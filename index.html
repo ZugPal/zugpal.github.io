@@ -1,0 +1,992 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Zugpal</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap">
+<style>
+/* Layout: one phone-width column; header, screen content, primary action at the end of the flow. */
+:root{
+  --bg:#F2F4F3; --surface:#FFFFFF; --ink:#15211D; --muted:#4A5A54; --line:#C9D1CD;
+  --accent:#1F6B50; --accent-ink:#FFFFFF; --soft:#DCEFE6; --soft-ink:#134634;
+  --hero:#15211D; --hero-ink:#F2F4F3; --hero-muted:#B8C4BF; --hero-card:#22332D; --mint:#9FE0C3; --mint-ink:#0E2A20;
+  --warn-bg:#FFF4E0; --warn-ink:#5C3A0C; --danger:#A3321F; --link:#1F6B50; --gold:#8A5A00; --gold-bg:#FBEFD2;
+  --f-display:'Bricolage Grotesque','IBM Plex Sans Arabic',system-ui,sans-serif;
+  --f-body:'DM Sans','IBM Plex Sans Arabic',system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0F1714; --surface:#18231F; --ink:#E8EEEB; --muted:#A3B2AC; --line:#2E3D37;
+  --accent:#2A7D5D; --accent-ink:#FFFFFF; --soft:#1E3A2F; --soft-ink:#BFE8D5;
+  --hero:#1C2B25; --hero-ink:#F2F4F3; --hero-muted:#B8C4BF; --hero-card:#26392F; --mint:#9FE0C3; --mint-ink:#0E2A20;
+  --warn-bg:#3A2C14; --warn-ink:#F2D7A6; --danger:#F08A73; --link:#9FE0C3; --gold:#F2C46B; --gold-bg:#3A2E12; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0F1714; --surface:#18231F; --ink:#E8EEEB; --muted:#A3B2AC; --line:#2E3D37;
+  --accent:#2A7D5D; --accent-ink:#FFFFFF; --soft:#1E3A2F; --soft-ink:#BFE8D5;
+  --hero:#1C2B25; --hero-ink:#F2F4F3; --hero-muted:#B8C4BF; --hero-card:#26392F; --mint:#9FE0C3; --mint-ink:#0E2A20;
+  --warn-bg:#3A2C14; --warn-ink:#F2D7A6; --danger:#F08A73; --link:#9FE0C3; --gold:#F2C46B; --gold-bg:#3A2E12; color-scheme:dark}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45}
+html[lang="ar"] body{--f-display:'IBM Plex Sans Arabic',system-ui,sans-serif;--f-body:'IBM Plex Sans Arabic',system-ui,sans-serif}
+*{box-sizing:border-box}
+.app{max-width:480px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;gap:20px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:16px 24px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-family:var(--f-display);font-weight:700;font-size:24px;letter-spacing:-.4px}
+select,input[type=text]{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;min-height:48px;padding:0 14px;width:100%}
+.top select{width:auto;min-height:44px}
+input:focus-visible,select:focus-visible,button:focus-visible,label:focus-within{outline:3px solid var(--mint);outline-offset:2px}
+.screen{display:flex;flex-direction:column;gap:18px;flex:1}
+h1{margin:0;font-family:var(--f-display);font-weight:700;font-size:30px;line-height:1.12;letter-spacing:-.5px;text-wrap:balance}
+html[lang="ar"] h1{letter-spacing:0}
+.muted{color:var(--muted);font-size:15px}
+.small{font-size:13px;color:var(--muted)}
+.banner{background:var(--warn-bg);color:var(--warn-ink);border-radius:12px;padding:10px 14px;font-size:14px}
+.banner.action{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap}
+.card{background:var(--surface);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.hero{background:var(--hero);color:var(--hero-ink);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.hero .small{color:var(--hero-muted)}
+.field{display:flex;flex-direction:column;gap:8px}
+.field > label,.flabel{font-weight:500;font-size:15px}
+.row{display:flex;gap:12px;align-items:center}
+.row > *{min-width:0}
+.grow{flex:1;min-width:0}
+.seg{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;font-size:15px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.check{display:flex;gap:12px;align-items:flex-start;font-size:15px;cursor:pointer}
+.check input{width:22px;height:22px;margin:1px 0 0;accent-color:var(--accent);flex-shrink:0}
+.rules{margin:0;padding-inline-start:20px;display:flex;flex-direction:column;gap:6px;font-size:15px}
+.btn{min-height:56px;border-radius:16px;border:none;background:var(--accent);color:var(--accent-ink);font:inherit;font-size:17px;font-weight:700;cursor:pointer;width:100%;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);font-weight:500;font-size:15px;min-height:52px}
+.btn.mint{background:var(--mint);color:var(--mint-ink)}
+.btn.onhero{background:transparent;color:var(--hero-ink);border:1px solid #3B4B45;font-weight:500;font-size:15px;min-height:52px}
+.btn.small{min-height:44px;width:auto;font-size:14px;border-radius:22px;padding:0 16px}
+.link{background:none;border:none;color:var(--link);font:inherit;font-size:14px;text-decoration:underline;cursor:pointer;min-height:44px;padding:0 4px}
+.danger{color:var(--danger)}
+.pill{display:inline-flex;align-items:center;gap:8px;background:var(--soft);color:var(--soft-ink);font-size:14px;font-weight:700;padding:8px 12px;border-radius:20px}
+.pill.off{background:var(--surface);color:var(--muted);border:1px solid var(--line)}
+.dot{width:10px;height:10px;border-radius:5px;background:currentColor}
+.person{background:var(--surface);border-radius:18px;padding:14px;display:flex;gap:14px;align-items:flex-start}
+.person.buddy{outline:2px solid var(--gold);outline-offset:-2px}
+.pname{font-weight:700}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.tag{font-size:12px;font-weight:700;background:var(--soft);color:var(--soft-ink);padding:3px 8px;border-radius:10px}
+.tag.gold{background:var(--gold-bg);color:var(--gold)}
+.tag.plain{background:transparent;border:1px solid var(--line);color:var(--muted);font-weight:500}
+.btn.wave{min-height:44px;width:auto;font-size:14px;border-radius:22px;padding:0 18px;flex-shrink:0;align-self:center}
+.btn.wave.done{background:var(--soft);color:var(--soft-ink)}
+.empty{border:1px dashed var(--line);border-radius:16px;padding:20px;text-align:center}
+.ph{position:relative;flex-shrink:0;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-weight:700}
+.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.ph.blur img{filter:blur(6px);transform:scale(1.25)}
+.ph .lock{position:absolute;inset:auto 0 0 auto;width:20px;height:20px;border-radius:10px;background:var(--surface);color:var(--muted);display:flex;align-items:center;justify-content:center;border:1px solid var(--line)}
+.match{background:var(--hero);color:var(--hero-ink);border-radius:24px;padding:24px 18px;display:flex;flex-direction:column;gap:16px;flex:1}
+.pair{display:flex;justify-content:center}
+.pair .ph{border:4px solid var(--hero)}
+.pair .ph + .ph{margin-inline-start:-16px}
+.ice{background:var(--mint);color:var(--mint-ink);border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.ice .q{font-family:var(--f-display);font-size:19px;font-weight:500;line-height:1.3}
+.lbl{font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+html[lang="ar"] .lbl{letter-spacing:0}
+.iconbtn{width:44px;height:44px;border-radius:22px;border:none;background:transparent;color:inherit;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.iconbtn[aria-pressed="true"]{color:var(--gold)}
+.meet{background:var(--hero-card);border-radius:18px;padding:14px 16px;display:flex;gap:12px;align-items:center}
+.meet .small{color:var(--hero-muted)}
+.games{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
+.games .chip{flex-shrink:0;font-size:14px}
+.chatlog{flex:1;min-height:240px;max-height:52vh;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:4px 0}
+.msg{max-width:80%;padding:10px 14px;border-radius:16px;background:var(--surface);overflow-wrap:anywhere;white-space:pre-wrap;align-self:flex-start}
+.msg.mine{align-self:flex-end;background:var(--accent);color:var(--accent-ink)}
+.gamecard{align-self:center;max-width:92%;background:var(--soft);color:var(--soft-ink);border-radius:16px;padding:12px 16px;text-align:center;display:flex;flex-direction:column;gap:4px}
+.gamecard .big{font-family:var(--f-display);font-size:18px;font-weight:700;color:var(--ink)}
+.chatbar{display:flex;gap:8px}
+.chatbar input{flex:1}
+.word{border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.word .w{font-family:var(--f-display);font-size:22px;font-weight:700}
+.photoedit{display:flex;gap:16px;align-items:center}
+.filebtn{position:relative;overflow:hidden}
+.filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.fb{background:var(--surface);border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:12px;font-size:14px;max-width:min(440px,calc(100% - 32px));z-index:20}
+.end{margin-top:auto;display:flex;flex-direction:column;gap:10px}
+[dir="rtl"] .flip svg{transform:scaleX(-1)}
+@media (prefers-reduced-motion: no-preference){.match,.person,.gamecard{animation:rise .25s ease-out}@keyframes rise{from{transform:translateY(6px);opacity:.6}to{transform:none;opacity:1}}}
+</style>
+
+<div id="app" class="app" aria-live="polite"></div>
+
+<script>
+/* ============================================================
+   SETTINGS — the only part you normally edit.
+   Leave supabaseUrl empty to run in demo mode.
+   ============================================================ */
+const CONFIG = {
+  supabaseUrl: "https://vkyfnewnpsyuhbmvryws.supabase.co",       // e.g. "https://abcd1234.supabase.co"
+  supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZreWZuZXducHN5dWhibXZyeXdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NTczMjUsImV4cCI6MjEwODMzMzMyNX0.FyGj1LjJkpDz6xtjKH28EscjSCtL_99M6mindIVG8rU",   // the "anon public" key from Supabase > Project Settings > API
+  talkTrain: {
+    de: "Dienstag 07:42 · RE 1 ab Düren · Wagen 5",
+    en: "Tuesday 07:42 · RE 1 from Düren · coach 5",
+    ar: "الثلاثاء 07:42 · RE 1 من دورن · العربة 5"
+  }
+};
+
+/* ---------------- Texts in three languages ---------------- */
+const T = {
+  en: {
+    tagline:"For commuters who'd like to talk.",
+    demoBanner:"Demo mode: the other riders are simulated so you can try the app.",
+    welcomeTitle:"Talk on your train. No pressure.", profileTitle:"Your profile",
+    welcomeBody:"Only people who are also open to chat can see you. A wave stays private unless it's returned.",
+    firstName:"Your first name", firstNameHint:"Others only see your first name.",
+    iAm:"I am", woman:"Woman", man:"Man", other:"Prefer not to say",
+    photo:"Photo", addPhoto:"Add photo", changePhoto:"Change photo", removePhoto:"Remove",
+    photoHint:"Others see it blurred. It only becomes clear after you both wave.",
+    photoError:"This photo couldn't be loaded. Try another one.",
+    age:"Age (optional)", ageHidden:"Don't show",
+    langs:"Languages I speak", topics:"Things I can talk about (up to 5)", maxTopics:"You can choose up to 5 topics.",
+    rulesTitle:"Our rules",
+    rule1:"I'm here to talk, not to date.", rule2:"I accept a no without asking why.", rule3:"I never share someone's details without asking.", rule4:"I'm at least 18 years old.",
+    agree:"I'll follow these rules", start:"Let's go", save:"Save",
+    checkinTitle:"Which train are you on?",
+    talkTrain:"The talk train", talkTrainBody:"Our regular train for meeting people. A Zugpal host rides along and says hello.", joinTalk:"Check in to the talk train",
+    orOther:"Or another train", line:"Line", number:"Train number",
+    numberHint:"In DB Navigator, tap your connection, then the train. Example: 10115.",
+    duration:"I'm on board for", min:"min", checkin:"Check in",
+    nobodySees:"Nobody can see you yet. You only become visible to people who are also open to chat.",
+    moodTitle:"What are you up for today?", moodHint:"Others see your mood, never your full profile.",
+    talkMode:"How do you want to talk?", modeBoth:"In person or chat", modeChat:"Chat only",
+    coach:"Coach (optional)", coachHint:"Only shown after a match.",
+    womenOnly:"Women only: I only see women, and only women see me.",
+    openBtn:"I'm open to chat", offAnytime:"You can switch this off any time with one tap.",
+    youAreOpen:"You're open to chat", invisible:"You're invisible", goInvisible:"Go invisible", beVisible:"Be visible",
+    invisibleNote:"Nobody can see you right now. Waves and matches are paused.",
+    count0:"Nobody else is open yet", count1:"1 person on your train is open too", countN:"{n} people on your train are open too",
+    emptyBody:"Stay open. People appear here as soon as they check in.",
+    waveNote:"A wave is private. They only find out if they wave back.",
+    wave:"Wave", waved:"Waved", sameCoach:"Same coach", chatOnlyTag:"Chat only", buddyTag:"Ride buddy",
+    speaks:"Speaks {l}", talksAbout:"Talks about {t}",
+    matchesTitle:"Your matches", openChat:"Chat",
+    matchTitle:"You and {name} both waved", minLeft:"Your ride has about {n} min left.",
+    ice:"Icebreaker", anotherIce:"Show another icebreaker", iceBecause:"You both picked: {mood}", iceGeneric:"For any ride",
+    meetAt:"Meeting point", coachX:"Coach {c}", noCoach:"No coach given. Say hi in chat first.",
+    chatOnlyMatch:"Chat only. No need to meet in person.",
+    sayHi:"Say hi in chat", notToday:"Not today, thanks",
+    chatPh:"Write a message", send:"Send", report:"Report", block:"Block",
+    dice:"Topic dice", spin:"Who asks next?", ttl:"Two truths and a lie",
+    spinYou:"You ask the next question.", spinThem:"{name} asks the next question.",
+    ttlYou:"You start: tell three facts about yourself. One is false. {name} guesses which.",
+    ttlThem:"{name} starts: three facts, one is false. Guess which one.",
+    bye:"Nice talking to you! Have a good day.",
+    endingSoon:"Your ride ends in about {n} min.", sayBye:"Say goodbye",
+    buddySave:"Save as ride buddy", buddyHint:"If you both save each other, Zugpal tells you when you're on the same train again.",
+    buddyHere:"{name} is on your train today. You're ride buddies.",
+    wordTitle:"German word of the ride",
+    fbTitle:"How was your ride?", fbPrivate:"Your answers are private. Compliments are shown without your name.",
+    comfy:"Did you feel comfortable with {name}?", yes:"Yes", no:"No", compliment:"Give a compliment", finish:"Finish ride",
+    blockedToast:"Blocked. You won't see each other again.", reportToast:"Thanks. We'll look into it.",
+    endRide:"End my ride", endedToast:"Ride ended. Your check-in is deleted.",
+    back:"Back", editProfile:"Edit profile",
+    needName:"Please enter your first name.", needGender:"Please choose an option under “I am”.", needRules:"Please agree to the rules.", needTrain:"Please enter the line and train number.",
+    netError:"Couldn't connect. Check your internet and try again.", newMatch:"New match: {name}",
+    loading:"Connecting…",
+    testTitle:"Test with friends", testBody:"Start a private test ride and send the link to your friends. Everyone who opens it lands in the same ride.",
+    testBtn:"Start a test ride", testRide:"Test ride {c}", inviteLabel:"Invite link for your friends", copyLink:"Copy link", copied:"Link copied. Send it to your friends.",
+    waveLimit:"You can wave at up to 5 people per ride.",
+    noContact:"For your safety, phone numbers, emails, links and social media can't be shared here. Swap them in person if you both want.",
+    moneyWarn:"Careful: never send money, codes or bank details to people you meet here. Report anyone who asks.",
+    askMe:"Ask me about… (optional)", askMePh:"e.g. my cooking disasters", askMeShown:"Ask me about {x}",
+    moodNow:"How's your mood right now? (optional)", moodAfter:"And how do you feel now?",
+    moodUp:"Your mood went up on this ride.", moodPrivate:"Anonymous. It helps us show partners that Zugpal works.",
+    m1:"Low", m2:"Meh", m3:"Okay", m4:"Good", m5:"Great"
+  },
+  de: {
+    tagline:"Für alle, die im Zug gern reden würden.",
+    demoBanner:"Demo: Die anderen Fahrgäste sind simuliert, damit du die App ausprobieren kannst.",
+    welcomeTitle:"Reden im Zug. Ganz ohne Druck.", profileTitle:"Dein Profil",
+    welcomeBody:"Dich sieht nur, wer selbst offen für ein Gespräch ist. Ein Winken bleibt privat, bis es erwidert wird.",
+    firstName:"Dein Vorname", firstNameHint:"Andere sehen nur deinen Vornamen.",
+    iAm:"Ich bin", woman:"Frau", man:"Mann", other:"Keine Angabe",
+    photo:"Foto", addPhoto:"Foto hinzufügen", changePhoto:"Foto ändern", removePhoto:"Entfernen",
+    photoHint:"Andere sehen es unscharf. Erst wenn ihr beide winkt, wird es klar.",
+    photoError:"Dieses Foto ließ sich nicht laden. Versuch ein anderes.",
+    age:"Alter (optional)", ageHidden:"Nicht anzeigen",
+    langs:"Sprachen, die ich spreche", topics:"Darüber rede ich gern (bis zu 5)", maxTopics:"Du kannst bis zu 5 Themen wählen.",
+    rulesTitle:"Unsere Regeln",
+    rule1:"Ich bin hier zum Reden, nicht zum Daten.", rule2:"Ich akzeptiere ein Nein, ohne nach dem Grund zu fragen.", rule3:"Ich teile keine Daten anderer ohne ihr Einverständnis.", rule4:"Ich bin mindestens 18 Jahre alt.",
+    agree:"Ich halte mich an diese Regeln", start:"Los geht's", save:"Speichern",
+    checkinTitle:"In welchem Zug sitzt du?",
+    talkTrain:"Der Gesprächszug", talkTrainBody:"Unser fester Zug zum Kennenlernen. Ein Zugpal-Gastgeber fährt mit und sagt Hallo.", joinTalk:"Im Gesprächszug einchecken",
+    orOther:"Oder ein anderer Zug", line:"Linie", number:"Zugnummer",
+    numberHint:"Im DB Navigator: Verbindung antippen, dann den Zug. Beispiel: 10115.",
+    duration:"Ich fahre mit für", min:"Min.", checkin:"Einchecken",
+    nobodySees:"Noch sieht dich niemand. Sichtbar wirst du nur für Leute, die auch offen sind.",
+    moodTitle:"Worauf hast du heute Lust?", moodHint:"Andere sehen deine Stimmung, nie dein ganzes Profil.",
+    talkMode:"Wie möchtest du reden?", modeBoth:"Persönlich oder im Chat", modeChat:"Nur Chat",
+    coach:"Wagen (optional)", coachHint:"Erst nach einem Match sichtbar.",
+    womenOnly:"Nur Frauen: Ich sehe nur Frauen und nur Frauen sehen mich.",
+    openBtn:"Ich bin offen für ein Gespräch", offAnytime:"Du kannst das jederzeit mit einem Tipp ausschalten.",
+    youAreOpen:"Du bist offen für Gespräche", invisible:"Du bist unsichtbar", goInvisible:"Unsichtbar werden", beVisible:"Sichtbar werden",
+    invisibleNote:"Gerade sieht dich niemand. Winken und Matches sind pausiert.",
+    count0:"Noch ist niemand sonst offen", count1:"1 Person in deinem Zug ist auch offen", countN:"{n} Leute in deinem Zug sind auch offen",
+    emptyBody:"Bleib offen. Sobald jemand eincheckt, erscheint die Person hier.",
+    waveNote:"Winken ist privat. Die andere Person erfährt es nur, wenn sie zurückwinkt.",
+    wave:"Winken", waved:"Gewunken", sameCoach:"Gleicher Wagen", chatOnlyTag:"Nur Chat", buddyTag:"Mitfahr-Buddy",
+    speaks:"Spricht {l}", talksAbout:"Redet gern über {t}",
+    matchesTitle:"Deine Matches", openChat:"Chat",
+    matchTitle:"Du und {name} habt beide gewunken", minLeft:"Eure Fahrt dauert noch etwa {n} Min.",
+    ice:"Eisbrecher", anotherIce:"Anderen Eisbrecher zeigen", iceBecause:"Ihr habt beide gewählt: {mood}", iceGeneric:"Passt zu jeder Fahrt",
+    meetAt:"Treffpunkt", coachX:"Wagen {c}", noCoach:"Kein Wagen angegeben. Sag erst im Chat Hallo.",
+    chatOnlyMatch:"Nur Chat. Ihr müsst euch nicht persönlich treffen.",
+    sayHi:"Im Chat Hallo sagen", notToday:"Heute nicht, danke",
+    chatPh:"Nachricht schreiben", send:"Senden", report:"Melden", block:"Blockieren",
+    dice:"Themenwürfel", spin:"Wer fragt als Nächstes?", ttl:"Zwei Wahrheiten, eine Lüge",
+    spinYou:"Du stellst die nächste Frage.", spinThem:"{name} stellt die nächste Frage.",
+    ttlYou:"Du fängst an: Erzähl drei Dinge über dich, eins davon ist falsch. {name} rät, welches.",
+    ttlThem:"{name} fängt an: drei Dinge, eins ist falsch. Rate, welches.",
+    bye:"Schön, mit dir geredet zu haben! Hab einen schönen Tag.",
+    endingSoon:"Deine Fahrt endet in etwa {n} Min.", sayBye:"Tschüss sagen",
+    buddySave:"Als Mitfahr-Buddy speichern", buddyHint:"Wenn ihr euch beide speichert, sagt dir Zugpal Bescheid, wenn ihr wieder im selben Zug sitzt.",
+    buddyHere:"{name} sitzt heute in deinem Zug. Ihr seid Mitfahr-Buddys.",
+    wordTitle:"Deutsches Wort der Fahrt",
+    fbTitle:"Wie war deine Fahrt?", fbPrivate:"Deine Antworten sind privat. Komplimente werden ohne deinen Namen angezeigt.",
+    comfy:"Hast du dich mit {name} wohlgefühlt?", yes:"Ja", no:"Nein", compliment:"Ein Kompliment geben", finish:"Fahrt abschließen",
+    blockedToast:"Blockiert. Ihr seht euch nicht mehr.", reportToast:"Danke. Wir sehen uns das an.",
+    endRide:"Fahrt beenden", endedToast:"Fahrt beendet. Dein Check-in ist gelöscht.",
+    back:"Zurück", editProfile:"Profil ändern",
+    needName:"Bitte gib deinen Vornamen ein.", needGender:"Bitte wähle eine Option unter „Ich bin“.", needRules:"Bitte bestätige die Regeln.", needTrain:"Bitte gib Linie und Zugnummer ein.",
+    netError:"Keine Verbindung. Prüf dein Internet und versuch es noch mal.", newMatch:"Neues Match: {name}",
+    loading:"Verbinde…",
+    testTitle:"Mit Freunden testen", testBody:"Starte eine private Testfahrt und schick den Link an deine Freunde. Alle, die ihn öffnen, landen in derselben Fahrt.",
+    testBtn:"Testfahrt starten", testRide:"Testfahrt {c}", inviteLabel:"Einladungslink für deine Freunde", copyLink:"Link kopieren", copied:"Link kopiert. Schick ihn an deine Freunde.",
+    waveLimit:"Du kannst pro Fahrt bis zu 5 Leuten winken.",
+    noContact:"Zu deiner Sicherheit können Telefonnummern, E-Mails, Links und Social Media hier nicht geteilt werden. Tauscht sie persönlich aus, wenn ihr beide wollt.",
+    moneyWarn:"Vorsicht: Schick Leuten von hier nie Geld, Codes oder Bankdaten. Melde alle, die danach fragen.",
+    askMe:"Frag mich nach… (optional)", askMePh:"z. B. meinen Kochunfällen", askMeShown:"Frag mich nach {x}",
+    moodNow:"Wie ist deine Stimmung gerade? (optional)", moodAfter:"Und wie fühlst du dich jetzt?",
+    moodUp:"Deine Stimmung ist auf dieser Fahrt gestiegen.", moodPrivate:"Anonym. Damit zeigen wir Partnern, dass Zugpal wirkt.",
+    m1:"Mies", m2:"Naja", m3:"Okay", m4:"Gut", m5:"Super"
+  },
+  ar: {
+    tagline:"لكل من يرغب في الحديث أثناء رحلة القطار.",
+    demoBanner:"وضع تجريبي: الركاب الآخرون افتراضيون لتتمكن من تجربة التطبيق.",
+    welcomeTitle:"تحدّث في القطار، بلا ضغط.", profileTitle:"ملفك الشخصي",
+    welcomeBody:"لا يراك إلا من هو منفتح على الحديث أيضاً. التلويحة تبقى سرية حتى يردّ عليها الطرف الآخر.",
+    firstName:"اسمك الأول", firstNameHint:"لن يرى الآخرون إلا اسمك الأول.",
+    iAm:"أنا", woman:"امرأة", man:"رجل", other:"أفضّل عدم الذكر",
+    photo:"الصورة", addPhoto:"إضافة صورة", changePhoto:"تغيير الصورة", removePhoto:"حذف",
+    photoHint:"يراها الآخرون ضبابية، ولا تتضح إلا بعد أن تلوّحا لبعضكما.",
+    photoError:"تعذّر تحميل الصورة. جرّب صورة أخرى.",
+    age:"العمر (اختياري)", ageHidden:"لا تُظهر",
+    langs:"اللغات التي أتحدثها", topics:"مواضيع أحب الحديث عنها (حتى 5)", maxTopics:"يمكنك اختيار 5 مواضيع كحد أقصى.",
+    rulesTitle:"قواعدنا",
+    rule1:"أنا هنا للحديث، لا للمواعدة.", rule2:"أتقبّل الرفض دون أن أسأل عن السبب.", rule3:"لا أشارك بيانات أحد دون موافقته.", rule4:"عمري 18 عاماً على الأقل.",
+    agree:"ألتزم بهذه القواعد", start:"لنبدأ", save:"حفظ",
+    checkinTitle:"في أي قطار أنت؟",
+    talkTrain:"قطار الحديث", talkTrainBody:"قطارنا الثابت للتعارف. يرافقكم مضيف من Zugpal ويرحّب بكم.", joinTalk:"سجّل في قطار الحديث",
+    orOther:"أو قطار آخر", line:"الخط", number:"رقم القطار",
+    numberHint:"في تطبيق DB Navigator: اضغط على رحلتك ثم على القطار. مثال: 10115.",
+    duration:"مدة رحلتي", min:"دقيقة", checkin:"سجّل في الرحلة",
+    nobodySees:"لا أحد يراك الآن. ستظهر فقط لمن هم منفتحون على الحديث أيضاً.",
+    moodTitle:"ما الذي يناسبك اليوم؟", moodHint:"يرى الآخرون مزاجك، لا ملفك الشخصي كاملاً.",
+    talkMode:"كيف تريد التواصل؟", modeBoth:"وجهاً لوجه أو بالمحادثة", modeChat:"محادثة فقط",
+    coach:"رقم العربة (اختياري)", coachHint:"يظهر فقط بعد التوافق.",
+    womenOnly:"نساء فقط: أرى النساء فقط، ولا تراني إلا النساء.",
+    openBtn:"أنا منفتح على الحديث", offAnytime:"يمكنك إيقاف ذلك في أي وقت بلمسة واحدة.",
+    youAreOpen:"أنت منفتح على الحديث", invisible:"أنت مخفي", goInvisible:"إخفاء نفسي", beVisible:"الظهور",
+    invisibleNote:"لا أحد يراك الآن. التلويح والتوافقات متوقفة مؤقتاً.",
+    count0:"لا أحد غيرك منفتح بعد", count1:"شخص واحد في قطارك منفتح أيضاً", countN:"{n} أشخاص في قطارك منفتحون أيضاً",
+    emptyBody:"ابقَ منفتحاً. سيظهر هنا كل من يسجّل في الرحلة.",
+    waveNote:"التلويحة سرية. لن يعرف بها الطرف الآخر إلا إذا لوّح لك أيضاً.",
+    wave:"لوّح", waved:"تمّ التلويح", sameCoach:"نفس العربة", chatOnlyTag:"محادثة فقط", buddyTag:"رفيق رحلة",
+    speaks:"يتحدث {l}", talksAbout:"يحب الحديث عن {t}",
+    matchesTitle:"توافقاتك", openChat:"محادثة",
+    matchTitle:"أنت و{name} لوّحتما لبعضكما", minLeft:"تبقّى من رحلتكما حوالي {n} دقيقة.",
+    ice:"كاسر الجليد", anotherIce:"اقتراح آخر", iceBecause:"لأنكما اخترتما: {mood}", iceGeneric:"يناسب أي رحلة",
+    meetAt:"مكان اللقاء", coachX:"العربة {c}", noCoach:"لم يُذكر رقم العربة. ابدأ بالتحية في المحادثة.",
+    chatOnlyMatch:"محادثة فقط. لا حاجة للقاء وجهاً لوجه.",
+    sayHi:"قل مرحباً في المحادثة", notToday:"ليس اليوم، شكراً",
+    chatPh:"اكتب رسالة", send:"إرسال", report:"إبلاغ", block:"حظر",
+    dice:"نرد المواضيع", spin:"من يسأل التالي؟", ttl:"حقيقتان وكذبة",
+    spinYou:"أنت تطرح السؤال التالي.", spinThem:"{name} يطرح السؤال التالي.",
+    ttlYou:"ابدأ أنت: اذكر ثلاث معلومات عن نفسك، واحدة منها خاطئة. على {name} أن يخمّن أيّها.",
+    ttlThem:"{name} يبدأ: ثلاث معلومات، واحدة منها خاطئة. خمّن أيّها.",
+    bye:"سعدت بالحديث معك! أتمنى لك يوماً جميلاً.",
+    endingSoon:"تنتهي رحلتك بعد حوالي {n} دقيقة.", sayBye:"قل وداعاً",
+    buddySave:"حفظ كرفيق رحلة", buddyHint:"إذا حفظ كلٌّ منكما الآخر، سيخبرك Zugpal عندما تكونان في القطار نفسه مجدداً.",
+    buddyHere:"{name} في قطارك اليوم. أنتما رفيقا رحلة.",
+    wordTitle:"كلمة ألمانية لهذه الرحلة",
+    fbTitle:"كيف كانت رحلتك؟", fbPrivate:"إجاباتك خاصة. تظهر المجاملات دون اسمك.",
+    comfy:"هل شعرت بالراحة مع {name}؟", yes:"نعم", no:"لا", compliment:"قدّم مجاملة", finish:"إنهاء الرحلة",
+    blockedToast:"تم الحظر. لن تريا بعضكما بعد الآن.", reportToast:"شكراً. سنراجع الأمر.",
+    endRide:"إنهاء الرحلة", endedToast:"انتهت الرحلة وتم حذف تسجيلك.",
+    back:"رجوع", editProfile:"تعديل الملف",
+    needName:"الرجاء إدخال اسمك الأول.", needGender:"الرجاء اختيار خيار تحت «أنا».", needRules:"الرجاء الموافقة على القواعد.", needTrain:"الرجاء إدخال الخط ورقم القطار.",
+    netError:"تعذّر الاتصال. تحقق من الإنترنت وحاول مجدداً.", newMatch:"توافق جديد: {name}",
+    loading:"جارٍ الاتصال…",
+    testTitle:"جرّبه مع أصدقائك", testBody:"ابدأ رحلة تجريبية خاصة وأرسل الرابط إلى أصدقائك. كل من يفتحه ينضم إلى الرحلة نفسها.",
+    testBtn:"ابدأ رحلة تجريبية", testRide:"رحلة تجريبية {c}", inviteLabel:"رابط الدعوة لأصدقائك", copyLink:"نسخ الرابط", copied:"تم نسخ الرابط. أرسله إلى أصدقائك.",
+    waveLimit:"يمكنك التلويح لخمسة أشخاص كحد أقصى في كل رحلة.",
+    noContact:"حفاظاً على سلامتك، لا يمكن مشاركة أرقام الهواتف أو البريد الإلكتروني أو الروابط أو حسابات التواصل هنا. تبادلوها وجهاً لوجه إذا رغبتما.",
+    moneyWarn:"انتبه: لا ترسل أبداً مالاً أو رموزاً أو بيانات بنكية لأشخاص تتعرف عليهم هنا. أبلغ عن كل من يطلب ذلك.",
+    askMe:"اسألني عن… (اختياري)", askMePh:"مثلاً: مغامراتي في الطبخ", askMeShown:"اسألني عن {x}",
+    moodNow:"كيف مزاجك الآن؟ (اختياري)", moodAfter:"وكيف تشعر الآن؟",
+    moodUp:"تحسّن مزاجك خلال هذه الرحلة.", moodPrivate:"مجهول الهوية. يساعدنا ذلك على إثبات فائدة Zugpal للشركاء.",
+    m1:"سيئ", m2:"عادي", m3:"لا بأس", m4:"جيد", m5:"رائع"
+  }
+};
+
+const MOODS = {
+  small:{en:"Light small talk",de:"Lockerer Small Talk",ar:"دردشة خفيفة"}, german:{en:"Practice German",de:"Deutsch üben",ar:"ممارسة الألمانية"},
+  books:{en:"Books",de:"Bücher",ar:"الكتب"}, football:{en:"Football",de:"Fußball",ar:"كرة القدم"},
+  work:{en:"Work & careers",de:"Arbeit & Beruf",ar:"العمل والمهنة"}, music:{en:"Music",de:"Musik",ar:"الموسيقى"},
+  travel:{en:"Travel",de:"Reisen",ar:"السفر"}, quiet:{en:"Quiet company",de:"Stille Gesellschaft",ar:"رفقة هادئة"}
+};
+const TOPICS = {
+  cooking:{en:"Cooking",de:"Kochen",ar:"الطبخ"}, football:{en:"Football",de:"Fußball",ar:"كرة القدم"}, tech:{en:"Tech & IT",de:"Technik & IT",ar:"التقنية"},
+  family:{en:"Family & kids",de:"Familie & Kinder",ar:"العائلة والأطفال"}, books:{en:"Books",de:"Bücher",ar:"الكتب"}, music:{en:"Music",de:"Musik",ar:"الموسيقى"},
+  travel:{en:"Travel",de:"Reisen",ar:"السفر"}, films:{en:"Films & series",de:"Filme & Serien",ar:"الأفلام والمسلسلات"}, sport:{en:"Sport & fitness",de:"Sport & Fitness",ar:"الرياضة واللياقة"},
+  nature:{en:"Nature",de:"Natur",ar:"الطبيعة"}, business:{en:"Business",de:"Business",ar:"الأعمال"}, history:{en:"History",de:"Geschichte",ar:"التاريخ"},
+  games:{en:"Games",de:"Spiele",ar:"الألعاب"}, psychology:{en:"Psychology",de:"Psychologie",ar:"علم النفس"}
+};
+const LANGS = ["Deutsch","English","العربية","Türkçe","Français","Español","Русский","Українська","فارسی","Kurdî","Polski","Italiano"];
+const AGES = ["18–24","25–29","30–39","40–49","50–59","60+"];
+const BADGES = {
+  listener:{en:"Great listener",de:"Toller Zuhörer",ar:"مستمع رائع"}, funny:{en:"Funny",de:"Lustig",ar:"مرح"},
+  german:{en:"Helped me with German",de:"Hat mir beim Deutsch geholfen",ar:"ساعدني في الألمانية"},
+  kind:{en:"Kind",de:"Freundlich",ar:"لطيف"}, stories:{en:"Great stories",de:"Spannende Geschichten",ar:"قصص ممتعة"}
+};
+const ICE = {
+  small:{en:["What's the best thing that happened to you this week?","Coffee or tea on the way to work?"],de:["Was war das Schönste an deiner Woche bisher?","Kaffee oder Tee auf dem Weg zur Arbeit?"],ar:["ما أجمل شيء حدث لك هذا الأسبوع؟","قهوة أم شاي في طريقك إلى العمل؟"]},
+  german:{en:["Which German word do you always mix up?","What's your favourite German word?"],de:["Welches deutsche Wort verwechselst du immer?","Was ist dein deutsches Lieblingswort?"],ar:["ما الكلمة الألمانية التي تخلط بينها دائماً؟","ما كلمتك الألمانية المفضلة؟"]},
+  books:{en:["What are you reading at the moment?","Which book would you recommend to a stranger?"],de:["Was liest du gerade?","Welches Buch würdest du einer fremden Person empfehlen?"],ar:["ماذا تقرأ هذه الأيام؟","أي كتاب تنصح به شخصاً لا تعرفه؟"]},
+  football:{en:["Which team do you support, and why?","Who will win the league this season?"],de:["Für welchen Verein bist du, und warum?","Wer wird diese Saison Meister?"],ar:["أي فريق تشجّع، ولماذا؟","من سيفوز بالدوري هذا الموسم؟"]},
+  work:{en:["What do you actually do all day?","What would you do if you could switch jobs tomorrow?"],de:["Was machst du eigentlich den ganzen Tag?","Was würdest du machen, wenn du morgen den Job wechseln könntest?"],ar:["ماذا تعمل طوال اليوم؟","ماذا كنت ستعمل لو استطعت تغيير مهنتك غداً؟"]},
+  music:{en:["What was the last song you had on repeat?","What's the best concert you've ever been to?"],de:["Welcher Song lief bei dir zuletzt in Dauerschleife?","Was war das beste Konzert deines Lebens?"],ar:["ما آخر أغنية استمعت إليها مراراً؟","ما أفضل حفلة موسيقية حضرتها؟"]},
+  travel:{en:["Where would you go if this train didn't stop?","What's the best place you've ever been?"],de:["Wohin würdest du fahren, wenn dieser Zug nicht anhält?","Was ist der schönste Ort, an dem du je warst?"],ar:["إلى أين كنت ستذهب لو لم يتوقف هذا القطار؟","ما أجمل مكان زرته في حياتك؟"]},
+  quiet:{en:["A short hello now, and maybe more tomorrow?","Window or aisle?"],de:["Kurz Hallo sagen, vielleicht morgen mehr?","Fenster oder Gang?"],ar:["تحية قصيرة الآن، وربما حديث أطول غداً؟","النافذة أم الممر؟"]},
+  generic:{en:["Do you take this train every day?","What's the best thing about your stop?"],de:["Fährst du jeden Tag mit diesem Zug?","Was ist das Beste an deiner Haltestelle?"],ar:["هل تركب هذا القطار كل يوم؟","ما أجمل شيء في محطتك؟"]}
+};
+const DICE = {
+  en:["The best meal you've ever eaten","A place you'd love to visit","Your first job","Something you learned this year","Your favourite childhood game","A film you can watch again and again","The best advice you ever got","Your dream weekend","A skill you'd like to learn","Something that made you laugh this week","Your favourite season and why","A song that reminds you of home","The most beautiful city you know","What you'd do with an extra hour every day","A book that changed how you see things","Your favourite dish from your home country"],
+  de:["Das beste Essen deines Lebens","Ein Ort, den du gern besuchen würdest","Dein erster Job","Etwas, das du dieses Jahr gelernt hast","Dein Lieblingsspiel als Kind","Ein Film, den du immer wieder schauen kannst","Der beste Rat, den du je bekommen hast","Dein Traum-Wochenende","Eine Fähigkeit, die du lernen möchtest","Etwas, das dich diese Woche zum Lachen gebracht hat","Deine Lieblingsjahreszeit und warum","Ein Lied, das dich an zu Hause erinnert","Die schönste Stadt, die du kennst","Was du mit einer Extrastunde am Tag machen würdest","Ein Buch, das deine Sicht verändert hat","Dein Lieblingsgericht aus deiner Heimat"],
+  ar:["أفضل وجبة تناولتها في حياتك","مكان تحلم بزيارته","عملك الأول","شيء تعلّمته هذا العام","لعبتك المفضلة في الطفولة","فيلم يمكنك مشاهدته مراراً","أفضل نصيحة تلقيتها","عطلة نهاية الأسبوع التي تحلم بها","مهارة تودّ تعلّمها","شيء أضحكك هذا الأسبوع","فصلك المفضل ولماذا","أغنية تذكّرك بالوطن","أجمل مدينة تعرفها","ماذا ستفعل بساعة إضافية كل يوم","كتاب غيّر نظرتك للأمور","أكلتك المفضلة من بلدك"]
+};
+const WORDS = [
+  ["Feierabend","Das Ende des Arbeitstags","The end of the workday","نهاية يوم العمل"],
+  ["Fernweh","Sehnsucht nach fernen Orten","Longing for faraway places","الحنين إلى الأماكن البعيدة"],
+  ["Gemütlichkeit","Ein warmes, gemütliches Gefühl","A warm, cosy feeling","الشعور بالدفء والراحة"],
+  ["Ohrwurm","Ein Lied, das nicht aus dem Kopf geht","A song stuck in your head","أغنية عالقة في رأسك"],
+  ["Verschlimmbessern","Etwas verbessern wollen und es schlimmer machen","To make something worse while trying to improve it","أن تُفسد الشيء وأنت تحاول تحسينه"],
+  ["Schnapsidee","Eine verrückte, spontane Idee","A crazy, spontaneous idea","فكرة مجنونة وعفوية"],
+  ["Kummerspeck","Gewicht durch Frustessen","Weight gained from comfort eating","الوزن الزائد بسبب الأكل عند الحزن"],
+  ["Fingerspitzengefühl","Feingefühl im Umgang mit Menschen","Tact and intuition with people","الحسّ المرهف في التعامل مع الناس"],
+  ["Sitzfleisch","Geduld, lange sitzen zu bleiben","The patience to sit through something","الصبر على الجلوس طويلاً"],
+  ["Heimweh","Sehnsucht nach zu Hause","Homesickness","الحنين إلى الوطن"],
+  ["Augenblick","Ein kurzer Moment","A brief moment","لحظة قصيرة"],
+  ["Mitbringsel","Ein kleines Geschenk, das man mitbringt","A small gift you bring along","هدية صغيرة تحملها معك"],
+  ["Stammtisch","Ein fester Tisch für Stammgäste","A regulars' table at a pub","طاولة الرواد الدائمين في المطعم"],
+  ["Zugzwang","Der Zwang, handeln zu müssen","Being forced to make a move","الاضطرار إلى اتخاذ خطوة"],
+  ["Torschlusspanik","Angst, Chancen im Leben zu verpassen","Fear of missing life's chances","الخوف من فوات فرص الحياة"],
+  ["Weltschmerz","Traurigkeit über den Zustand der Welt","Sadness about the state of the world","الحزن على حال العالم"]
+];
+const REACT = {
+  text:null,
+  dice:{de:"Gute Frage! Lass mich kurz überlegen…",en:"Good one! Let me think…",ar:"سؤال جميل! دعني أفكر قليلاً…"},
+  ttl:{de:"1) Ich habe in Spanien gelebt. 2) Ich habe drei Katzen. 3) Ich kann nicht schwimmen.",en:"1) I've lived in Spain. 2) I have three cats. 3) I can't swim.",ar:"1) عشت في إسبانيا. 2) عندي ثلاث قطط. 3) لا أجيد السباحة."},
+  bye:{de:"Danke, gleichfalls! Vielleicht bis morgen.",en:"Thanks, you too! Maybe see you tomorrow.",ar:"شكراً، وأنت أيضاً! ربما نلتقي غداً."}
+};
+
+/* ---------------- State ---------------- */
+const STORE_KEY = "abteil.v1";
+const S = {
+  lang:"de", profile:null, agreed:false, edit:null,
+  ride:null, moods:new Set(["small"]), coach:"", womenOnly:false, chatOnly:true, open:true, moodBefore:null, moodAfter:null, autoTalk:false,
+  screen:"welcome", riders:[], matches:[], seen:new Set(), buddySeen:new Set(), buddies:new Set(),
+  current:null, chatWith:null, messages:[], iceIndex:0, draft:{}, fb:{}, toast:"", warnedEnd:false
+};
+let backend = null, pollTimer = null, toastTimer = null;
+
+function load(){
+  try{
+    const d = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+    if(!d){ const nl=(navigator.language||"de").slice(0,2); S.lang = T[nl]?nl:"de"; return; }
+    S.lang = T[d.lang] ? d.lang : "de";
+    S.profile = d.profile || null; S.agreed = !!d.profile;
+    if(S.profile){ S.profile.langs = S.profile.langs || []; S.profile.topics = S.profile.topics || []; }
+    S.moods = new Set(d.moods || ["small"]); S.coach = d.coach || ""; S.womenOnly = !!d.womenOnly; S.chatOnly = d.chatOnly ?? true;
+    S.buddies = new Set(d.buddies || []);
+    if(d.ride && d.ride.expiresAt > Date.now()) S.ride = d.ride;
+  }catch(e){}
+}
+function save(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify({lang:S.lang, profile:S.profile, moods:[...S.moods], coach:S.coach, womenOnly:S.womenOnly, chatOnly:S.chatOnly, buddies:[...S.buddies], ride:S.ride})); }catch(e){}
+}
+
+/* ---------------- Helpers ---------------- */
+const t = (k, vars) => { let s = (T[S.lang] && T[S.lang][k]) || T.en[k] || k; if(vars) for(const v in vars) s = s.split("{"+v+"}").join(vars[v]); return s; };
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const loc = (map, id) => (map[id] && (map[id][S.lang] || map[id].en)) || id;
+const moodName = id => loc(MOODS, id);
+const berlinDate = () => new Date().toLocaleDateString("sv-SE",{timeZone:"Europe/Berlin"});
+const norm = s => String(s||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+const minsLeft = () => S.ride ? Math.max(0, Math.round((S.ride.expiresAt - Date.now())/60000)) : 0;
+const TINTS = [["#D9E6FB","#1E3F8A"],["#F5DFD0","#7A3410"],["#E6DCF2","#4E2A75"],["#DCEFE6","#134634"],["#F7E7B4","#5E4507"]];
+const tint = id => { let h=0; for(const c of String(id)) h=(h*31+c.charCodeAt(0))>>>0; return TINTS[h % TINTS.length]; };
+const MAX_WAVES = 5;
+const CONTACT_RE = /([^\s@]+@[^\s@]+\.[a-z]{2,})|(\+?\d[\d\s\-\/().]{7,}\d)|(https?:\/\/|www\.)|\b[a-z0-9-]+\.(com|de|net|org|me|io|app)\b|(instagram|insta\b|snapchat|snap\b|whatsapp|telegram|t\.me|wa\.me|tiktok|facebook|signal\b|واتس|انستا|تلغرام|سناب)|\bDE\d{2}\s?\d{4}/i;
+const MONEY_RE = /(geld|überweis|paypal|western\s?union|bitcoin|krypto|crypto|gutschein|money|wire|loan|kredit|bank\s?details|iban|فلوس|مال|تحويل|حوالة|بنك)/i;
+const hasContact = s => CONTACT_RE.test(String(s||""));
+const SAFE_IMG = /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/;
+const imgOk = (id, src) => !!src && (String(id).startsWith("d-") ? String(src).startsWith("data:image/svg+xml") : SAFE_IMG.test(src));
+function photo(id, name, src, size, blurred){
+  const [bg,fg] = tint(id);
+  const inner = imgOk(id, src) ? `<img src="${esc(src)}" alt="">` : `<span style="font-size:${Math.round(size*0.42)}px">${esc((String(name||"?").trim()[0]||"?").toUpperCase())}</span>`;
+  const lock = blurred && imgOk(id, src) && size >= 44 ? `<span class="lock" aria-hidden="true">${ICON.lock}</span>` : "";
+  return `<div class="ph${blurred?" blur":""}" style="width:${size}px;height:${size}px;background:${bg};color:${fg}" aria-hidden="true">${inner}${lock}</div>`;
+}
+function toast(msg){ S.toast = msg; render(); clearTimeout(toastTimer); toastTimer = setTimeout(()=>{ S.toast=""; render(); }, 3400); }
+function todaysWord(){ const d = new Date(berlinDate()); const i = Math.floor(d.getTime()/86400000) % WORDS.length; return WORDS[i]; }
+const ICON = {
+  back:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>',
+  shield:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/></svg>',
+  refresh:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg>',
+  pin:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9FE0C3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+  bubble:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9FE0C3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>',
+  lock:'<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+  dice:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8" cy="8" r="1.3" fill="currentColor"/><circle cx="16" cy="16" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/></svg>',
+  spin:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 12l5-3"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>',
+  cards:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="10" height="14" rx="2"/><path d="M9 4.5l9.5 2.5a2 2 0 0 1 1.4 2.4l-2.6 9.8"/></svg>',
+  star:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>',
+  starFull:'<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>'
+};
+
+/* Simple illustrated portraits for the demo riders */
+function portrait(bg, skin, hair, shirt, style){
+  const back = style==="long" ? `<path d='M24 66 Q18 18 50 16 Q82 18 76 66 Z' fill='${hair}'/>` : style==="scarf" ? `<path d='M24 52 Q22 16 50 15 Q78 16 76 52 Q78 80 50 82 Q22 80 24 52 Z' fill='${hair}'/>` : "";
+  const top = style==="scarf" ? "" : `<path d='M30 44 Q30 21 50 21 Q70 21 70 44 Q63 30 50 31 Q37 30 30 44 Z' fill='${hair}'/>`;
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='${bg}'/>${back}<path d='M12 100 Q15 72 50 70 Q85 72 88 100 Z' fill='${shirt}'/><rect x='43' y='55' width='14' height='17' fill='${skin}'/><circle cx='50' cy='44' r='${style==="scarf"?17:20}' fill='${skin}'/>${top}</svg>`;
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+}
+
+/* Special chat cards are stored as normal messages with a prefix */
+const CARD = "\u0001";
+function parseMsg(body){
+  if(!String(body).startsWith(CARD)) return {type:"text", body};
+  const [type, val] = String(body).slice(1).split(":");
+  return {type, val};
+}
+
+/* ---------------- Demo backend (simulated riders) ---------------- */
+function DemoBackend(){
+  const people = [
+    {id:"d-lena", askMe:{de:"meinem Jahr in Valencia",en:"my year in Valencia",ar:"السنة التي قضيتها في فالنسيا"}, name:"Lena", gender:"woman", age:"25–29", langs:["Deutsch","English","Español"], topics:["books","travel","films"], moods:["german","books"], coach:"5", womenOnly:false, chatOnly:false, wavesBack:true, buddyBack:true,
+     badges:{listener:4, german:7}, photo:portrait("#D9E6FB","#F1C9A5","#C8963E","#2D5BD0","long"),
+     reply:{de:"Hallo! Ich sitze in Wagen 5, beim mittleren Eingang.",en:"Hi! I'm in coach 5, by the middle doors.",ar:"مرحباً! أنا في العربة 5 بجانب الباب الأوسط."}},
+    {id:"d-karim", askMe:{de:"dem besten Falafel in Köln",en:"the best falafel in Cologne",ar:"أفضل فلافل في كولونيا"}, name:"Karim", gender:"man", age:"30–39", langs:["العربية","Deutsch","Français"], topics:["football","tech","family"], moods:["small","football"], coach:"3", womenOnly:false, chatOnly:false, wavesBack:true, buddyBack:true,
+     badges:{funny:5, kind:2}, photo:portrait("#F5DFD0","#C68B5E","#2B2018","#1F6B50","short"),
+     reply:{de:"Hey! Gerne, ich steige in Horrem aus.",en:"Hey! Sure, I get off at Horrem.",ar:"أهلاً! بكل سرور، سأنزل في محطة هورم."}},
+    {id:"d-aylin", name:"Aylin", gender:"woman", age:"25–29", langs:["Türkçe","Deutsch","English"], topics:["psychology","music"], moods:["small","music"], coach:"", womenOnly:false, chatOnly:true, wavesBack:true, buddyBack:false,
+     badges:{stories:3}, photo:portrait("#E6DCF2","#E2B48C","#3A2418","#B4531E","long"),
+     reply:{de:"Hi! Ich schreibe lieber, bin noch etwas müde.",en:"Hi! I prefer to chat, still a bit sleepy.",ar:"مرحباً! أفضّل الكتابة، ما زلت نعسانة قليلاً."}},
+    {id:"d-mira", name:"Mira", gender:"woman", age:"40–49", langs:["Deutsch","Türkçe"], topics:["nature","books"], moods:["quiet","travel"], coach:"5", womenOnly:true, chatOnly:true, wavesBack:false,
+     badges:{kind:3}, photo:portrait("#DCEFE6","#D9A77E","#7A3FA0","#2E3B36","scarf"), reply:{}},
+    {id:"d-jonas", name:"Jonas", gender:"man", age:"18–24", langs:["Deutsch","English"], topics:["music","games","tech"], moods:["work","music"], coach:"7", womenOnly:false, chatOnly:true, wavesBack:false,
+     badges:{}, photo:portrait("#F7E7B4","#F3D2B5","#9A5A2B","#15211D","short"), reply:{}}
+  ];
+  let present=[], mine=new Set(), theirs=new Set(), blocked=new Set(), msgs={}, timers=[], reacted={};
+  let savedBuddies = new Set(); try{ savedBuddies = new Set(JSON.parse(localStorage.getItem("zugpal.demoBuddies")||"[]")); }catch(e){}
+  const visibleTo = p => !blocked.has(p.id) && (!S.womenOnly || p.gender==="woman") && (!p.womenOnly || S.profile.gender==="woman");
+  const isBuddy = p => savedBuddies.has(p.id) && S.buddies.has(p.id);
+  const after = (ms, fn) => timers.push(setTimeout(fn, ms));
+  return {
+    mode:"demo",
+    async checkIn(){ timers.forEach(clearTimeout); timers=[]; present=[]; mine.clear(); theirs.clear(); msgs={}; reacted={};
+      people.forEach((p,i)=>after(700 + i*1500, ()=>present.push(p))); },
+    async update(){},
+    async visible(){ if(!S.open) return []; return present.filter(visibleTo).map(p=>({id:p.id, first_name:p.name, ask_me:p.askMe ? (p.askMe[S.lang]||p.askMe.en) : null, age_range:p.age, languages:p.langs, topics:p.topics, moods:p.moods,
+      chat_only:p.chatOnly, same_coach:!!S.coach && S.coach===p.coach, waved:mine.has(p.id), photo_small:p.photo, badges:p.badges, buddy:isBuddy(p)})); },
+    async wave(id){ mine.add(id); const p=people.find(x=>x.id===id); if(p && p.wavesBack) after(2500, ()=>theirs.add(id)); },
+    async unwave(id){ mine.delete(id); },
+    async matches(){ if(!S.open) return []; return present.filter(p=>visibleTo(p) && mine.has(p.id) && theirs.has(p.id)).map(p=>({id:p.id, first_name:p.name, age_range:p.age, languages:p.langs, moods:p.moods,
+      chat_only:p.chatOnly || S.chatOnly, coach:(p.chatOnly || S.chatOnly) ? null : p.coach, photo:p.photo})); },
+    async messages(id){ return (msgs[id]||[]).slice(); },
+    async send(id, body){
+      const list = msgs[id] = msgs[id] || []; list.push({mine:true, body, at:Date.now()});
+      const p = people.find(x=>x.id===id); if(!p) return;
+      const kind = parseMsg(body).type; const key = id + ":" + kind;
+      if(reacted[key]) return; reacted[key] = true;
+      const text = kind==="text" ? (p.reply[S.lang]||p.reply.en) : REACT[kind] && (REACT[kind][S.lang]||REACT[kind].en);
+      if(text) after(1800, ()=>list.push({mine:false, body:text, at:Date.now()}));
+    },
+    async block(id){ blocked.add(id); }, async report(){}, async compliment(){}, async recordMood(){},
+    async buddy(id, on){ const p = people.find(x=>x.id===id); if(on && p && p.buddyBack){ savedBuddies.add(id); } else savedBuddies.delete(id);
+      try{ localStorage.setItem("zugpal.demoBuddies", JSON.stringify([...savedBuddies])); }catch(e){} },
+    async checkOut(){ timers.forEach(clearTimeout); timers=[]; present=[]; mine.clear(); theirs.clear(); msgs={}; }
+  };
+}
+
+/* ---------------- Live backend (Supabase) ---------------- */
+function loadScript(src){ return new Promise((ok,fail)=>{ const s=document.createElement("script"); s.src=src; s.onload=ok; s.onerror=fail; document.head.appendChild(s); }); }
+async function LiveBackend(){
+  await loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js");
+  const sb = window.supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey);
+  let { data:{ session } } = await sb.auth.getSession();
+  if(!session){ const { data, error } = await sb.auth.signInAnonymously(); if(error) throw error; session = data.session; }
+  const uid = session.user.id;
+  const ok = ({data, error}) => { if(error) throw error; return data; };
+  return {
+    mode:"live",
+    async checkIn(){ await this.update(); },
+    async update(){ const p = S.profile; ok(await sb.from("riders").upsert({
+      id:uid, ride_key:S.ride.key, first_name:p.name, gender:p.gender, age_range:p.age || null, ask_me:p.askMe || null, languages:p.langs, topics:p.topics,
+      photo_small:p.photoSmall || null, photo:p.photo || null, moods:[...S.moods],
+      women_only:S.womenOnly && p.gender==="woman", chat_only:S.chatOnly, coach:S.coach || null, is_open:S.open, lang:S.lang,
+      expires_at:new Date(S.ride.expiresAt).toISOString(), updated_at:new Date().toISOString() })); },
+    async visible(){ return ok(await sb.rpc("visible_riders")) || []; },
+    async wave(id){ ok(await sb.from("waves").upsert({from_id:uid, to_id:id, ride_key:S.ride.key})); },
+    async unwave(id){ ok(await sb.from("waves").delete().match({from_id:uid, to_id:id, ride_key:S.ride.key})); },
+    async matches(){ return ok(await sb.rpc("my_matches")) || []; },
+    async messages(id){ const rows = ok(await sb.from("messages").select("from_id,body,created_at").eq("ride_key",S.ride.key)
+        .or(`and(from_id.eq.${uid},to_id.eq.${id}),and(from_id.eq.${id},to_id.eq.${uid})`).order("created_at"));
+      return (rows||[]).map(m=>({mine:m.from_id===uid, body:m.body, at:Date.parse(m.created_at)})); },
+    async send(id, body){ ok(await sb.from("messages").insert({ride_key:S.ride.key, to_id:id, body})); },
+    async block(id){ ok(await sb.from("blocks").upsert({blocker:uid, blocked:id})); },
+    async report(id, reason){ ok(await sb.from("reports").insert({reported:id, ride_key:S.ride && S.ride.key, reason:reason || "reported in app"})); },
+    async compliment(id, badge){ ok(await sb.from("compliments").upsert({from_id:uid, to_id:id, badge})); },
+    async recordMood(before, after, matched){ ok(await sb.from("ride_moods").insert({ride_key:S.ride ? S.ride.key.replace(/-\d{4}-\d{2}-\d{2}$/,"") : null, mood_before:before, mood_after:after, matched})); },
+    async buddy(id, on){ on ? ok(await sb.from("buddies").upsert({from_id:uid, to_id:id})) : ok(await sb.from("buddies").delete().match({from_id:uid, to_id:id})); },
+    async checkOut(){ await sb.from("messages").delete().eq("from_id",uid); await sb.from("riders").delete().eq("id",uid); }
+  };
+}
+
+/* ---------------- Photo handling ---------------- */
+function resizeImage(file, size, quality){
+  return new Promise((resolve, reject)=>{
+    const url = URL.createObjectURL(file); const img = new Image();
+    img.onload = () => { const c = document.createElement("canvas"); c.width = c.height = size; const s = Math.min(img.width, img.height);
+      c.getContext("2d").drawImage(img, (img.width-s)/2, (img.height-s)/2, s, s, 0, 0, size, size); URL.revokeObjectURL(url); resolve(c.toDataURL("image/jpeg", quality)); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("image")); };
+    img.src = url;
+  });
+}
+
+/* ---------------- Screens ---------------- */
+function header(){
+  return `<div class="top"><div class="logo">Zugpal</div>
+    <select id="lang" aria-label="Language / Sprache / اللغة">
+      <option value="de"${S.lang==="de"?" selected":""}>Deutsch</option>
+      <option value="en"${S.lang==="en"?" selected":""}>English</option>
+      <option value="ar"${S.lang==="ar"?" selected":""}>العربية</option>
+    </select></div>
+    ${backend && backend.mode==="demo" ? `<div class="banner">${t("demoBanner")}</div>` : ""}`;
+}
+function endingBanner(){
+  const n = minsLeft();
+  if(!S.ride || n > 5 || !S.matches.length) return "";
+  return `<div class="banner action"><span>${t("endingSoon",{n:Math.max(n,1)})}</span><button class="btn small" data-act="sayBye">${t("sayBye")}</button></div>`;
+}
+function personCard(r){
+  const tags = [];
+  if(r.buddy) tags.push(`<span class="tag gold">${t("buddyTag")}</span>`);
+  if(r.same_coach && !r.chat_only) tags.push(`<span class="tag">${t("sameCoach")}</span>`);
+  if(r.chat_only) tags.push(`<span class="tag">${t("chatOnlyTag")}</span>`);
+  const b = r.badges || {};
+  Object.keys(b).filter(k=>BADGES[k] && b[k]>0).sort((x,y)=>b[y]-b[x]).slice(0,2).forEach(k=>tags.push(`<span class="tag plain">${esc(loc(BADGES,k))} ×${Number(b[k])||0}</span>`));
+  const langs = (r.languages||[]).filter(l=>LANGS.includes(l)).join(", ");
+  const tops = (r.topics||[]).map(x=>loc(TOPICS,x)).join(", ");
+  return `<div class="person${r.buddy?" buddy":""}">${photo(r.id, r.first_name, r.photo_small, 56, true)}
+    <div class="grow"><div class="pname">${esc(r.first_name)}${r.age_range && AGES.includes(r.age_range) ? `<span class="muted" style="font-weight:400">, ${esc(r.age_range)}</span>` : ""}</div>
+      <div class="small">${esc((r.moods||[]).map(moodName).join(" · "))}</div>
+      ${langs ? `<div class="small">${esc(t("speaks",{l:langs}))}</div>` : ""}
+      ${tops ? `<div class="small">${esc(t("talksAbout",{t:tops}))}</div>` : ""}
+      ${r.ask_me && !hasContact(r.ask_me) ? `<div class="small" style="color:var(--ink)" dir="auto">“${esc(t("askMeShown",{x:String(r.ask_me).slice(0,60)}))}”</div>` : ""}
+      ${tags.length ? `<div class="tags">${tags.join("")}</div>` : ""}</div>
+    <button class="btn wave${r.waved?" done":""}" data-act="wave" data-arg="${esc(r.id)}" aria-pressed="${!!r.waved}">${r.waved?t("waved"):t("wave")}</button></div>`;
+}
+
+const screens = {
+  loading(){ return `<div class="screen"><p class="muted">${t("loading")}</p></div>`; },
+
+  welcome(){
+    const e = S.edit;
+    const first = !S.profile;
+    const gBtn = v => `<button class="chip" data-act="gender" data-arg="${v}" aria-pressed="${e.gender===v}">${t(v)}</button>`;
+    const ageOpts = `<option value="">${t("ageHidden")}</option>` + AGES.map(a=>`<option value="${a}"${e.age===a?" selected":""}>${a}</option>`).join("");
+    const langChips = LANGS.map(l=>`<button class="chip" data-act="lang2" data-arg="${esc(l)}" aria-pressed="${e.langs.includes(l)}">${esc(l)}</button>`).join("");
+    const topicChips = Object.keys(TOPICS).map(id=>`<button class="chip" data-act="topic" data-arg="${id}" aria-pressed="${e.topics.includes(id)}">${esc(loc(TOPICS,id))}</button>`).join("");
+    return `<div class="screen">
+      ${first ? `<div class="muted">${t("tagline")}</div><h1>${t("welcomeTitle")}</h1><p class="muted" style="margin:0">${t("welcomeBody")}</p>` : `<h1>${t("profileTitle")}</h1>`}
+      <div class="field"><span class="flabel">${t("photo")}</span>
+        <div class="photoedit">${photo("me", e.name, e.photo, 88, false)}
+          <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start">
+            <label class="btn ghost small filebtn">${e.photo ? t("changePhoto") : t("addPhoto")}<input type="file" id="photoInput" accept="image/*"></label>
+            ${e.photo ? `<button class="link" data-act="removePhoto">${t("removePhoto")}</button>` : ""}
+          </div></div>
+        <div class="small">${t("photoHint")}</div></div>
+      <div class="field"><label for="name">${t("firstName")}</label>
+        <input type="text" id="name" data-bind="edit.name" maxlength="30" autocomplete="given-name" value="${esc(e.name)}">
+        <div class="small">${t("firstNameHint")}</div></div>
+      <div class="field"><span class="flabel">${t("iAm")}</span><div class="seg">${gBtn("woman")}${gBtn("man")}${gBtn("other")}</div></div>
+      <div class="field"><label for="age">${t("age")}</label><select id="age" data-bind="edit.age">${ageOpts}</select></div>
+      <div class="field"><span class="flabel">${t("langs")}</span><div class="seg">${langChips}</div></div>
+      <div class="field"><span class="flabel">${t("topics")}</span><div class="seg">${topicChips}</div></div>
+      <div class="field"><label for="askme">${t("askMe")}</label><input type="text" id="askme" data-bind="edit.askMe" maxlength="60" placeholder="${t("askMePh")}" value="${esc(e.askMe||"")}"></div>
+      <div class="card"><div class="pname">${t("rulesTitle")}</div>
+        <ul class="rules"><li>${t("rule1")}</li><li>${t("rule2")}</li><li>${t("rule3")}</li><li>${t("rule4")}</li></ul>
+        <label class="check" for="agree"><input type="checkbox" id="agree" data-bind="edit.agree"${e.agree?" checked":""}> ${t("agree")}</label></div>
+      <div class="end"><button class="btn" data-act="saveProfile">${first ? t("start") : t("save")}</button></div>
+    </div>`;
+  },
+
+  checkin(){
+    const d = S.draft, dur = d.duration || "45";
+    const opts = ["15","30","45","60","90","120"].map(v=>`<option value="${v}"${v===dur?" selected":""}>${v} ${t("min")}</option>`).join("");
+    return `<div class="screen">
+      <div class="row">${photo("me", S.profile.name, S.profile.photo, 40, false)}<div class="grow muted">${esc(S.profile.name)}</div><button class="link" data-act="editProfile">${t("editProfile")}</button></div>
+      <h1>${t("checkinTitle")}</h1>
+      <div class="hero"><div class="small">${t("talkTrain")}</div>
+        <div style="font-size:19px;font-weight:700">${esc(CONFIG.talkTrain[S.lang] || CONFIG.talkTrain.en)}</div>
+        <div class="small">${t("talkTrainBody")}</div>
+        <button class="btn mint" data-act="checkin" data-arg="talk">${t("joinTalk")}</button></div>
+      <div class="card"><div class="pname">${t("testTitle")}</div><div class="small">${t("testBody")}</div>
+        <button class="btn ghost" data-act="startTest">${t("testBtn")}</button></div>
+      <div class="pname">${t("orOther")}</div>
+      <div class="row">
+        <div class="field" style="flex:1"><label for="line">${t("line")}</label><input type="text" id="line" data-bind="line" placeholder="RE 1" value="${esc(d.line||"")}"></div>
+        <div class="field" style="flex:1.4"><label for="num">${t("number")}</label><input type="text" id="num" data-bind="num" inputmode="numeric" placeholder="10115" value="${esc(d.num||"")}"></div>
+      </div>
+      <div class="small" style="margin-top:-10px">${t("numberHint")}</div>
+      <div class="field"><label for="duration">${t("duration")}</label><select id="duration" data-bind="duration">${opts}</select></div>
+      <div class="card" style="flex-direction:row;align-items:flex-start;color:var(--muted)">${ICON.shield}<div style="font-size:14px">${t("nobodySees")}</div></div>
+      <div class="end"><button class="btn" data-act="checkin" data-arg="train">${t("checkin")}</button></div>
+    </div>`;
+  },
+
+  mood(){
+    const chips = Object.keys(MOODS).map(id=>`<button class="chip" data-act="mood" data-arg="${id}" aria-pressed="${S.moods.has(id)}">${esc(moodName(id))}</button>`).join("");
+    const co = S.draft.chatOnly ?? S.chatOnly;
+    return `<div class="screen">
+      <div class="row"><button class="iconbtn flip" data-act="go" data-arg="checkin" aria-label="${t("back")}">${ICON.back}</button><div class="muted">${esc(S.ride.label)}</div></div>
+      <h1>${t("moodTitle")}</h1>
+      <p class="muted" style="margin:-8px 0 0">${t("moodHint")}</p>
+      <div class="seg">${chips}</div>
+      <div class="field"><span class="flabel">${t("talkMode")}</span><div class="seg">
+        <button class="chip" data-act="mode" data-arg="both" aria-pressed="${!co}">${t("modeBoth")}</button>
+        <button class="chip" data-act="mode" data-arg="chat" aria-pressed="${co}">${t("modeChat")}</button></div></div>
+      ${co ? "" : `<div class="field"><label for="coach">${t("coach")}</label><input type="text" id="coach" data-bind="coach" maxlength="4" inputmode="numeric" value="${esc(S.draft.coach ?? S.coach)}"><div class="small">${t("coachHint")}</div></div>`}
+      <div class="field"><span class="flabel">${t("moodNow")}</span><div class="seg">${[1,2,3,4,5].map(n=>`<button class="chip" data-act="moodBefore" data-arg="${n}" aria-pressed="${S.moodBefore===n}">${t("m"+n)}</button>`).join("")}</div><div class="small">${t("moodPrivate")}</div></div>
+      ${S.profile.gender==="woman" ? `<label class="check card" for="wo" style="flex-direction:row"><input type="checkbox" id="wo" data-bind="womenOnly"${(S.draft.womenOnly ?? S.womenOnly)?" checked":""}> ${t("womenOnly")}</label>` : ""}
+      <div class="end"><button class="btn" data-act="goOpen">${t("openBtn")}</button><div class="small" style="text-align:center">${t("offAnytime")}</div></div>
+    </div>`;
+  },
+
+  nearby(){
+    const n = S.riders.length;
+    const title = !S.open ? t("invisible") : n===0 ? t("count0") : n===1 ? t("count1") : t("countN",{n});
+    const matchIds = new Set(S.matches.map(m=>m.id));
+    const matchList = S.matches.length && S.open ? `<div class="pname">${t("matchesTitle")}</div>` + S.matches.map(m=>`
+      <div class="person">${photo(m.id, m.first_name, m.photo, 56, false)}<div class="grow"><div class="pname">${esc(m.first_name)}</div><div class="small">${esc((m.moods||[]).map(moodName).join(" · "))}</div>
+      ${m.chat_only ? `<div class="tags"><span class="tag">${t("chatOnlyTag")}</span></div>` : ""}</div>
+      <button class="btn wave" data-act="chat" data-arg="${esc(m.id)}">${t("openChat")}</button></div>`).join("") : "";
+    const others = S.riders.filter(r=>!matchIds.has(r.id)).sort((a,b)=>(b.buddy?1:0)-(a.buddy?1:0));
+    const [w, de, en, ar] = todaysWord();
+    return `<div class="screen">
+      <div class="row" style="justify-content:space-between;flex-wrap:wrap">
+        <span class="pill${S.open?"":" off"}"><span class="dot"></span>${S.open?t("youAreOpen"):t("invisible")}</span>
+        <button class="btn ghost small" data-act="toggleOpen">${S.open?t("goInvisible"):t("beVisible")}</button></div>
+      <div class="small">${esc(S.ride.label)} · ${t("minLeft",{n:minsLeft()})}</div>
+      ${S.ride.key.startsWith("TEST-") ? `<div class="card"><span class="flabel">${t("inviteLabel")}</span>
+        <div class="small" style="user-select:all;overflow-wrap:anywhere;color:var(--ink)" id="inviteText">${esc(inviteLink())}</div>
+        <button class="btn ghost small" data-act="copyInvite">${t("copyLink")}</button></div>` : ""}
+      ${endingBanner()}
+      <h1>${title}</h1>
+      ${S.open ? `<div class="banner">${t("waveNote")}</div>` : `<div class="empty"><div class="muted">${t("invisibleNote")}</div></div>`}
+      ${matchList}
+      ${S.open ? (others.map(personCard).join("") || (S.matches.length ? "" : `<div class="empty"><div class="muted">${t("emptyBody")}</div></div>`)) : ""}
+      <div class="word"><span class="lbl" style="color:var(--muted)">${t("wordTitle")}</span><span class="w" lang="de">${esc(w)}</span>
+        <span class="muted">${esc(S.lang==="de"?de:S.lang==="ar"?ar:en)}</span></div>
+      <div class="end"><button class="btn ghost" data-act="go" data-arg="mood">${t("moodTitle")}</button><button class="link danger" data-act="endRide">${t("endRide")}</button></div>
+    </div>`;
+  },
+
+  match(){
+    const m = S.current; if(!m) return screens.nearby();
+    const shared = (m.moods||[]).filter(x=>S.moods.has(x) && ICE[x]);
+    const pool = []; shared.forEach(x=>ICE[x][S.lang].forEach(q=>pool.push([q,x]))); ICE.generic[S.lang].forEach(q=>pool.push([q,null]));
+    const [q, why] = pool[S.iceIndex % pool.length];
+    const meet = m.chat_only
+      ? `<div class="meet">${ICON.bubble}<div style="font-weight:700">${t("chatOnlyMatch")}</div></div>`
+      : `<div class="meet">${ICON.pin}<div><div class="small">${t("meetAt")}</div><div style="font-weight:700">${m.coach ? t("coachX",{c:esc(m.coach)}) : t("noCoach")}</div></div></div>`;
+    return `<div class="screen"><div class="match">
+      <div class="pair">${photo("me", S.profile.name, S.profile.photo, 84, false)}${photo(m.id, m.first_name, m.photo, 84, false)}</div>
+      <h1 style="text-align:center">${t("matchTitle",{name:esc(m.first_name)})}</h1>
+      <div class="small" style="text-align:center;color:var(--hero-muted)">${t("minLeft",{n:minsLeft()})}</div>
+      <div class="ice"><div class="row" style="justify-content:space-between"><span class="lbl">${t("ice")}</span>
+        <button class="iconbtn" data-act="nextIce" aria-label="${t("anotherIce")}" style="margin:-10px">${ICON.refresh}</button></div>
+        <div class="q">“${esc(q)}”</div><div class="small" style="color:inherit">${why ? t("iceBecause",{mood:esc(moodName(why))}) : t("iceGeneric")}</div></div>
+      ${meet}
+      <div class="end"><button class="btn mint" data-act="chat" data-arg="${esc(m.id)}">${t("sayHi")}</button>
+        <button class="btn onhero" data-act="go" data-arg="nearby">${t("notToday")}</button></div>
+    </div></div>`;
+  },
+
+  chat(){
+    const m = S.matches.find(x=>x.id===S.chatWith) || S.current;
+    if(!m) return screens.nearby();
+    const name = esc(m.first_name);
+    const log = S.messages.map(x=>{
+      const p = parseMsg(x.body);
+      if(p.type==="text"){
+        if(!x.mine && hasContact(x.body)) return `<div class="banner">${t("noContact")}</div>`;
+        return `<div class="msg${x.mine?" mine":""}" dir="auto">${esc(x.body)}</div>` + (!x.mine && MONEY_RE.test(x.body) ? `<div class="banner">${t("moneyWarn")}</div>` : "");
+      }
+      if(p.type==="dice"){ const i = Math.abs(parseInt(p.val,10)||0) % DICE.en.length; return `<div class="gamecard"><span class="lbl">${t("dice")}</span><span class="big">${esc(DICE[S.lang][i])}</span></div>`; }
+      if(p.type==="spin"){ const meAsks = (x.mine && p.val==="me") || (!x.mine && p.val==="you"); return `<div class="gamecard"><span class="lbl">${t("spin")}</span><span class="big">${meAsks ? t("spinYou") : t("spinThem",{name})}</span></div>`; }
+      if(p.type==="ttl") return `<div class="gamecard"><span class="lbl">${t("ttl")}</span><span>${x.mine ? t("ttlYou",{name}) : t("ttlThem",{name})}</span></div>`;
+      if(p.type==="bye") return `<div class="msg${x.mine?" mine":""}">${t("bye")}</div>`;
+      return "";
+    }).join("");
+    const isB = S.buddies.has(m.id);
+    return `<div class="screen">
+      <div class="row"><button class="iconbtn flip" data-act="go" data-arg="nearby" aria-label="${t("back")}">${ICON.back}</button>
+        ${photo(m.id, m.first_name, m.photo, 40, false)}<div class="grow pname">${name}</div>
+        <button class="iconbtn" data-act="buddyToggle" data-arg="${esc(m.id)}" aria-pressed="${isB}" aria-label="${t("buddySave")}">${isB ? ICON.starFull : ICON.star}</button>
+        <button class="link" data-act="report" data-arg="${esc(m.id)}">${t("report")}</button>
+        <button class="link danger" data-act="block" data-arg="${esc(m.id)}">${t("block")}</button></div>
+      ${endingBanner()}
+      <div class="games" role="toolbar">
+        <button class="chip" data-act="game" data-arg="dice">${ICON.dice}${t("dice")}</button>
+        <button class="chip" data-act="game" data-arg="spin">${ICON.spin}${t("spin")}</button>
+        <button class="chip" data-act="game" data-arg="ttl">${ICON.cards}${t("ttl")}</button></div>
+      <div id="chatLog" class="chatlog">${log}</div>
+      <form class="chatbar" id="chatForm"><input type="text" id="chatInput" data-bind="chat" maxlength="500" placeholder="${t("chatPh")}" value="${esc(S.draft.chat||"")}" aria-label="${t("chatPh")}">
+        <button class="btn small" type="submit">${t("send")}</button></form>
+    </div>`;
+  },
+
+  feedback(){
+    const items = S.fbList.map(m=>{
+      const f = S.fb[m.id]; const name = esc(m.first_name);
+      const badgeChips = Object.keys(BADGES).map(k=>`<button class="chip" data-act="fbBadge" data-arg="${esc(m.id)}|${k}" aria-pressed="${f.badges.has(k)}">${esc(loc(BADGES,k))}</button>`).join("");
+      return `<div class="fb"><div class="row">${photo(m.id, m.first_name, m.photo, 48, false)}<div class="pname grow">${name}</div></div>
+        <div class="field"><span class="flabel">${t("comfy",{name})}</span><div class="seg">
+          <button class="chip" data-act="fbComfy" data-arg="${esc(m.id)}|yes" aria-pressed="${f.comfy===true}">${t("yes")}</button>
+          <button class="chip" data-act="fbComfy" data-arg="${esc(m.id)}|no" aria-pressed="${f.comfy===false}">${t("no")}</button></div></div>
+        <div class="field"><span class="flabel">${t("compliment")}</span><div class="seg">${badgeChips}</div></div>
+        <label class="check" for="bud-${esc(m.id)}"><input type="checkbox" id="bud-${esc(m.id)}" data-fbbuddy="${esc(m.id)}"${f.buddy?" checked":""}> <span>${t("buddySave")}<br><span class="small">${t("buddyHint")}</span></span></label></div>`;
+    }).join("");
+    const moodQ = `<div class="fb"><div class="field"><span class="flabel">${t("moodAfter")}</span><div class="seg">${[1,2,3,4,5].map(n=>`<button class="chip" data-act="moodAfterSet" data-arg="${n}" aria-pressed="${S.moodAfter===n}">${t("m"+n)}</button>`).join("")}</div><div class="small">${t("moodPrivate")}</div></div></div>`;
+    return `<div class="screen"><h1>${t("fbTitle")}</h1>${items ? `<p class="muted" style="margin:-8px 0 0">${t("fbPrivate")}</p>` : ""}${moodQ}${items}
+      <div class="end"><button class="btn" data-act="finish">${t("finish")}</button></div></div>`;
+  }
+};
+
+function render(){
+  document.documentElement.lang = S.lang;
+  document.documentElement.dir = S.lang==="ar" ? "rtl" : "ltr";
+  const active = document.activeElement && document.activeElement.id;
+  const app = document.getElementById("app");
+  app.innerHTML = header() + (screens[S.screen] || screens.welcome)() + (S.toast ? `<div class="toast" role="status">${esc(S.toast)}</div>` : "");
+  if(active){ const el = document.getElementById(active); if(el && el.tagName==="INPUT" && el.type==="text"){ el.focus(); try{ const l=el.value.length; el.setSelectionRange(l,l); }catch(e){} } }
+  const log = document.getElementById("chatLog"); if(log) log.scrollTop = log.scrollHeight;
+}
+
+/* ---------------- Actions ---------------- */
+function selectInvite(){ const el = document.getElementById("inviteText"); if(!el) return; const r = document.createRange(); r.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
+async function safe(fn){ try{ await fn(); } catch(e){ console.error(e); toast(t("netError")); } }
+const inviteLink = () => location.href.split("#")[0] + "#ride-" + S.ride.key.slice(5);
+function joinTest(code){
+  code = String(code).toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,8);
+  S.ride = {key:"TEST-" + code, label:t("testRide",{c:code}), expiresAt: Date.now() + 120*60000};
+  S.seen = new Set(); S.buddySeen = new Set(); S.riders = []; S.matches = []; S.warnedEnd = false;
+  save(); S.screen = "mood"; render();
+}
+function openProfile(){
+  const p = S.profile || {};
+  S.edit = {name:p.name||"", gender:p.gender||"", age:p.age||"", langs:[...(p.langs||[])], topics:[...(p.topics||[])], photo:p.photo||"", photoSmall:p.photoSmall||"", askMe:p.askMe||"", agree:S.agreed};
+  S.screen = "welcome";
+}
+const toggleIn = (arr, v) => { const i = arr.indexOf(v); i>=0 ? arr.splice(i,1) : arr.push(v); };
+
+const actions = {
+  gender(v){ S.edit.gender = v; render(); },
+  lang2(v){ toggleIn(S.edit.langs, v); render(); },
+  topic(v){ if(!S.edit.topics.includes(v) && S.edit.topics.length >= 5) return toast(t("maxTopics")); toggleIn(S.edit.topics, v); render(); },
+  removePhoto(){ S.edit.photo = ""; S.edit.photoSmall = ""; render(); },
+  saveProfile(){
+    const e = S.edit, name = String(e.name||"").trim();
+    if(!name) return toast(t("needName"));
+    if(!e.gender) return toast(t("needGender"));
+    if(!e.agree) return toast(t("needRules"));
+    if(hasContact(e.askMe)) return toast(t("noContact"));
+    S.profile = {name:name.slice(0,30), gender:e.gender, age:AGES.includes(e.age)?e.age:"", langs:e.langs.filter(l=>LANGS.includes(l)), topics:e.topics.filter(x=>TOPICS[x]).slice(0,5), photo:e.photo, photoSmall:e.photoSmall, askMe:String(e.askMe||"").trim().slice(0,60)};
+    S.agreed = true; S.edit = null;
+    if(e.gender!=="woman") S.womenOnly = false;
+    save();
+    if(S.ride){ S.screen = "nearby"; safe(async()=>{ await backend.update(); await refresh(); }); startPolling(); }
+    else if(S.autoRide){ const c = S.autoRide; S.autoRide = null; return joinTest(c); }
+    else if(S.autoTalk){ S.autoTalk = false; return actions.checkin("talk"); }
+    else S.screen = "checkin";
+    render();
+  },
+  editProfile(){ openProfile(); render(); },
+  go(where){ S.screen = where; if(where==="nearby") S.current = null; render(); },
+  checkin(kind){
+    const minutes = parseInt(S.draft.duration || "45", 10);
+    let key, label;
+    if(kind==="talk"){ key = "TALK-" + berlinDate(); label = t("talkTrain"); }
+    else {
+      const line = String(S.draft.line||"").trim(), num = String(S.draft.num||"").trim();
+      if(!norm(line) || !norm(num)) return toast(t("needTrain"));
+      key = norm(line) + "-" + norm(num) + "-" + berlinDate(); label = line.toUpperCase() + " · " + num;
+    }
+    S.ride = {key, label, expiresAt: Date.now() + minutes*60000};
+    S.seen = new Set(); S.buddySeen = new Set(); S.riders = []; S.matches = []; S.warnedEnd = false;
+    save(); S.screen = "mood"; render();
+  },
+  mood(id){ S.moods.has(id) ? S.moods.delete(id) : S.moods.add(id); if(!S.moods.size) S.moods.add(id); save(); render(); },
+  mode(v){ S.draft.chatOnly = v==="chat"; render(); },
+  goOpen(){
+    S.chatOnly = !!(S.draft.chatOnly ?? S.chatOnly);
+    S.coach = S.chatOnly ? "" : String(S.draft.coach ?? S.coach).replace(/[^0-9A-Za-z]/g,"").slice(0,4);
+    S.womenOnly = S.profile.gender==="woman" && !!(S.draft.womenOnly ?? S.womenOnly);
+    delete S.draft.coach; delete S.draft.womenOnly; delete S.draft.chatOnly;
+    S.open = true; save(); S.screen = "nearby"; render();
+    safe(async()=>{ await backend.checkIn(); await refresh(); startPolling(); });
+  },
+  toggleOpen(){ S.open = !S.open; render(); safe(async()=>{ await backend.update(); await refresh(); }); },
+  wave(id){
+    const r = S.riders.find(x=>x.id===id); if(!r) return;
+    if(!r.waved && S.riders.filter(x=>x.waved).length + S.matches.length >= MAX_WAVES) return toast(t("waveLimit"));
+    r.waved = !r.waved; render();
+    safe(async()=>{ r.waved ? await backend.wave(id) : await backend.unwave(id); });
+  },
+  nextIce(){ S.iceIndex++; render(); },
+  startTest(){ const abc = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let c = ""; for(let i=0;i<5;i++) c += abc[Math.floor(Math.random()*abc.length)]; joinTest(c); },
+  copyInvite(){
+    const link = inviteLink();
+    try{ navigator.clipboard.writeText(link).then(()=>toast(t("copied")), ()=>selectInvite()); }catch(e){ selectInvite(); }
+  },
+  moodBefore(n){ n = +n; S.moodBefore = S.moodBefore===n ? null : n; render(); },
+  moodAfterSet(n){ n = +n; S.moodAfter = S.moodAfter===n ? null : n; render(); },
+  chat(id){ S.chatWith = id; S.current = S.matches.find(m=>m.id===id) || S.current; S.messages = []; S.screen = "chat"; render(); safe(loadMessages); },
+  game(kind){
+    let body = CARD + kind;
+    if(kind==="dice") body += ":" + Math.floor(Math.random()*DICE.en.length);
+    if(kind==="spin") body += ":" + (Math.random() < .5 ? "me" : "you");
+    sendBody(body);
+  },
+  sayBye(){
+    if(S.screen==="chat" && S.chatWith) return sendBody(CARD + "bye");
+    S.matches.forEach(m=>safe(()=>backend.send(m.id, CARD + "bye")));
+    toast(t("bye"));
+  },
+  buddyToggle(id){
+    const on = !S.buddies.has(id); on ? S.buddies.add(id) : S.buddies.delete(id); save(); render();
+    safe(()=>backend.buddy(id, on));
+  },
+  report(id){ safe(async()=>{ await backend.report(id); toast(t("reportToast")); }); },
+  block(id){ S.buddies.delete(id); save(); safe(async()=>{ await backend.buddy(id, false).catch(()=>{}); await backend.block(id); S.matches = S.matches.filter(m=>m.id!==id); S.riders = S.riders.filter(r=>r.id!==id); S.screen="nearby"; S.current=null; toast(t("blockedToast")); }); },
+  endRide(){ startFeedback(); },
+  fbComfy(arg){ const [id, v] = arg.split("|"); S.fb[id].comfy = v==="yes"; render(); },
+  fbBadge(arg){ const [id, k] = arg.split("|"); const b = S.fb[id].badges; b.has(k) ? b.delete(k) : b.add(k); render(); },
+  finish(){ finishRide(); }
+};
+
+function startFeedback(){
+  stopPolling();
+  S.fbList = S.matches.slice();
+  S.fb = {}; S.fbList.forEach(m=>S.fb[m.id] = {comfy:null, badges:new Set(), buddy:S.buddies.has(m.id)});
+  S.screen = "feedback"; render();
+}
+async function finishRide(){
+  stopPolling();
+  const jobs = [];
+  for(const id in S.fb){
+    const f = S.fb[id];
+    if(f.comfy === false) jobs.push(backend.report(id, "did not feel comfortable"));
+    f.badges.forEach(k=>jobs.push(backend.compliment(id, k)));
+    if(f.buddy){ S.buddies.add(id); jobs.push(backend.buddy(id, true)); } else if(S.buddies.has(id)){ S.buddies.delete(id); jobs.push(backend.buddy(id, false)); }
+  }
+  const before = S.moodBefore, after = S.moodAfter;
+  if(before || after) jobs.push(backend.recordMood(before, after, S.fbList.length > 0));
+  try{ await Promise.all(jobs); }catch(e){ console.error(e); }
+  try{ if(backend && S.ride) await backend.checkOut(); }catch(e){ console.error(e); }
+  S.ride = null; S.riders = []; S.matches = []; S.current = null; S.chatWith = null; S.messages = []; S.fb = {}; S.fbList = [];
+  S.moodBefore = null; S.moodAfter = null;
+  save(); S.screen = "checkin"; toast(before && after && after > before ? t("moodUp") : t("endedToast"));
+}
+
+function sendBody(body){
+  if(!S.chatWith) return;
+  S.messages.push({mine:true, body, at:Date.now()}); render();
+  safe(async()=>{ await backend.send(S.chatWith, body); await loadMessages(); });
+}
+function sendChat(){ const body = String(S.draft.chat||"").trim(); if(!body) return; if(hasContact(body)) return toast(t("noContact")); S.draft.chat = ""; sendBody(body.slice(0,500)); }
+async function loadMessages(){ if(!S.chatWith) return; S.messages = await backend.messages(S.chatWith); if(S.screen==="chat") render(); }
+
+/* ---------------- Polling ---------------- */
+async function refresh(){
+  if(!S.ride || S.screen==="feedback") return;
+  if(Date.now() > S.ride.expiresAt) return startFeedback();
+  const [riders, matches] = await Promise.all([backend.visible(), backend.matches()]);
+  S.riders = riders || []; S.matches = matches || [];
+  const buddy = S.riders.find(r=>r.buddy && !S.buddySeen.has(r.id) && !S.seen.has(r.id));
+  if(buddy){ S.buddySeen.add(buddy.id); toast(t("buddyHere",{name:buddy.first_name})); }
+  const fresh = S.matches.find(m=>!S.seen.has(m.id));
+  if(fresh){ S.matches.forEach(m=>S.seen.add(m.id));
+    if(S.screen!=="chat"){ S.current = fresh; S.iceIndex = 0; S.screen = "match"; try{ navigator.vibrate && navigator.vibrate([80,60,80]); }catch(e){} }
+    else toast(t("newMatch",{name:fresh.first_name}));
+  }
+  if(S.screen==="chat") await loadMessages();
+  if(["nearby","match","chat"].includes(S.screen)) render();
+}
+function startPolling(){ stopPolling(); const ms = backend.mode==="demo" ? 1500 : 6000; pollTimer = setInterval(()=>safe(refresh), ms); }
+function stopPolling(){ clearInterval(pollTimer); pollTimer = null; }
+
+/* ---------------- Wiring ---------------- */
+function bind(el){
+  const key = el.dataset.bind, val = el.type==="checkbox" ? el.checked : el.value;
+  if(key.startsWith("edit.")){ if(S.edit) S.edit[key.slice(5)] = val; } else S.draft[key] = val;
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-act]"); if(!b) return;
+  const fn = actions[b.dataset.act]; if(fn) fn(b.dataset.arg, b);
+});
+document.addEventListener("input", e => { const el = e.target; if(el.dataset && el.dataset.bind) bind(el); });
+document.addEventListener("change", async e => {
+  const el = e.target;
+  if(el.id==="lang"){ S.lang = el.value; save(); render(); return; }
+  if(el.id==="photoInput" && el.files && el.files[0]){
+    try{ const f = el.files[0]; S.edit.photo = await resizeImage(f, 320, 0.8); S.edit.photoSmall = await resizeImage(f, 24, 0.6); render(); }
+    catch(err){ toast(t("photoError")); }
+    return;
+  }
+  if(el.dataset && el.dataset.fbbuddy){ S.fb[el.dataset.fbbuddy].buddy = el.checked; return; }
+  if(el.dataset && el.dataset.bind) bind(el);
+});
+document.addEventListener("submit", e => { if(e.target.id==="chatForm"){ e.preventDefault(); sendChat(); } });
+
+(async function start(){
+  load();
+  S.autoTalk = location.hash === "#talk";
+  const m = location.hash.match(/^#ride-([A-Za-z0-9]{4,8})$/); S.autoRide = m ? m[1] : null;
+  S.screen = "loading"; render();
+  try{ backend = CONFIG.supabaseUrl ? await LiveBackend() : DemoBackend(); }
+  catch(e){ console.error(e); backend = DemoBackend(); toast(t("netError")); }
+  if(!S.profile) openProfile();
+  else if(S.autoRide && !(S.ride && S.ride.key === "TEST-" + S.autoRide.toUpperCase())){ const c = S.autoRide; S.autoRide = null; joinTest(c); return; }
+  else if(S.ride){ S.screen = "nearby"; safe(async()=>{ await backend.checkIn(); await refresh(); startPolling(); }); }
+  else if(S.autoTalk){ S.autoTalk = false; actions.checkin("talk"); return; }
+  else S.screen = "checkin";
+  render();
+})();
+</script>
+
+</body>
+</html>
