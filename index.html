@@ -236,6 +236,7 @@ const T = {
     games:"Games", chess:"Chess", gamesHint:"Play while you ride. Chess against the computer works without internet.", vsComputer:"Chess against the computer", vsComputerBody:"Works offline. Choose easy or normal.", play:"Play", withMatch:"Chess with your match", withMatchBody:"After a match, open the chat and tap Chess.", damaT:"Dama", solT:"Solitaire", soon:"Coming soon", easy:"Easy", normal:"Normal", newGame:"New game", yourMove:"Your move", peerMove:"{name}'s move", thinking:"Computer is thinking…", inCheck:"Check!", youWin:"Checkmate. You win!", youLose:"Checkmate. {name} wins.", cpuWins:"Checkmate. The computer wins.", drawT:"Draw.", chessStartMe:"You started a chess game. You play white.", chessStartThem:"{name} started a chess game. You play black.", openBoard:"Open board", autoQueen:"Pawns that reach the last row become queens.", computer:"Computer", backChat:"Back to chat",
     damaVs:"Dama against the computer", damaWith:"With your match: open the chat and tap Dama.", damaRules:"Move one square forward or sideways. Jump to capture: capturing is required, and you must take as many pieces as possible. A piece that reaches the last row becomes a king and moves any distance.", mustCapture:"You must capture.", damaStartMe:"You started a Dama game. You play white.", damaStartThem:"{name} started a Dama game. You play black.", winD:"You win!", loseD:"{name} wins.", cpuWinD:"The computer wins.", solVs:"Solitaire", solBody:"Classic Klondike for one. Works offline.", solHint:"Tap a card, then tap where it should go. Tap a selected card again to send it to the piles on the right.", solWon:"You solved it!", undo:"Undo", finish:"Finish automatically", movesN:"{n} moves",
     takePhoto:"Take a photo", fromGallery:"Choose from gallery", tryAgain:"Tap to try again", mediaSetup:"Photos and voice aren't set up in the database yet. Run the media step in Supabase.",
+    inGame:"{name} is in the game", inChatP:"{name} is in the chat", leftGame:"{name} isn't in the game right now", activeNow:"Active now", newGameStarted:"{name} started a new game.", openIt:"Open", newMsgFrom:"New message from {name}", voiceTooLong:"That voice message is too long. Keep it under a minute.",
     testTitle:"Test with friends", testBody:"Start a private test ride and send the link to your friends. Everyone who opens it lands in the same ride.",
     testBtn:"Start a test ride", testRide:"Test ride {c}", inviteLabel:"Invite link for your friends", copyLink:"Copy link", copied:"Link copied. Send it to your friends.",
     waveLimit:"You can wave at up to 5 people per ride.",
@@ -307,6 +308,7 @@ const T = {
     games:"Spiele", chess:"Schach", gamesHint:"Spiel während der Fahrt. Schach gegen den Computer geht auch ohne Internet.", vsComputer:"Schach gegen den Computer", vsComputerBody:"Funktioniert offline. Wähle leicht oder normal.", play:"Spielen", withMatch:"Schach mit deinem Match", withMatchBody:"Öffne nach einem Match den Chat und tippe auf Schach.", damaT:"Dama", solT:"Solitär", soon:"Kommt bald", easy:"Leicht", normal:"Normal", newGame:"Neues Spiel", yourMove:"Du bist am Zug", peerMove:"{name} ist am Zug", thinking:"Der Computer überlegt…", inCheck:"Schach!", youWin:"Schachmatt. Du gewinnst!", youLose:"Schachmatt. {name} gewinnt.", cpuWins:"Schachmatt. Der Computer gewinnt.", drawT:"Remis.", chessStartMe:"Du hast eine Schachpartie gestartet. Du spielst Weiß.", chessStartThem:"{name} hat eine Schachpartie gestartet. Du spielst Schwarz.", openBoard:"Brett öffnen", autoQueen:"Bauern, die die letzte Reihe erreichen, werden zur Dame.", computer:"Computer", backChat:"Zurück zum Chat",
     damaVs:"Dama gegen den Computer", damaWith:"Mit deinem Match: Öffne den Chat und tippe auf Dama.", damaRules:"Zieh ein Feld nach vorn oder zur Seite. Schlagen durch Überspringen: Schlagen ist Pflicht, und du musst so viele Steine wie möglich nehmen. Ein Stein auf der letzten Reihe wird zur Dame und zieht beliebig weit.", mustCapture:"Du musst schlagen.", damaStartMe:"Du hast eine Dama-Partie gestartet. Du spielst Weiß.", damaStartThem:"{name} hat eine Dama-Partie gestartet. Du spielst Schwarz.", winD:"Du gewinnst!", loseD:"{name} gewinnt.", cpuWinD:"Der Computer gewinnt.", solVs:"Solitär", solBody:"Klassisches Klondike für eine Person. Funktioniert offline.", solHint:"Tippe eine Karte an, dann das Ziel. Tippe eine ausgewählte Karte noch mal, um sie auf die Stapel rechts zu legen.", solWon:"Geschafft!", undo:"Zurück", finish:"Automatisch beenden", movesN:"{n} Züge",
     takePhoto:"Foto aufnehmen", fromGallery:"Aus der Galerie wählen", tryAgain:"Zum erneuten Versuch tippen", mediaSetup:"Fotos und Sprachnachrichten sind in der Datenbank noch nicht eingerichtet. Führe den Medien-Schritt in Supabase aus.",
+    inGame:"{name} ist im Spiel", inChatP:"{name} ist im Chat", leftGame:"{name} ist gerade nicht im Spiel", activeNow:"Gerade aktiv", newGameStarted:"{name} hat ein neues Spiel gestartet.", openIt:"Öffnen", newMsgFrom:"Neue Nachricht von {name}", voiceTooLong:"Die Sprachnachricht ist zu lang. Bitte unter einer Minute bleiben.",
     testTitle:"Mit Freunden testen", testBody:"Starte eine private Testfahrt und schick den Link an deine Freunde. Alle, die ihn öffnen, landen in derselben Fahrt.",
     testBtn:"Testfahrt starten", testRide:"Testfahrt {c}", inviteLabel:"Einladungslink für deine Freunde", copyLink:"Link kopieren", copied:"Link kopiert. Schick ihn an deine Freunde.",
     waveLimit:"Du kannst pro Fahrt bis zu 5 Leuten winken.",
@@ -378,6 +380,7 @@ const T = {
     games:"الألعاب", chess:"الشطرنج", gamesHint:"العب أثناء رحلتك. الشطرنج ضد الكمبيوتر يعمل دون إنترنت.", vsComputer:"الشطرنج ضد الكمبيوتر", vsComputerBody:"يعمل دون اتصال. اختر سهل أو عادي.", play:"العب", withMatch:"الشطرنج مع من توافقت معه", withMatchBody:"بعد التوافق، افتح المحادثة واضغط على الشطرنج.", damaT:"الداما", solT:"السوليتير", soon:"قريباً", easy:"سهل", normal:"عادي", newGame:"لعبة جديدة", yourMove:"دورك", peerMove:"دور {name}", thinking:"الكمبيوتر يفكر…", inCheck:"كش ملك!", youWin:"كش مات. لقد فزت!", youLose:"كش مات. فاز {name}.", cpuWins:"كش مات. فاز الكمبيوتر.", drawT:"تعادل.", chessStartMe:"بدأت مباراة شطرنج. أنت تلعب بالأبيض.", chessStartThem:"بدأ {name} مباراة شطرنج. أنت تلعب بالأسود.", openBoard:"افتح الرقعة", autoQueen:"الجندي الذي يصل إلى الصف الأخير يصبح وزيراً.", computer:"الكمبيوتر", backChat:"العودة إلى المحادثة",
     damaVs:"الداما ضد الكمبيوتر", damaWith:"مع من توافقت معه: افتح المحادثة واضغط على الداما.", damaRules:"تحرّك مربعاً واحداً إلى الأمام أو إلى الجانب. القفز للأكل: الأكل إلزامي، ويجب أن تأكل أكبر عدد ممكن من القطع. القطعة التي تصل إلى الصف الأخير تصبح ملكاً وتتحرك أي مسافة.", mustCapture:"يجب أن تأكل.", damaStartMe:"بدأت مباراة داما. أنت تلعب بالأبيض.", damaStartThem:"بدأ {name} مباراة داما. أنت تلعب بالأسود.", winD:"لقد فزت!", loseD:"فاز {name}.", cpuWinD:"فاز الكمبيوتر.", solVs:"السوليتير", solBody:"لعبة كلوندايك الكلاسيكية لشخص واحد. تعمل دون اتصال.", solHint:"اضغط على ورقة ثم على المكان الذي تريد نقلها إليه. اضغط على الورقة المحددة مرة أخرى لإرسالها إلى الأكوام على اليمين.", solWon:"لقد حللتها!", undo:"تراجع", finish:"إنهاء تلقائي", movesN:"{n} نقلة",
     takePhoto:"التقاط صورة", fromGallery:"اختيار من المعرض", tryAgain:"اضغط للمحاولة مجدداً", mediaSetup:"لم يتم إعداد الصور والرسائل الصوتية في قاعدة البيانات بعد. نفّذ خطوة الوسائط في Supabase.",
+    inGame:"{name} موجود في اللعبة", inChatP:"{name} موجود في المحادثة", leftGame:"{name} ليس في اللعبة الآن", activeNow:"نشط الآن", newGameStarted:"بدأ {name} لعبة جديدة.", openIt:"افتح", newMsgFrom:"رسالة جديدة من {name}", voiceTooLong:"الرسالة الصوتية طويلة جداً. اجعلها أقل من دقيقة.",
     testTitle:"جرّبه مع أصدقائك", testBody:"ابدأ رحلة تجريبية خاصة وأرسل الرابط إلى أصدقائك. كل من يفتحه ينضم إلى الرحلة نفسها.",
     testBtn:"ابدأ رحلة تجريبية", testRide:"رحلة تجريبية {c}", inviteLabel:"رابط الدعوة لأصدقائك", copyLink:"نسخ الرابط", copied:"تم نسخ الرابط. أرسله إلى أصدقائك.",
     waveLimit:"يمكنك التلويح لخمسة أشخاص كحد أقصى في كل رحلة.",
@@ -802,7 +805,7 @@ const S = {
   lang:"de", profile:null, agreed:false, edit:null,
   ride:null, moods:new Set(["small"]), coach:"", womenOnly:false, chatOnly:true, open:true, moodBefore:null, moodAfter:null, autoTalk:false,
   screen:"welcome", riders:[], matches:[], seen:new Set(), buddySeen:new Set(), buddies:new Set(),
-  current:null, chatWith:null, messages:[], mediaDone:new Set(), mediaStatus:{}, mediaCache:{}, photoSheet:false, chess:null, dama:null, sol:null, gamesBack:"checkin", playing:null, viewer:null, recording:null, iceIndex:0, draft:{}, fb:{}, toast:"", warnedEnd:false
+  current:null, chatWith:null, messages:[], mediaDone:new Set(), mediaStatus:{}, mediaCache:{}, photoSheet:false, readCount:{}, lastUnread:0, presAct:null, presAt:0, chess:null, dama:null, sol:null, gamesBack:"checkin", playing:null, viewer:null, recording:null, iceIndex:0, draft:{}, fb:{}, toast:"", warnedEnd:false
 };
 let backend = null, pollTimer = null, toastTimer = null;
 
@@ -911,7 +914,8 @@ function DemoBackend(){
     async wave(id){ mine.add(id); const p=people.find(x=>x.id===id); if(p && p.wavesBack) after(2500, ()=>theirs.add(id)); },
     async unwave(id){ mine.delete(id); },
     async matches(){ if(!S.open) return []; return present.filter(p=>visibleTo(p) && mine.has(p.id) && theirs.has(p.id)).map(p=>({id:p.id, first_name:p.name, age_range:p.age, languages:p.langs, moods:p.moods,
-      chat_only:p.chatOnly || S.chatOnly, coach:(p.chatOnly || S.chatOnly) ? null : p.coach, photo:p.photo, accept_photos:true})); },
+      chat_only:p.chatOnly || S.chatOnly, coach:(p.chatOnly || S.chatOnly) ? null : p.coach, photo:p.photo, accept_photos:true, seen_at:new Date().toISOString(), active_game:currentActivity() || "chat"})); },
+    async presence(){},
     async messages(id){ return (msgs[id]||[]).slice(); },
     async send(id, body){
       const list = msgs[id] = msgs[id] || []; list.push({mine:true, body, at:Date.now()});
@@ -990,6 +994,7 @@ async function LiveBackend(){
     async openMedia(mid){ const rows = ok(await sb.rpc("open_media", {p_id:mid})) || []; return rows[0] || null; },
     async mediaStatus(){ const rows = ok(await sb.rpc("my_media_status", {p_ride:S.ride.key})) || []; const o = {}; rows.forEach(r=>o[r.id] = r.opened); return o; },
     async reportMedia(mid){ ok(await sb.rpc("report_media", {p_id:mid})); },
+    async presence(act){ ok(await sb.from("riders").update({seen_at:new Date().toISOString(), active_game:act || null}).eq("id", uid)); },
     async recordMood(before, after, matched){ ok(await sb.from("ride_moods").insert({ride_key:S.ride ? S.ride.key.replace(/-\d{4}-\d{2}-\d{2}$/,"") : null, mood_before:before, mood_after:after, matched})); },
     async buddy(id, on){ on ? ok(await sb.from("buddies").upsert({from_id:uid, to_id:id})) : ok(await sb.from("buddies").delete().match({from_id:uid, to_id:id})); },
     async checkOut(){ await sb.from("messages").delete().eq("from_id",uid); await sb.from("riders").delete().eq("id",uid); }
@@ -1204,9 +1209,11 @@ const screens = {
       return "";
     }).join("");
     const isB = S.buddies.has(m.id);
+    S.readCount[m.id] = S.messages.filter(x=>!x.mine && COUNTED(x)).length; S.lastUnread = 0;
+    const active = m.seen_at && Date.now() - Date.parse(m.seen_at) < 25000;
     return `<div class="screen">
       <div class="row"><button class="iconbtn flip" data-act="go" data-arg="nearby" aria-label="${t("back")}">${ICON.back}</button>
-        ${photo(m.id, m.first_name, m.photo, 40, false)}<div class="grow pname">${name}</div>
+        ${photo(m.id, m.first_name, m.photo, 40, false)}<div class="grow"><div class="pname">${name}</div>${active ? `<div class="small" style="color:var(--accent)">● ${t("activeNow")}</div>` : ""}</div>
         <button class="iconbtn" data-act="buddyToggle" data-arg="${esc(m.id)}" aria-pressed="${isB}" aria-label="${t("buddySave")}">${isB ? ICON.starFull : ICON.star}</button>
         <button class="link" data-act="report" data-arg="${esc(m.id)}">${t("report")}</button>
         <button class="link danger" data-act="block" data-arg="${esc(m.id)}">${t("block")}</button></div>
@@ -1259,11 +1266,12 @@ const screens = {
       <div class="row"><button class="iconbtn flip" data-act="chessBack" data-arg="${back}" aria-label="${t("back")}">${ICON.back}</button>
         <div class="grow"><div class="pname">${t("chess")}</div><div class="small">${c.mode==="cpu" ? t("vsComputer") : name}</div></div></div>
       <span class="pill${status.over?"":" off"}" style="align-self:flex-start">${line}</span>
+      ${c.mode==="online" ? onlineInfo("chess", c) : ""}
       ${boardHtml(st, myColor, c.sel)}
       <div class="small">${t("autoQueen")}</div>
       ${c.mode==="cpu" ? `<div class="row" style="flex-wrap:wrap">
         <div class="seg"><button class="chip" data-act="chessLevel" data-arg="easy" aria-pressed="${c.level==="easy"}">${t("easy")}</button><button class="chip" data-act="chessLevel" data-arg="normal" aria-pressed="${c.level!=="easy"}">${t("normal")}</button></div>
-        <button class="btn ghost small" data-act="chessCpu">${t("newGame")}</button></div>` : `<button class="btn ghost" data-act="chessBack" data-arg="chat">${t("backChat")}</button>`}
+        <button class="btn ghost small" data-act="chessCpu">${t("newGame")}</button></div>` : `<div class="row" style="flex-wrap:wrap"><button class="btn ghost small" data-act="chessInvite">${t("newGame")}</button><button class="btn ghost small" data-act="chessBack" data-arg="chat">${t("backChat")}</button></div>`}
     </div>`;
   },
 
@@ -1281,11 +1289,12 @@ const screens = {
       <div class="row"><button class="iconbtn flip" data-act="chessBack" data-arg="${back}" aria-label="${t("back")}">${ICON.back}</button>
         <div class="grow"><div class="pname">${t("damaT")}</div><div class="small">${d.mode==="cpu" ? t("damaVs") : name}</div></div></div>
       <span class="pill${status.over?"":" off"}" style="align-self:flex-start">${line}</span>
+      ${d.mode==="online" ? onlineInfo("dama", d) : ""}
       ${damaBoard(st, myColor, d.sel, last)}
       <div class="small">${t("damaRules")}</div>
       ${d.mode==="cpu" ? `<div class="row" style="flex-wrap:wrap">
         <div class="seg"><button class="chip" data-act="damaLevel" data-arg="easy" aria-pressed="${d.level==="easy"}">${t("easy")}</button><button class="chip" data-act="damaLevel" data-arg="normal" aria-pressed="${d.level!=="easy"}">${t("normal")}</button></div>
-        <button class="btn ghost small" data-act="damaCpuNew">${t("newGame")}</button></div>` : `<button class="btn ghost" data-act="chessBack" data-arg="chat">${t("backChat")}</button>`}
+        <button class="btn ghost small" data-act="damaCpuNew">${t("newGame")}</button></div>` : `<div class="row" style="flex-wrap:wrap"><button class="btn ghost small" data-act="damaInvite">${t("newGame")}</button><button class="btn ghost small" data-act="chessBack" data-arg="chat">${t("backChat")}</button></div>`}
     </div>`;
   },
 
@@ -1675,9 +1684,40 @@ function solSrcFromArg(arg){
   return null;
 }
 const sameSrc = (x, y) => x && y && x.kind===y.kind && x.i===y.i && x.idx===y.idx;
+const peerOf = id => S.matches.find(x=>x.id===id);
+const COUNTED = m => !["cm","dm","chess","dama"].includes(parseMsg(m.body).type);
+function presenceOf(m, gid){
+  if(!m || !m.seen_at) return null;
+  const age = Date.now() - Date.parse(m.seen_at);
+  if(!(age < 25000)) return "away";
+  if(gid && m.active_game === "g:" + gid) return "here";
+  if(m.active_game === "chat") return "chat";
+  return "away";
+}
+const unreadFrom = peerId => S.messages.filter(x=>!x.mine && COUNTED(x)).length - (S.readCount[peerId] || 0);
+function onlineInfo(type, g){
+  const m = peerOf(g.peerId), name = esc(m ? m.first_name : (g.peerName || ""));
+  const pr = presenceOf(m, g.gid);
+  let h = pr ? `<div class="small" style="display:flex;align-items:center;gap:6px;color:${pr==="here"?"var(--accent)":"var(--muted)"}"><span class="dot"></span>${pr==="here" ? t("inGame",{name}) : pr==="chat" ? t("inChatP",{name}) : t("leftGame",{name})}</div>` : "";
+  let lastInv = null;
+  for(const x of S.messages){ const p = parseMsg(x.body); if(p.type===type) lastInv = {gid:p.val, mine:x.mine}; }
+  if(lastInv && lastInv.gid !== g.gid && !lastInv.mine && /^[A-Za-z0-9]{4,12}$/.test(lastInv.gid))
+    h += `<div class="banner action"><span>${t("newGameStarted",{name})}</span><button class="btn small" data-act="${type}Open" data-arg="${lastInv.gid}">${t("openIt")}</button></div>`;
+  if(unreadFrom(g.peerId) > 0){
+    const lastTxt = [...S.messages].reverse().find(x=>!x.mine && parseMsg(x.body).type==="text");
+    h += `<div class="banner action"><span>${t("newMsgFrom",{name})}${lastTxt ? `: “${esc(String(lastTxt.body).slice(0,60))}”` : ""}</span><button class="btn small" data-act="chessBack" data-arg="chat">${t("openChat")}</button></div>`;
+  }
+  return h;
+}
+function currentActivity(){
+  if(S.screen==="chat") return "chat";
+  if(S.screen==="chess" && S.chess && S.chess.mode==="online") return "g:" + S.chess.gid;
+  if(S.screen==="dama" && S.dama && S.dama.mode==="online") return "g:" + S.dama.gid;
+  return "";
+}
 const SILENT_WAV = "data:audio/wav;base64,UklGRkQDAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YSADAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgA==";
 const SAFE_PHOTO = /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/;
-const SAFE_AUDIO = /^data:audio\/(webm|mp4|ogg|aac|mpeg|x-m4a)(;[a-z0-9=._-]+)*;base64,[A-Za-z0-9+/=]+$/i;
+const SAFE_AUDIO = /^data:audio\/(wav|webm|mp4|ogg|aac|mpeg|x-m4a)(;[a-z0-9=._-]+)*;base64,[A-Za-z0-9+/=]+$/i;
 function resizeMax(file, max, quality){
   return new Promise((resolve, reject)=>{
     const url = URL.createObjectURL(file); const img = new Image();
@@ -1701,21 +1741,33 @@ async function sendMedia(kind, data){
       : /send_media|PGRST202|schema cache|does not exist|Could not find/i.test(msg) ? t("mediaSetup") : t("netError"));
   }
 }
-let recorder = null, recChunks = [], recTimer = null;
+let rec = null, recTimer = null;
+function encodeWav(chunks, inRate, outRate){
+  let len = 0; chunks.forEach(c=>len += c.length);
+  const all = new Float32Array(len); let o = 0; chunks.forEach(c=>{ all.set(c, o); o += c.length; });
+  const ratio = inRate / outRate, outLen = Math.floor(len / ratio), mono = new Float32Array(outLen);
+  let peak = 0;
+  for(let i = 0; i < outLen; i++){ const a = Math.floor(i*ratio), b = Math.min(len, Math.floor((i+1)*ratio)); let sum = 0; for(let j = a; j < b; j++) sum += all[j]; const v = sum / Math.max(1, b - a); mono[i] = v; if(Math.abs(v) > peak) peak = Math.abs(v); }
+  const gain = peak > 0.01 && peak < 0.9 ? Math.min(4, 0.9 / peak) : 1;
+  const buf = new ArrayBuffer(44 + outLen*2), dv = new DataView(buf);
+  const w = (off, str) => { for(let i = 0; i < str.length; i++) dv.setUint8(off + i, str.charCodeAt(i)); };
+  w(0,"RIFF"); dv.setUint32(4, 36 + outLen*2, true); w(8,"WAVE"); w(12,"fmt "); dv.setUint32(16,16,true); dv.setUint16(20,1,true); dv.setUint16(22,1,true);
+  dv.setUint32(24,outRate,true); dv.setUint32(28,outRate*2,true); dv.setUint16(32,2,true); dv.setUint16(34,16,true); w(36,"data"); dv.setUint32(40,outLen*2,true);
+  for(let i = 0; i < outLen; i++){ const v = Math.max(-1, Math.min(1, mono[i]*gain)); dv.setInt16(44 + i*2, v < 0 ? v*0x8000 : v*0x7FFF, true); }
+  return new Blob([buf], {type:"audio/wav"});
+}
 async function startRecording(){
+  let ctx = null;
   try{
-    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
-    const mime = ["audio/mp4;codecs=mp4a.40.2","audio/mp4","audio/aac","audio/webm;codecs=opus","audio/webm","audio/ogg;codecs=opus"].find(m=>window.MediaRecorder && MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(m));
-    recorder = new MediaRecorder(stream, mime ? {mimeType:mime, audioBitsPerSecond:24000} : undefined);
-    recChunks = [];
-    recorder.ondataavailable = e => { if(e.data && e.data.size) recChunks.push(e.data); };
-    recorder.onstop = async () => {
-      stream.getTracks().forEach(tr=>tr.stop());
-      const send = recorder && recorder._send; const type = (recorder && recorder.mimeType) || "audio/webm";
-      recorder = null; S.recording = null; render();
-      if(send && recChunks.length){ const d = await blobToDataUrl(new Blob(recChunks, {type})); if(d.length < 590000) sendMedia("voice", d); }
-    };
-    recorder.start(250);
+    const AC = window.AudioContext || window.webkitAudioContext;
+    ctx = new AC(); if(ctx.state === "suspended" && ctx.resume) ctx.resume();
+    const stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true, autoGainControl:true}});
+    const src = ctx.createMediaStreamSource(stream);
+    const node = ctx.createScriptProcessor(4096, 1, 1);
+    const chunks = [];
+    node.onaudioprocess = e => { chunks.push(new Float32Array(e.inputBuffer.getChannelData(0))); };
+    src.connect(node); node.connect(ctx.destination);
+    rec = {ctx, stream, src, node, chunks, rate:ctx.sampleRate};
     S.recording = {start:Date.now()}; render();
     clearInterval(recTimer);
     recTimer = setInterval(()=>{
@@ -1724,9 +1776,18 @@ async function startRecording(){
       if(sec >= 60){ stopRecording(true); return; }
       const el = document.getElementById("recTime"); if(el) el.textContent = Math.floor(sec/60) + ":" + String(sec%60).padStart(2,"0");
     }, 250);
-  }catch(e){ console.error(e); toast(t("micDenied")); }
+  }catch(e){ console.error(e); try{ ctx && ctx.close(); }catch(_){} toast(t("micDenied")); }
 }
-function stopRecording(send){ clearInterval(recTimer); if(recorder){ recorder._send = send; try{ recorder.stop(); }catch(e){} } else { S.recording = null; render(); } }
+function stopRecording(send){
+  clearInterval(recTimer);
+  const r = rec; rec = null; S.recording = null; render();
+  if(!r) return;
+  try{ r.node.disconnect(); r.src.disconnect(); }catch(e){}
+  r.stream.getTracks().forEach(tr=>tr.stop());
+  try{ r.ctx.close(); }catch(e){}
+  if(!send || !r.chunks.length) return;
+  blobToDataUrl(encodeWav(r.chunks, r.rate, 8000)).then(d=>{ if(d.length < 1450000) sendMedia("voice", d); else toast(t("voiceTooLong")); });
+}
 function sendBody(body){
   if(!S.chatWith) return;
   S.messages.push({mine:true, body, at:Date.now()}); render();
@@ -1737,6 +1798,11 @@ async function loadMessages(){
   if(!S.chatWith) return;
   S.messages = await backend.messages(S.chatWith);
   try{ S.mediaStatus = await backend.mediaStatus(); }catch(e){}
+  if(S.screen==="chess" || S.screen==="dama"){
+    const un = unreadFrom(S.chatWith);
+    if(un > S.lastUnread){ const m = peerOf(S.chatWith); toast(t("newMsgFrom",{name:m ? m.first_name : ""})); try{ navigator.vibrate && navigator.vibrate(60); }catch(e){} }
+    S.lastUnread = Math.max(0, un);
+  }
   if((S.screen==="chat" || S.screen==="chess" || S.screen==="dama") && !S.viewer) render();
 }
 
@@ -1744,6 +1810,8 @@ async function loadMessages(){
 async function refresh(){
   if(!S.ride || S.screen==="feedback") return;
   if(Date.now() > S.ride.expiresAt) return startFeedback();
+  const act = currentActivity();
+  if(backend.presence && (act !== S.presAct || Date.now() - S.presAt > 12000)){ S.presAct = act; S.presAt = Date.now(); backend.presence(act).catch(()=>{}); }
   const [riders, matches] = await Promise.all([backend.visible(), backend.matches()]);
   S.riders = riders || []; S.matches = matches || [];
   const buddy = S.riders.find(r=>r.buddy && !S.buddySeen.has(r.id) && !S.seen.has(r.id));
