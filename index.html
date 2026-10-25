@@ -126,6 +126,24 @@ button.mediacard{cursor:pointer;min-height:48px}
 .pc.w{color:#FFFFFF;text-shadow:0 0 1px #000,0 0 1px #000,0 1px 1px #000,1px 0 1px #000,-1px 0 1px #000}
 .pc.b{color:#15211D;text-shadow:0 0 1px #FFFFFF}
 .gamecard2{display:flex;gap:12px;align-items:center}
+.dm{width:74%;height:74%;border-radius:50%;pointer-events:none;display:flex;align-items:center;justify-content:center;font-size:55%}
+.dm.w{background:#FFFFFF;box-shadow:inset 0 -3px 0 #C9D1CD,0 0 0 2px #15211D}
+.dm.b{background:#15211D;box-shadow:inset 0 -3px 0 #000,0 0 0 2px #15211D}
+.dm.k{outline:3px solid #E0A526;outline-offset:-7px}
+.dm.k::after{content:"\265B\FE0E";font-family:"Segoe UI Symbol","Noto Sans Symbols 2","DejaVu Sans",serif;color:#E0A526}
+.sq.path{box-shadow:inset 0 0 0 100px rgba(247,214,120,.45)}
+.soltable{direction:ltr;display:flex;flex-direction:column;gap:12px;width:100%;max-width:448px;margin:0 auto}
+.solrow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.solcol{display:flex;flex-direction:column;min-width:0}
+.card2{position:relative;aspect-ratio:5/7;width:100%;border-radius:6px;border:1px solid #9AA8A2;background:#FFFFFF;color:#15211D;font-family:var(--f-body);font-weight:700;font-size:clamp(11px,3.4vw,16px);line-height:1;padding:3px 4px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;text-align:start}
+.card2.red{color:#B3261E}
+.card2 .big{align-self:center;font-size:170%;margin-bottom:12%}
+.card2.down{background:repeating-linear-gradient(45deg,#1F6B50 0 4px,#2A7D5D 4px 8px);border-color:#134634}
+.card2.slot{background:transparent;border:1.5px dashed var(--line);color:var(--muted);align-items:center;justify-content:center}
+.card2.sel{outline:3px solid #E0A526;outline-offset:-1px;z-index:2}
+.solcol .card2 + .card2{margin-top:-108%}
+.solcol .card2.up + .card2{margin-top:-96%}
+.solwin{background:var(--soft);color:var(--soft-ink);border-radius:14px;padding:14px;text-align:center;font-weight:700}
 .word{border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
 .word .w{font-family:var(--f-display);font-size:22px;font-weight:700}
 .photoedit{display:flex;gap:16px;align-items:center}
@@ -216,6 +234,7 @@ const T = {
     loading:"Connecting…",
     photoBtn:"Send a view-once photo", voiceBtn:"Record a voice message", recording:"Recording · max 60 s", cancel:"Cancel", sending:"Sending…", photoLocked:"Photos unlock after you've both sent a few messages.", photosOff:"{name} doesn't receive photos.", acceptPhotos:"Receive view-once photos in chats", photoIn:"Photo · tap to view once", voiceIn:"Voice message · tap to play once", photoOut:"You sent a photo (view once)", voiceOut:"You sent a voice message (play once)", openedTag:"Opened", notOpened:"Not opened yet", photoSeen:"Photo viewed", voiceHeard:"Voice message played", playing:"Playing…", mediaGone:"No longer available.", onceNote:"Can be seen once. Screenshots can't be blocked.", close:"Close", micDenied:"Zugpal needs microphone access to record. Allow it in your browser settings.", mediaReported:"Reported. It's kept for review.", playFail:"This phone can't play this voice message format.",
     games:"Games", chess:"Chess", gamesHint:"Play while you ride. Chess against the computer works without internet.", vsComputer:"Chess against the computer", vsComputerBody:"Works offline. Choose easy or normal.", play:"Play", withMatch:"Chess with your match", withMatchBody:"After a match, open the chat and tap Chess.", damaT:"Dama", solT:"Solitaire", soon:"Coming soon", easy:"Easy", normal:"Normal", newGame:"New game", yourMove:"Your move", peerMove:"{name}'s move", thinking:"Computer is thinking…", inCheck:"Check!", youWin:"Checkmate. You win!", youLose:"Checkmate. {name} wins.", cpuWins:"Checkmate. The computer wins.", drawT:"Draw.", chessStartMe:"You started a chess game. You play white.", chessStartThem:"{name} started a chess game. You play black.", openBoard:"Open board", autoQueen:"Pawns that reach the last row become queens.", computer:"Computer", backChat:"Back to chat",
+    damaVs:"Dama against the computer", damaWith:"With your match: open the chat and tap Dama.", damaRules:"Move one square forward or sideways. Jump to capture: capturing is required, and you must take as many pieces as possible. A piece that reaches the last row becomes a king and moves any distance.", mustCapture:"You must capture.", damaStartMe:"You started a Dama game. You play white.", damaStartThem:"{name} started a Dama game. You play black.", winD:"You win!", loseD:"{name} wins.", cpuWinD:"The computer wins.", solVs:"Solitaire", solBody:"Classic Klondike for one. Works offline.", solHint:"Tap a card, then tap where it should go. Tap a selected card again to send it to the piles on the right.", solWon:"You solved it!", undo:"Undo", finish:"Finish automatically", movesN:"{n} moves",
     testTitle:"Test with friends", testBody:"Start a private test ride and send the link to your friends. Everyone who opens it lands in the same ride.",
     testBtn:"Start a test ride", testRide:"Test ride {c}", inviteLabel:"Invite link for your friends", copyLink:"Copy link", copied:"Link copied. Send it to your friends.",
     waveLimit:"You can wave at up to 5 people per ride.",
@@ -284,7 +303,8 @@ const T = {
     netError:"Keine Verbindung. Prüf dein Internet und versuch es noch mal.", newMatch:"Neues Match: {name}",
     loading:"Verbinde…",
     photoBtn:"Einmal-Foto senden", voiceBtn:"Sprachnachricht aufnehmen", recording:"Aufnahme · max. 60 Sek.", cancel:"Abbrechen", sending:"Wird gesendet…", photoLocked:"Fotos werden freigeschaltet, sobald ihr beide ein paar Nachrichten geschrieben habt.", photosOff:"{name} empfängt keine Fotos.", acceptPhotos:"Einmal-Fotos im Chat empfangen", photoIn:"Foto · zum einmaligen Ansehen tippen", voiceIn:"Sprachnachricht · zum einmaligen Abspielen tippen", photoOut:"Du hast ein Foto gesendet (einmal ansehbar)", voiceOut:"Du hast eine Sprachnachricht gesendet (einmal abspielbar)", openedTag:"Geöffnet", notOpened:"Noch nicht geöffnet", photoSeen:"Foto angesehen", voiceHeard:"Sprachnachricht abgespielt", playing:"Wird abgespielt…", mediaGone:"Nicht mehr verfügbar.", onceNote:"Kann einmal angesehen werden. Screenshots lassen sich nicht verhindern.", close:"Schließen", micDenied:"Zugpal braucht Zugriff aufs Mikrofon. Erlaube es in den Browser-Einstellungen.", mediaReported:"Gemeldet. Es wird zur Prüfung aufbewahrt.", playFail:"Dieses Handy kann das Format dieser Sprachnachricht nicht abspielen.",
-    games:"Spiele", chess:"Schach", gamesHint:"Spiel während der Fahrt. Schach gegen den Computer geht auch ohne Internet.", vsComputer:"Schach gegen den Computer", vsComputerBody:"Funktioniert offline. Wähle leicht oder normal.", play:"Spielen", withMatch:"Schach mit deinem Match", withMatchBody:"Öffne nach einem Match den Chat und tippe auf Schach.", damaT:"Dame", solT:"Solitär", soon:"Kommt bald", easy:"Leicht", normal:"Normal", newGame:"Neues Spiel", yourMove:"Du bist am Zug", peerMove:"{name} ist am Zug", thinking:"Der Computer überlegt…", inCheck:"Schach!", youWin:"Schachmatt. Du gewinnst!", youLose:"Schachmatt. {name} gewinnt.", cpuWins:"Schachmatt. Der Computer gewinnt.", drawT:"Remis.", chessStartMe:"Du hast eine Schachpartie gestartet. Du spielst Weiß.", chessStartThem:"{name} hat eine Schachpartie gestartet. Du spielst Schwarz.", openBoard:"Brett öffnen", autoQueen:"Bauern, die die letzte Reihe erreichen, werden zur Dame.", computer:"Computer", backChat:"Zurück zum Chat",
+    games:"Spiele", chess:"Schach", gamesHint:"Spiel während der Fahrt. Schach gegen den Computer geht auch ohne Internet.", vsComputer:"Schach gegen den Computer", vsComputerBody:"Funktioniert offline. Wähle leicht oder normal.", play:"Spielen", withMatch:"Schach mit deinem Match", withMatchBody:"Öffne nach einem Match den Chat und tippe auf Schach.", damaT:"Dama", solT:"Solitär", soon:"Kommt bald", easy:"Leicht", normal:"Normal", newGame:"Neues Spiel", yourMove:"Du bist am Zug", peerMove:"{name} ist am Zug", thinking:"Der Computer überlegt…", inCheck:"Schach!", youWin:"Schachmatt. Du gewinnst!", youLose:"Schachmatt. {name} gewinnt.", cpuWins:"Schachmatt. Der Computer gewinnt.", drawT:"Remis.", chessStartMe:"Du hast eine Schachpartie gestartet. Du spielst Weiß.", chessStartThem:"{name} hat eine Schachpartie gestartet. Du spielst Schwarz.", openBoard:"Brett öffnen", autoQueen:"Bauern, die die letzte Reihe erreichen, werden zur Dame.", computer:"Computer", backChat:"Zurück zum Chat",
+    damaVs:"Dama gegen den Computer", damaWith:"Mit deinem Match: Öffne den Chat und tippe auf Dama.", damaRules:"Zieh ein Feld nach vorn oder zur Seite. Schlagen durch Überspringen: Schlagen ist Pflicht, und du musst so viele Steine wie möglich nehmen. Ein Stein auf der letzten Reihe wird zur Dame und zieht beliebig weit.", mustCapture:"Du musst schlagen.", damaStartMe:"Du hast eine Dama-Partie gestartet. Du spielst Weiß.", damaStartThem:"{name} hat eine Dama-Partie gestartet. Du spielst Schwarz.", winD:"Du gewinnst!", loseD:"{name} gewinnt.", cpuWinD:"Der Computer gewinnt.", solVs:"Solitär", solBody:"Klassisches Klondike für eine Person. Funktioniert offline.", solHint:"Tippe eine Karte an, dann das Ziel. Tippe eine ausgewählte Karte noch mal, um sie auf die Stapel rechts zu legen.", solWon:"Geschafft!", undo:"Zurück", finish:"Automatisch beenden", movesN:"{n} Züge",
     testTitle:"Mit Freunden testen", testBody:"Starte eine private Testfahrt und schick den Link an deine Freunde. Alle, die ihn öffnen, landen in derselben Fahrt.",
     testBtn:"Testfahrt starten", testRide:"Testfahrt {c}", inviteLabel:"Einladungslink für deine Freunde", copyLink:"Link kopieren", copied:"Link kopiert. Schick ihn an deine Freunde.",
     waveLimit:"Du kannst pro Fahrt bis zu 5 Leuten winken.",
@@ -354,6 +374,7 @@ const T = {
     loading:"جارٍ الاتصال…",
     photoBtn:"إرسال صورة تُعرض مرة واحدة", voiceBtn:"تسجيل رسالة صوتية", recording:"جارٍ التسجيل · 60 ثانية كحد أقصى", cancel:"إلغاء", sending:"جارٍ الإرسال…", photoLocked:"تُفتح ميزة الصور بعد أن يتبادل كلٌّ منكما بضع رسائل.", photosOff:"{name} لا يستقبل الصور.", acceptPhotos:"استقبال الصور التي تُعرض مرة واحدة في المحادثات", photoIn:"صورة · اضغط لعرضها مرة واحدة", voiceIn:"رسالة صوتية · اضغط لتشغيلها مرة واحدة", photoOut:"أرسلت صورة (تُعرض مرة واحدة)", voiceOut:"أرسلت رسالة صوتية (تُشغَّل مرة واحدة)", openedTag:"تم الفتح", notOpened:"لم تُفتح بعد", photoSeen:"تمت مشاهدة الصورة", voiceHeard:"تم تشغيل الرسالة الصوتية", playing:"جارٍ التشغيل…", mediaGone:"لم تعد متاحة.", onceNote:"يمكن مشاهدتها مرة واحدة. لا يمكن منع لقطات الشاشة.", close:"إغلاق", micDenied:"يحتاج Zugpal إلى إذن الميكروفون للتسجيل. اسمح به من إعدادات المتصفح.", mediaReported:"تم الإبلاغ. سيتم الاحتفاظ بها للمراجعة.", playFail:"لا يستطيع هذا الهاتف تشغيل صيغة هذه الرسالة الصوتية.",
     games:"الألعاب", chess:"الشطرنج", gamesHint:"العب أثناء رحلتك. الشطرنج ضد الكمبيوتر يعمل دون إنترنت.", vsComputer:"الشطرنج ضد الكمبيوتر", vsComputerBody:"يعمل دون اتصال. اختر سهل أو عادي.", play:"العب", withMatch:"الشطرنج مع من توافقت معه", withMatchBody:"بعد التوافق، افتح المحادثة واضغط على الشطرنج.", damaT:"الداما", solT:"السوليتير", soon:"قريباً", easy:"سهل", normal:"عادي", newGame:"لعبة جديدة", yourMove:"دورك", peerMove:"دور {name}", thinking:"الكمبيوتر يفكر…", inCheck:"كش ملك!", youWin:"كش مات. لقد فزت!", youLose:"كش مات. فاز {name}.", cpuWins:"كش مات. فاز الكمبيوتر.", drawT:"تعادل.", chessStartMe:"بدأت مباراة شطرنج. أنت تلعب بالأبيض.", chessStartThem:"بدأ {name} مباراة شطرنج. أنت تلعب بالأسود.", openBoard:"افتح الرقعة", autoQueen:"الجندي الذي يصل إلى الصف الأخير يصبح وزيراً.", computer:"الكمبيوتر", backChat:"العودة إلى المحادثة",
+    damaVs:"الداما ضد الكمبيوتر", damaWith:"مع من توافقت معه: افتح المحادثة واضغط على الداما.", damaRules:"تحرّك مربعاً واحداً إلى الأمام أو إلى الجانب. القفز للأكل: الأكل إلزامي، ويجب أن تأكل أكبر عدد ممكن من القطع. القطعة التي تصل إلى الصف الأخير تصبح ملكاً وتتحرك أي مسافة.", mustCapture:"يجب أن تأكل.", damaStartMe:"بدأت مباراة داما. أنت تلعب بالأبيض.", damaStartThem:"بدأ {name} مباراة داما. أنت تلعب بالأسود.", winD:"لقد فزت!", loseD:"فاز {name}.", cpuWinD:"فاز الكمبيوتر.", solVs:"السوليتير", solBody:"لعبة كلوندايك الكلاسيكية لشخص واحد. تعمل دون اتصال.", solHint:"اضغط على ورقة ثم على المكان الذي تريد نقلها إليه. اضغط على الورقة المحددة مرة أخرى لإرسالها إلى الأكوام على اليمين.", solWon:"لقد حللتها!", undo:"تراجع", finish:"إنهاء تلقائي", movesN:"{n} نقلة",
     testTitle:"جرّبه مع أصدقائك", testBody:"ابدأ رحلة تجريبية خاصة وأرسل الرابط إلى أصدقائك. كل من يفتحه ينضم إلى الرحلة نفسها.",
     testBtn:"ابدأ رحلة تجريبية", testRide:"رحلة تجريبية {c}", inviteLabel:"رابط الدعوة لأصدقائك", copyLink:"نسخ الرابط", copied:"تم نسخ الرابط. أرسله إلى أصدقائك.",
     waveLimit:"يمكنك التلويح لخمسة أشخاص كحد أقصى في كل رحلة.",
@@ -583,13 +604,202 @@ const ZChess = (function(){
   return { newGame, fromFen, legal, apply, status, inCheck, uci, fromUci, bestMove, sqName, sqIndex };
 })();
 
+/* Zugpal Arabic/Turkish Dama. Squares 0..63, index = row*8 + col. Row 0 is white's back row.
+   Pieces: "w","b" (men), "W","B" (kings), or null. White moves toward higher rows. */
+const ZDama = (function(){
+  const color = p => p ? p.toLowerCase() : null;
+  const isKing = p => p === "W" || p === "B";
+  const at = (r, c) => (r < 0 || r > 7 || c < 0 || c > 7) ? -1 : r*8 + c;
+
+  function newGame(){
+    const b = new Array(64).fill(null);
+    for(let c = 0; c < 8; c++){ b[8 + c] = "w"; b[16 + c] = "w"; b[40 + c] = "b"; b[48 + c] = "b"; }
+    return { b, turn:"w", quiet:0 };
+  }
+
+  // Directions for a piece: men go forward + sideways; kings go all four.
+  function dirs(p){
+    if(isKing(p)) return [[1,0],[-1,0],[0,1],[0,-1]];
+    return color(p) === "w" ? [[1,0],[0,1],[0,-1]] : [[-1,0],[0,1],[0,-1]];
+  }
+
+  // All capture sequences starting from sq. Captured pieces are removed as they are jumped.
+  function captures(b, sq, piece){
+    const results = [];
+    const me = color(piece), king = isKing(piece);
+    function dfs(board, pos, path, taken, lastDir){
+      let extended = false;
+      const r0 = Math.floor(pos / 8), c0 = pos % 8;
+      for(const [dr, dc] of dirs(piece)){
+        if(lastDir && dr === -lastDir[0] && dc === -lastDir[1]) continue; // no 180 degree turn
+        if(king){
+          let r = r0 + dr, c = c0 + dc;
+          while(at(r, c) >= 0 && !board[at(r, c)]){ r += dr; c += dc; }
+          const victim = at(r, c);
+          if(victim < 0 || color(board[victim]) === me || !board[victim]) continue;
+          let r2 = r + dr, c2 = c + dc;
+          while(at(r2, c2) >= 0 && !board[at(r2, c2)]){
+            const land = at(r2, c2), nb = board.slice(); nb[victim] = null; nb[pos] = null; nb[land] = piece;
+            extended = true; dfs(nb, land, path.concat(land), taken.concat(victim), [dr, dc]);
+            r2 += dr; c2 += dc;
+          }
+        } else {
+          const victim = at(r0 + dr, c0 + dc), land = at(r0 + 2*dr, c0 + 2*dc);
+          if(victim < 0 || land < 0 || !board[victim] || color(board[victim]) === me || board[land]) continue;
+          const nb = board.slice(); nb[victim] = null; nb[pos] = null; nb[land] = piece;
+          extended = true; dfs(nb, land, path.concat(land), taken.concat(victim), [dr, dc]);
+        }
+      }
+      if(!extended && taken.length) results.push({path, taken});
+    }
+    dfs(b, sq, [sq], [], null);
+    return results;
+  }
+
+  function legal(st){
+    const b = st.b, me = st.turn;
+    let caps = [];
+    for(let sq = 0; sq < 64; sq++) if(color(b[sq]) === me) caps = caps.concat(captures(b, sq, b[sq]));
+    if(caps.length){
+      const max = Math.max(...caps.map(m => m.taken.length));
+      const seen = new Set();
+      return caps.filter(m => m.taken.length === max).filter(m => { const k = m.path.join("-") + "|" + m.taken.slice().sort((x,y)=>x-y).join(","); if(seen.has(k)) return false; seen.add(k); return true; });
+    }
+    const out = [];
+    for(let sq = 0; sq < 64; sq++){
+      const p = b[sq]; if(color(p) !== me) continue;
+      const r0 = Math.floor(sq / 8), c0 = sq % 8;
+      for(const [dr, dc] of dirs(p)){
+        let r = r0 + dr, c = c0 + dc;
+        while(at(r, c) >= 0 && !b[at(r, c)]){ out.push({path:[sq, at(r, c)], taken:[]}); if(!isKing(p)) break; r += dr; c += dc; }
+      }
+    }
+    return out;
+  }
+
+  function apply(st, m){
+    const b = st.b.slice(), from = m.path[0], to = m.path[m.path.length - 1];
+    let p = b[from]; b[from] = null; m.taken.forEach(i => { b[i] = null; });
+    const row = Math.floor(to / 8);
+    if(p === "w" && row === 7) p = "W";
+    if(p === "b" && row === 0) p = "B";
+    b[to] = p;
+    return { b, turn: st.turn === "w" ? "b" : "w", quiet: m.taken.length ? 0 : st.quiet + 1 };
+  }
+
+  function status(st){
+    const mine = st.b.filter(p => color(p) === st.turn).length;
+    const moves = mine ? legal(st) : [];
+    const lost = mine === 0 || moves.length === 0;
+    return { over: lost || st.quiet >= 80, winner: lost ? (st.turn === "w" ? "b" : "w") : null, draw: !lost && st.quiet >= 80, mustCapture: moves.length > 0 && moves[0].taken.length > 0 };
+  }
+
+  const key = m => m.path.join("-");
+  function fromKey(st, k){ if(!/^\d{1,2}(-\d{1,2}){1,20}$/.test(String(k))) return null; return legal(st).find(m => key(m) === k) || null; }
+
+  function evaluate(st){
+    let s = 0;
+    for(let i = 0; i < 64; i++){ const p = st.b[i]; if(!p) continue;
+      const row = Math.floor(i / 8);
+      let v = isKing(p) ? 320 : 100 + (color(p) === "w" ? row : 7 - row) * 4;
+      s += color(p) === "w" ? v : -v; }
+    return s;
+  }
+  function search(st, depth, alpha, beta){
+    const moves = legal(st);
+    if(moves.length === 0) return st.turn === "w" ? -100000 - depth : 100000 + depth;
+    if(depth === 0) return evaluate(st);
+    if(st.turn === "w"){ let v = -Infinity;
+      for(const m of moves){ v = Math.max(v, search(apply(st, m), depth - 1, alpha, beta)); alpha = Math.max(alpha, v); if(beta <= alpha) break; } return v; }
+    let v = Infinity;
+    for(const m of moves){ v = Math.min(v, search(apply(st, m), depth - 1, alpha, beta)); beta = Math.min(beta, v); if(beta <= alpha) break; }
+    return v;
+  }
+  function bestMove(st, depth){
+    const moves = legal(st); if(!moves.length) return null;
+    for(let i = moves.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [moves[i], moves[j]] = [moves[j], moves[i]]; }
+    let best = moves[0], bv = st.turn === "w" ? -Infinity : Infinity;
+    for(const m of moves){ const v = search(apply(st, m), depth - 1, -Infinity, Infinity);
+      if(st.turn === "w" ? v > bv : v < bv){ bv = v; best = m; } }
+    return best;
+  }
+
+  return { newGame, legal, apply, status, key, fromKey, bestMove, isKing, color };
+})();
+
+/* Zugpal Solitaire (Klondike, draw 1). Card: {s:"S|H|D|C", r:1..13, up:bool} */
+const ZSol = (function(){
+  const red = c => c.s === "H" || c.s === "D";
+  function deal(){
+    const deck = [];
+    for(const s of ["S","H","D","C"]) for(let r = 1; r <= 13; r++) deck.push({s, r, up:false});
+    for(let i = deck.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [deck[i], deck[j]] = [deck[j], deck[i]]; }
+    const tab = [];
+    for(let i = 0; i < 7; i++){ const pile = deck.splice(0, i + 1); pile[pile.length - 1].up = true; tab.push(pile); }
+    return { tab, stock: deck, waste: [], found: [[],[],[],[]], moves: 0 };
+  }
+  const clone = g => JSON.parse(JSON.stringify(g));
+  const top = a => a[a.length - 1];
+
+  function canFound(card, pile){ const t = top(pile); return t ? (t.s === card.s && card.r === t.r + 1) : card.r === 1; }
+  function canTab(card, pile){ const t = top(pile); return t ? (t.up && red(t) !== red(card) && card.r === t.r - 1) : card.r === 13; }
+
+  // src: {kind:"waste"} | {kind:"tab", i, idx} | {kind:"found", i}
+  function cardsFrom(g, src){
+    if(src.kind === "waste") return g.waste.length ? [top(g.waste)] : [];
+    if(src.kind === "found") return g.found[src.i].length ? [top(g.found[src.i])] : [];
+    const pile = g.tab[src.i]; if(src.idx < 0 || src.idx >= pile.length || !pile[src.idx].up) return [];
+    return pile.slice(src.idx);
+  }
+  function remove(g, src, n){
+    if(src.kind === "waste") g.waste.pop();
+    else if(src.kind === "found") g.found[src.i].pop();
+    else { g.tab[src.i].splice(g.tab[src.i].length - n, n); const t = top(g.tab[src.i]); if(t) t.up = true; }
+  }
+  // dst: {kind:"tab", i} | {kind:"found", i}
+  function move(g, src, dst){
+    const cards = cardsFrom(g, src); if(!cards.length) return null;
+    if(dst.kind === "found"){ if(cards.length !== 1 || !canFound(cards[0], g.found[dst.i]) || src.kind === "found") return null; }
+    else { if(src.kind === "tab" && src.i === dst.i) return null; if(!canTab(cards[0], g.tab[dst.i])) return null; }
+    const n = clone(g); const moved = cardsFrom(n, src).map(c => Object.assign({}, c, {up:true}));
+    remove(n, src, moved.length);
+    if(dst.kind === "found") n.found[dst.i].push(moved[0]); else n.tab[dst.i].push(...moved);
+    n.moves = g.moves + 1; return n;
+  }
+  function autoFound(g, src){
+    const cards = cardsFrom(g, src); if(cards.length !== 1) return null;
+    for(let i = 0; i < 4; i++){ const n = move(g, src, {kind:"found", i}); if(n) return n; }
+    return null;
+  }
+  function draw(g){
+    const n = clone(g);
+    if(n.stock.length){ const c = n.stock.pop(); c.up = true; n.waste.push(c); }
+    else if(n.waste.length){ n.stock = n.waste.reverse().map(c => Object.assign(c, {up:false})); n.waste = []; }
+    else return null;
+    n.moves = g.moves + 1; return n;
+  }
+  const won = g => g.found.every(f => f.length === 13);
+  // When everything is face up and the stock is empty, finish automatically.
+  function canAutoFinish(g){ return !g.stock.length && !g.waste.length && g.tab.every(p => p.every(c => c.up)) && !won(g); }
+  function autoFinish(g){
+    let n = g, guard = 0;
+    while(!won(n) && guard++ < 200){
+      let moved = false;
+      for(let i = 0; i < 7 && !moved; i++){ const p = n.tab[i]; if(!p.length) continue; const r = autoFound(n, {kind:"tab", i, idx:p.length - 1}); if(r){ n = r; moved = true; } }
+      if(!moved) break;
+    }
+    return n;
+  }
+  return { deal, move, autoFound, draw, won, canAutoFinish, autoFinish, red, cardsFrom };
+})();
+
 /* ---------------- State ---------------- */
 const STORE_KEY = "abteil.v1";
 const S = {
   lang:"de", profile:null, agreed:false, edit:null,
   ride:null, moods:new Set(["small"]), coach:"", womenOnly:false, chatOnly:true, open:true, moodBefore:null, moodAfter:null, autoTalk:false,
   screen:"welcome", riders:[], matches:[], seen:new Set(), buddySeen:new Set(), buddies:new Set(),
-  current:null, chatWith:null, messages:[], mediaDone:new Set(), mediaStatus:{}, chess:null, gamesBack:"checkin", playing:null, viewer:null, recording:null, iceIndex:0, draft:{}, fb:{}, toast:"", warnedEnd:false
+  current:null, chatWith:null, messages:[], mediaDone:new Set(), mediaStatus:{}, chess:null, dama:null, sol:null, gamesBack:"checkin", playing:null, viewer:null, recording:null, iceIndex:0, draft:{}, fb:{}, toast:"", warnedEnd:false
 };
 let backend = null, pollTimer = null, toastTimer = null;
 
@@ -704,7 +914,13 @@ function DemoBackend(){
       const list = msgs[id] = msgs[id] || []; list.push({mine:true, body, at:Date.now()});
       const p = people.find(x=>x.id===id); if(!p) return;
       const kind = parseMsg(body).type;
-      if(kind==="chess") return;
+      if(kind==="chess" || kind==="dama") return;
+      if(kind==="dm"){
+        const gid = parseMsg(body).val; let st = ZDama.newGame();
+        for(const x of list){ const q = parseMsg(x.body); if(q.type==="dm" && q.val===gid){ const mv = ZDama.fromKey(st, q.extra); if(mv) st = ZDama.apply(st, mv); } }
+        if(st.turn==="b"){ const bm = ZDama.bestMove(st, 3); if(bm) after(1200, ()=>list.push({mine:false, body:CARD+"dm:"+gid+":"+ZDama.key(bm), at:Date.now()})); }
+        return;
+      }
       if(kind==="cm"){
         const gid = parseMsg(body).val; let st = ZChess.newGame();
         for(const x of list){ const q = parseMsg(x.body); if(q.type==="cm" && q.val===gid){ const mv = ZChess.fromUci(st, q.extra); if(mv) st = ZChess.apply(st, mv); } }
@@ -964,7 +1180,11 @@ const screens = {
       if(p.type==="spin"){ const meAsks = (x.mine && p.val==="me") || (!x.mine && p.val==="you"); return `<div class="gamecard"><span class="lbl">${t("spin")}</span><span class="big">${meAsks ? t("spinYou") : t("spinThem",{name})}</span></div>`; }
       if(p.type==="ttl") return `<div class="gamecard"><span class="lbl">${t("ttl")}</span><span>${x.mine ? t("ttlYou",{name}) : t("ttlThem",{name})}</span></div>`;
       if(p.type==="bye") return `<div class="msg${x.mine?" mine":""}">${t("bye")}</div>`;
-      if(p.type==="cm") return "";
+      if(p.type==="cm" || p.type==="dm") return "";
+      if(p.type==="dama"){
+        const gid = String(p.val||""); if(!/^[A-Za-z0-9]{4,12}$/.test(gid)) return "";
+        return `<div class="gamecard"><span class="lbl">${t("damaT")}</span><span>${x.mine ? t("damaStartMe") : t("damaStartThem",{name})}</span><button class="btn small" style="align-self:center" data-act="damaOpen" data-arg="${gid}">${t("openBoard")}</button></div>`;
+      }
       if(p.type==="chess"){
         const gid = String(p.val||""); if(!/^[A-Za-z0-9]{4,12}$/.test(gid)) return "";
         return `<div class="gamecard"><span class="lbl">${t("chess")}</span><span>${x.mine ? t("chessStartMe") : t("chessStartThem",{name})}</span><button class="btn small" style="align-self:center" data-act="chessOpen" data-arg="${gid}">${t("openBoard")}</button></div>`;
@@ -992,7 +1212,8 @@ const screens = {
         <button class="chip" data-act="game" data-arg="dice">${ICON.dice}${t("dice")}</button>
         <button class="chip" data-act="game" data-arg="spin">${ICON.spin}${t("spin")}</button>
         <button class="chip" data-act="game" data-arg="ttl">${ICON.cards}${t("ttl")}</button>
-        <button class="chip" data-act="chessInvite"><span class="pc b" style="font-size:18px">${GLYPH.N}\uFE0E</span>${t("chess")}</button></div>
+        <button class="chip" data-act="chessInvite"><span class="pc b" style="font-size:18px">${GLYPH.N}\uFE0E</span>${t("chess")}</button>
+        <button class="chip" data-act="damaInvite"><span class="dm b" style="width:16px;height:16px"></span>${t("damaT")}</button></div>
       <div id="chatLog" class="chatlog">${log}</div>
       <form class="chatbar" id="chatForm">${S.recording
         ? `<div class="recbar"><span class="dot"></span><span id="recTime">0:00</span><span class="small">${t("recording")}</span></div>
@@ -1012,8 +1233,10 @@ const screens = {
       <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">${GLYPH.N}\uFE0E</span><div class="grow"><div class="pname">${t("vsComputer")}</div><div class="small">${t("vsComputerBody")}</div></div></div>
         <button class="btn" data-act="chessCpu">${t("play")}</button></div>
       <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">${GLYPH.K}\uFE0E</span><div class="grow"><div class="pname">${t("withMatch")}</div><div class="small">${t("withMatchBody")}</div></div></div></div>
-      <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">●</span><div class="grow"><div class="pname">${t("damaT")}</div><div class="small">${t("soon")}</div></div></div></div>
-      <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">♠\uFE0E</span><div class="grow"><div class="pname">${t("solT")}</div><div class="small">${t("soon")}</div></div></div></div>
+      <div class="card"><div class="gamecard2"><span class="dm b" style="width:34px;height:34px;flex-shrink:0"></span><div class="grow"><div class="pname">${t("damaVs")}</div><div class="small">${t("vsComputerBody")}</div><div class="small">${t("damaWith")}</div></div></div>
+        <button class="btn" data-act="damaCpuNew">${t("play")}</button></div>
+      <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">♠\uFE0E</span><div class="grow"><div class="pname">${t("solVs")}</div><div class="small">${t("solBody")}</div></div></div>
+        <button class="btn" data-act="solNew">${t("play")}</button></div>
     </div>`;
   },
 
@@ -1037,6 +1260,53 @@ const screens = {
       ${c.mode==="cpu" ? `<div class="row" style="flex-wrap:wrap">
         <div class="seg"><button class="chip" data-act="chessLevel" data-arg="easy" aria-pressed="${c.level==="easy"}">${t("easy")}</button><button class="chip" data-act="chessLevel" data-arg="normal" aria-pressed="${c.level!=="easy"}">${t("normal")}</button></div>
         <button class="btn ghost small" data-act="chessCpu">${t("newGame")}</button></div>` : `<button class="btn ghost" data-act="chessBack" data-arg="chat">${t("backChat")}</button>`}
+    </div>`;
+  },
+
+  dama(){
+    const d = S.dama, ds = damaState(); if(!d || !ds) return screens.games();
+    const {st, myColor, last} = ds, status = ZDama.status(st);
+    const m = d.mode==="online" ? (S.matches.find(x=>x.id===d.peerId) || {first_name:d.peerName||""}) : null;
+    const name = m ? esc(m.first_name) : t("computer");
+    let line;
+    if(status.over) line = status.draw ? t("drawT") : (status.winner===myColor ? t("winD") : (d.mode==="cpu" ? t("cpuWinD") : t("loseD",{name})));
+    else if(d.thinking) line = t("thinking");
+    else line = (st.turn===myColor ? t("yourMove") : (d.mode==="cpu" ? t("thinking") : t("peerMove",{name}))) + (status.mustCapture && st.turn===myColor ? " · " + t("mustCapture") : "");
+    const back = d.mode==="online" ? "chat" : "games";
+    return `<div class="screen">
+      <div class="row"><button class="iconbtn flip" data-act="chessBack" data-arg="${back}" aria-label="${t("back")}">${ICON.back}</button>
+        <div class="grow"><div class="pname">${t("damaT")}</div><div class="small">${d.mode==="cpu" ? t("damaVs") : name}</div></div></div>
+      <span class="pill${status.over?"":" off"}" style="align-self:flex-start">${line}</span>
+      ${damaBoard(st, myColor, d.sel, last)}
+      <div class="small">${t("damaRules")}</div>
+      ${d.mode==="cpu" ? `<div class="row" style="flex-wrap:wrap">
+        <div class="seg"><button class="chip" data-act="damaLevel" data-arg="easy" aria-pressed="${d.level==="easy"}">${t("easy")}</button><button class="chip" data-act="damaLevel" data-arg="normal" aria-pressed="${d.level!=="easy"}">${t("normal")}</button></div>
+        <button class="btn ghost small" data-act="damaCpuNew">${t("newGame")}</button></div>` : `<button class="btn ghost" data-act="chessBack" data-arg="chat">${t("backChat")}</button>`}
+    </div>`;
+  },
+
+  solitaire(){
+    const so = S.sol; if(!so) return screens.games();
+    const g = so.g, sel = so.sel;
+    const isSel = src => sameSrc(sel, src);
+    const stock = g.stock.length ? `<button class="card2 down" data-act="solTap" data-arg="stock" aria-label="stock"></button>` : `<button class="card2 slot" data-act="solTap" data-arg="stock" aria-label="stock">↻</button>`;
+    const wtop = g.waste[g.waste.length-1];
+    const waste = wtop ? cardHtml(wtop, "waste", isSel({kind:"waste"})) : `<div class="card2 slot"></div>`;
+    const founds = g.found.map((f,i)=>{ const tp = f[f.length-1]; return tp ? cardHtml(tp, "found:"+i, isSel({kind:"found", i})) : `<button class="card2 slot" data-act="solTap" data-arg="found:${i}">A</button>`; }).join("");
+    const cols = g.tab.map((pile,i)=>`<div class="solcol">${pile.length ? pile.map((c,idx)=>cardHtml(c, `tab:${i}:${idx}`, sel && sel.kind==="tab" && sel.i===i && idx>=sel.idx)).join("") : cardHtml(null, `tab:${i}:-1`)}</div>`).join("");
+    const won = ZSol.won(g);
+    return `<div class="screen">
+      <div class="row"><button class="iconbtn flip" data-act="go" data-arg="games" aria-label="${t("back")}">${ICON.back}</button>
+        <div class="grow"><div class="pname">${t("solVs")}</div><div class="small">${t("movesN",{n:g.moves})}</div></div>
+        <button class="btn ghost small" data-act="solUndo"${so.history.length?"":" disabled"}>${t("undo")}</button></div>
+      ${won ? `<div class="solwin">${t("solWon")}</div>` : ""}
+      <div class="soltable">
+        <div class="solrow"><div>${stock}</div><div>${waste}</div><div></div>${founds}</div>
+        <div class="solrow">${cols}</div>
+      </div>
+      ${ZSol.canAutoFinish(g) ? `<button class="btn" data-act="solFinish">${t("finish")}</button>` : ""}
+      <div class="small">${t("solHint")}</div>
+      <button class="btn ghost small" data-act="solNew" style="align-self:flex-start">${t("newGame")}</button>
     </div>`;
   },
 
@@ -1151,6 +1421,54 @@ const actions = {
   },
   chessOpen(gid){ const m = S.matches.find(x=>x.id===S.chatWith); S.chess = {mode:"online", gid, peerId:S.chatWith, peerName:m && m.first_name, sel:null, last:null}; S.screen = "chess"; render(); },
   chessBack(where){ S.screen = where; render(); },
+  damaCpuNew(){ const lvl = S.dama && S.dama.mode==="cpu" ? S.dama.level : "normal"; S.dama = {mode:"cpu", st:ZDama.newGame(), level:lvl, sel:null, last:null}; S.screen = "dama"; render(); },
+  damaLevel(v){ if(S.dama) S.dama.level = v; render(); },
+  damaInvite(){
+    if(!S.chatWith) return;
+    const abc = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let gid = ""; for(let i=0;i<6;i++) gid += abc[Math.floor(Math.random()*abc.length)];
+    sendBody(CARD + "dama:" + gid);
+    S.dama = {mode:"online", gid, peerId:S.chatWith, sel:null}; S.screen = "dama"; render();
+  },
+  damaOpen(gid){ const m = S.matches.find(x=>x.id===S.chatWith); S.dama = {mode:"online", gid, peerId:S.chatWith, peerName:m && m.first_name, sel:null}; S.screen = "dama"; render(); },
+  dq(arg){
+    const d = S.dama, ds = damaState(); if(!d || !ds || d.thinking) return;
+    const i = +arg, {st, myColor} = ds;
+    if(ZDama.status(st).over || st.turn !== myColor) return;
+    const moves = ZDama.legal(st);
+    if(d.sel !== null && d.sel !== undefined){
+      const m = moves.find(mv=>mv.path[0]===d.sel && mv.path[mv.path.length-1]===i);
+      if(m){
+        d.sel = null;
+        if(d.mode==="cpu"){ d.st = ZDama.apply(st, m); d.last = m.path; render(); if(!ZDama.status(d.st).over) damaCpu(); }
+        else sendBody(CARD + "dm:" + d.gid + ":" + ZDama.key(m));
+        return;
+      }
+    }
+    if(ZDama.color(st.b[i])===myColor){
+      if(moves.some(mv=>mv.path[0]===i)) d.sel = i;
+      else { d.sel = null; if(moves.length && moves[0].taken.length) toast(t("mustCapture")); }
+    } else d.sel = null;
+    render();
+  },
+  solNew(){ S.sol = {g:ZSol.deal(), history:[], sel:null}; S.screen = "solitaire"; render(); },
+  solUndo(){ const so = S.sol; if(so && so.history.length){ so.g = so.history.pop(); so.sel = null; render(); } },
+  solFinish(){ const so = S.sol; if(!so) return; so.history.push(so.g); so.g = ZSol.autoFinish(so.g); so.sel = null; render(); },
+  solTap(arg){
+    const so = S.sol; if(!so) return;
+    const commit = n => { so.history.push(so.g); if(so.history.length > 60) so.history.shift(); so.g = n; so.sel = null; render(); };
+    if(arg==="stock"){ const n = ZSol.draw(so.g); if(n) commit(n); else { so.sel = null; render(); } return; }
+    const src = solSrcFromArg(arg);
+    const selectable = src && src.kind!=="found" || (src && src.kind==="found" && so.g.found[src.i].length);
+    if(so.sel){
+      if(sameSrc(so.sel, src)){ const n = ZSol.autoFound(so.g, so.sel); if(n) return commit(n); so.sel = null; return render(); }
+      let dst = null;
+      if(src && src.kind==="tab") dst = {kind:"tab", i:src.i};
+      if(src && src.kind==="found") dst = {kind:"found", i:src.i};
+      if(dst){ const n = ZSol.move(so.g, so.sel, dst); if(n) return commit(n); }
+    }
+    so.sel = (src && selectable && ZSol.cardsFrom(so.g, src).length) ? src : null;
+    render();
+  },
   sq(arg){
     const c = S.chess, cs = chessState(); if(!c || !cs || c.thinking) return;
     const i = +arg, {st, myColor} = cs;
@@ -1294,6 +1612,56 @@ function cpuTurn(){
     c.thinking = false; render();
   }, 60);
 }
+function onlineDama(gid){
+  let st = ZDama.newGame(), starter = null, last = null;
+  for(const x of S.messages){
+    const p = parseMsg(x.body);
+    if(p.type==="dama" && p.val===gid && starter===null) starter = x.mine ? "me" : "them";
+    if(p.type==="dm" && p.val===gid && starter!==null){
+      const myColor = starter==="me" ? "w" : "b";
+      if((st.turn===myColor) !== !!x.mine) continue;
+      const m = ZDama.fromKey(st, p.extra); if(m){ st = ZDama.apply(st, m); last = m.path; }
+    }
+  }
+  return {st, myColor: starter==="them" ? "b" : "w", last};
+}
+function damaState(){ const d = S.dama; if(!d) return null; if(d.mode==="cpu") return {st:d.st, myColor:"w", last:d.last}; return onlineDama(d.gid); }
+function damaBoard(st, myColor, sel, lastPath){
+  const moves = ZDama.legal(st);
+  const targets = new Set(sel===null || sel===undefined ? [] : moves.filter(m=>m.path[0]===sel).map(m=>m.path[m.path.length-1]));
+  const lp = new Set(lastPath || []);
+  let h = "";
+  for(let r = 0; r < 8; r++) for(let c = 0; c < 8; c++){
+    const row = myColor==="w" ? 7 - r : r, col = myColor==="w" ? c : 7 - c, i = row*8 + col, p = st.b[i];
+    h += `<button class="sq ${(row+col)%2===0?"d":"l"}${sel===i?" sel":""}${lp.has(i)?" path":""}" data-act="dq" data-arg="${i}" aria-label="${"abcdefgh"[col]}${row+1}">${p?`<span class="dm ${ZDama.color(p)}${ZDama.isKing(p)?" k":""}"></span>`:""}${targets.has(i)?'<span class="dot"></span>':""}</button>`;
+  }
+  return `<div class="board" role="grid">${h}</div>`;
+}
+function damaCpu(){
+  const d = S.dama; if(!d || d.mode!=="cpu") return;
+  d.thinking = true; render();
+  setTimeout(()=>{
+    if(S.dama!==d) return;
+    const m = ZDama.bestMove(d.st, d.level==="easy" ? 1 : 5);
+    if(m){ d.st = ZDama.apply(d.st, m); d.last = m.path; }
+    d.thinking = false; render();
+  }, 60);
+}
+const RANKS = ["","A","2","3","4","5","6","7","8","9","10","J","Q","K"], SUITS = {S:"\u2660",H:"\u2665",D:"\u2666",C:"\u2663"};
+function cardHtml(c, arg, sel){
+  if(!c) return `<button class="card2 slot" data-act="solTap" data-arg="${arg}"></button>`;
+  if(!c.up) return `<button class="card2 down" data-act="solTap" data-arg="${arg}" aria-label="card"></button>`;
+  const lab = RANKS[c.r] + SUITS[c.s] + "\uFE0E";
+  return `<button class="card2 up${ZSol.red(c)?" red":""}${sel?" sel":""}" data-act="solTap" data-arg="${arg}" aria-label="${lab}"><span>${lab}</span><span class="big">${SUITS[c.s]}\uFE0E</span></button>`;
+}
+function solSrcFromArg(arg){
+  const [k, a, b] = arg.split(":");
+  if(k==="waste") return {kind:"waste"};
+  if(k==="found") return {kind:"found", i:+a};
+  if(k==="tab") return {kind:"tab", i:+a, idx:+b};
+  return null;
+}
+const sameSrc = (x, y) => x && y && x.kind===y.kind && x.i===y.i && x.idx===y.idx;
 const SAFE_PHOTO = /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/;
 const SAFE_AUDIO = /^data:audio\/(webm|mp4|ogg|aac|mpeg)(;[a-z0-9=._-]+)*;base64,[A-Za-z0-9+/=]+$/i;
 function resizeMax(file, max, quality){
@@ -1354,7 +1722,7 @@ async function loadMessages(){
   if(!S.chatWith) return;
   S.messages = await backend.messages(S.chatWith);
   try{ S.mediaStatus = await backend.mediaStatus(); }catch(e){}
-  if((S.screen==="chat" || S.screen==="chess") && !S.viewer) render();
+  if((S.screen==="chat" || S.screen==="chess" || S.screen==="dama") && !S.viewer) render();
 }
 
 /* ---------------- Polling ---------------- */
@@ -1370,7 +1738,7 @@ async function refresh(){
     if(S.screen!=="chat"){ S.current = fresh; S.iceIndex = 0; S.screen = "match"; try{ navigator.vibrate && navigator.vibrate([80,60,80]); }catch(e){} }
     else toast(t("newMatch",{name:fresh.first_name}));
   }
-  const onlineChessOpen = S.screen==="chess" && S.chess && S.chess.mode==="online";
+  const onlineChessOpen = (S.screen==="chess" && S.chess && S.chess.mode==="online") || (S.screen==="dama" && S.dama && S.dama.mode==="online");
   if(S.screen==="chat" || onlineChessOpen) await loadMessages();
   if(["nearby","match","chat"].includes(S.screen) || onlineChessOpen) render();
 }
