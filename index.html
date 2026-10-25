@@ -116,6 +116,16 @@ button.mediacard{cursor:pointer;min-height:48px}
 .viewer .note{color:#B8C4BF;font-size:13px;text-align:center}
 .recbar{display:flex;gap:10px;align-items:center;flex:1;min-width:0;background:var(--surface);border-radius:12px;padding:0 12px;min-height:48px;color:var(--danger);font-weight:700}
 .recbar .small{font-weight:400}
+.board{direction:ltr;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));width:100%;max-width:440px;aspect-ratio:1;margin:0 auto;border-radius:10px;overflow:hidden;box-shadow:0 0 0 2px var(--line)}
+.sq{border:none;padding:0;margin:0;position:relative;display:flex;align-items:center;justify-content:center;font-size:min(9vw,42px);line-height:1;cursor:pointer;aspect-ratio:1;min-width:0}
+.sq.l{background:#E6EEE8}.sq.d{background:#7FA58F}
+.sq.last{box-shadow:inset 0 0 0 100px rgba(247,214,120,.45)}
+.sq.sel{box-shadow:inset 0 0 0 3px #0E2A20,inset 0 0 0 100px rgba(159,224,195,.55)}
+.sq .dot{position:absolute;width:28%;height:28%;border-radius:50%;background:rgba(14,42,32,.42);pointer-events:none}
+.pc{font-family:"Segoe UI Symbol","Noto Sans Symbols 2","DejaVu Sans","Apple Symbols",serif;pointer-events:none}
+.pc.w{color:#FFFFFF;text-shadow:0 0 1px #000,0 0 1px #000,0 1px 1px #000,1px 0 1px #000,-1px 0 1px #000}
+.pc.b{color:#15211D;text-shadow:0 0 1px #FFFFFF}
+.gamecard2{display:flex;gap:12px;align-items:center}
 .word{border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
 .word .w{font-family:var(--f-display);font-size:22px;font-weight:700}
 .photoedit{display:flex;gap:16px;align-items:center}
@@ -205,6 +215,7 @@ const T = {
     netError:"Couldn't connect. Check your internet and try again.", newMatch:"New match: {name}",
     loading:"Connecting…",
     photoBtn:"Send a view-once photo", voiceBtn:"Record a voice message", recording:"Recording · max 60 s", cancel:"Cancel", sending:"Sending…", photoLocked:"Photos unlock after you've both sent a few messages.", photosOff:"{name} doesn't receive photos.", acceptPhotos:"Receive view-once photos in chats", photoIn:"Photo · tap to view once", voiceIn:"Voice message · tap to play once", photoOut:"You sent a photo (view once)", voiceOut:"You sent a voice message (play once)", openedTag:"Opened", notOpened:"Not opened yet", photoSeen:"Photo viewed", voiceHeard:"Voice message played", playing:"Playing…", mediaGone:"No longer available.", onceNote:"Can be seen once. Screenshots can't be blocked.", close:"Close", micDenied:"Zugpal needs microphone access to record. Allow it in your browser settings.", mediaReported:"Reported. It's kept for review.", playFail:"This phone can't play this voice message format.",
+    games:"Games", chess:"Chess", gamesHint:"Play while you ride. Chess against the computer works without internet.", vsComputer:"Chess against the computer", vsComputerBody:"Works offline. Choose easy or normal.", play:"Play", withMatch:"Chess with your match", withMatchBody:"After a match, open the chat and tap Chess.", damaT:"Dama", solT:"Solitaire", soon:"Coming soon", easy:"Easy", normal:"Normal", newGame:"New game", yourMove:"Your move", peerMove:"{name}'s move", thinking:"Computer is thinking…", inCheck:"Check!", youWin:"Checkmate. You win!", youLose:"Checkmate. {name} wins.", cpuWins:"Checkmate. The computer wins.", drawT:"Draw.", chessStartMe:"You started a chess game. You play white.", chessStartThem:"{name} started a chess game. You play black.", openBoard:"Open board", autoQueen:"Pawns that reach the last row become queens.", computer:"Computer", backChat:"Back to chat",
     testTitle:"Test with friends", testBody:"Start a private test ride and send the link to your friends. Everyone who opens it lands in the same ride.",
     testBtn:"Start a test ride", testRide:"Test ride {c}", inviteLabel:"Invite link for your friends", copyLink:"Copy link", copied:"Link copied. Send it to your friends.",
     waveLimit:"You can wave at up to 5 people per ride.",
@@ -273,6 +284,7 @@ const T = {
     netError:"Keine Verbindung. Prüf dein Internet und versuch es noch mal.", newMatch:"Neues Match: {name}",
     loading:"Verbinde…",
     photoBtn:"Einmal-Foto senden", voiceBtn:"Sprachnachricht aufnehmen", recording:"Aufnahme · max. 60 Sek.", cancel:"Abbrechen", sending:"Wird gesendet…", photoLocked:"Fotos werden freigeschaltet, sobald ihr beide ein paar Nachrichten geschrieben habt.", photosOff:"{name} empfängt keine Fotos.", acceptPhotos:"Einmal-Fotos im Chat empfangen", photoIn:"Foto · zum einmaligen Ansehen tippen", voiceIn:"Sprachnachricht · zum einmaligen Abspielen tippen", photoOut:"Du hast ein Foto gesendet (einmal ansehbar)", voiceOut:"Du hast eine Sprachnachricht gesendet (einmal abspielbar)", openedTag:"Geöffnet", notOpened:"Noch nicht geöffnet", photoSeen:"Foto angesehen", voiceHeard:"Sprachnachricht abgespielt", playing:"Wird abgespielt…", mediaGone:"Nicht mehr verfügbar.", onceNote:"Kann einmal angesehen werden. Screenshots lassen sich nicht verhindern.", close:"Schließen", micDenied:"Zugpal braucht Zugriff aufs Mikrofon. Erlaube es in den Browser-Einstellungen.", mediaReported:"Gemeldet. Es wird zur Prüfung aufbewahrt.", playFail:"Dieses Handy kann das Format dieser Sprachnachricht nicht abspielen.",
+    games:"Spiele", chess:"Schach", gamesHint:"Spiel während der Fahrt. Schach gegen den Computer geht auch ohne Internet.", vsComputer:"Schach gegen den Computer", vsComputerBody:"Funktioniert offline. Wähle leicht oder normal.", play:"Spielen", withMatch:"Schach mit deinem Match", withMatchBody:"Öffne nach einem Match den Chat und tippe auf Schach.", damaT:"Dame", solT:"Solitär", soon:"Kommt bald", easy:"Leicht", normal:"Normal", newGame:"Neues Spiel", yourMove:"Du bist am Zug", peerMove:"{name} ist am Zug", thinking:"Der Computer überlegt…", inCheck:"Schach!", youWin:"Schachmatt. Du gewinnst!", youLose:"Schachmatt. {name} gewinnt.", cpuWins:"Schachmatt. Der Computer gewinnt.", drawT:"Remis.", chessStartMe:"Du hast eine Schachpartie gestartet. Du spielst Weiß.", chessStartThem:"{name} hat eine Schachpartie gestartet. Du spielst Schwarz.", openBoard:"Brett öffnen", autoQueen:"Bauern, die die letzte Reihe erreichen, werden zur Dame.", computer:"Computer", backChat:"Zurück zum Chat",
     testTitle:"Mit Freunden testen", testBody:"Starte eine private Testfahrt und schick den Link an deine Freunde. Alle, die ihn öffnen, landen in derselben Fahrt.",
     testBtn:"Testfahrt starten", testRide:"Testfahrt {c}", inviteLabel:"Einladungslink für deine Freunde", copyLink:"Link kopieren", copied:"Link kopiert. Schick ihn an deine Freunde.",
     waveLimit:"Du kannst pro Fahrt bis zu 5 Leuten winken.",
@@ -341,6 +353,7 @@ const T = {
     netError:"تعذّر الاتصال. تحقق من الإنترنت وحاول مجدداً.", newMatch:"توافق جديد: {name}",
     loading:"جارٍ الاتصال…",
     photoBtn:"إرسال صورة تُعرض مرة واحدة", voiceBtn:"تسجيل رسالة صوتية", recording:"جارٍ التسجيل · 60 ثانية كحد أقصى", cancel:"إلغاء", sending:"جارٍ الإرسال…", photoLocked:"تُفتح ميزة الصور بعد أن يتبادل كلٌّ منكما بضع رسائل.", photosOff:"{name} لا يستقبل الصور.", acceptPhotos:"استقبال الصور التي تُعرض مرة واحدة في المحادثات", photoIn:"صورة · اضغط لعرضها مرة واحدة", voiceIn:"رسالة صوتية · اضغط لتشغيلها مرة واحدة", photoOut:"أرسلت صورة (تُعرض مرة واحدة)", voiceOut:"أرسلت رسالة صوتية (تُشغَّل مرة واحدة)", openedTag:"تم الفتح", notOpened:"لم تُفتح بعد", photoSeen:"تمت مشاهدة الصورة", voiceHeard:"تم تشغيل الرسالة الصوتية", playing:"جارٍ التشغيل…", mediaGone:"لم تعد متاحة.", onceNote:"يمكن مشاهدتها مرة واحدة. لا يمكن منع لقطات الشاشة.", close:"إغلاق", micDenied:"يحتاج Zugpal إلى إذن الميكروفون للتسجيل. اسمح به من إعدادات المتصفح.", mediaReported:"تم الإبلاغ. سيتم الاحتفاظ بها للمراجعة.", playFail:"لا يستطيع هذا الهاتف تشغيل صيغة هذه الرسالة الصوتية.",
+    games:"الألعاب", chess:"الشطرنج", gamesHint:"العب أثناء رحلتك. الشطرنج ضد الكمبيوتر يعمل دون إنترنت.", vsComputer:"الشطرنج ضد الكمبيوتر", vsComputerBody:"يعمل دون اتصال. اختر سهل أو عادي.", play:"العب", withMatch:"الشطرنج مع من توافقت معه", withMatchBody:"بعد التوافق، افتح المحادثة واضغط على الشطرنج.", damaT:"الداما", solT:"السوليتير", soon:"قريباً", easy:"سهل", normal:"عادي", newGame:"لعبة جديدة", yourMove:"دورك", peerMove:"دور {name}", thinking:"الكمبيوتر يفكر…", inCheck:"كش ملك!", youWin:"كش مات. لقد فزت!", youLose:"كش مات. فاز {name}.", cpuWins:"كش مات. فاز الكمبيوتر.", drawT:"تعادل.", chessStartMe:"بدأت مباراة شطرنج. أنت تلعب بالأبيض.", chessStartThem:"بدأ {name} مباراة شطرنج. أنت تلعب بالأسود.", openBoard:"افتح الرقعة", autoQueen:"الجندي الذي يصل إلى الصف الأخير يصبح وزيراً.", computer:"الكمبيوتر", backChat:"العودة إلى المحادثة",
     testTitle:"جرّبه مع أصدقائك", testBody:"ابدأ رحلة تجريبية خاصة وأرسل الرابط إلى أصدقائك. كل من يفتحه ينضم إلى الرحلة نفسها.",
     testBtn:"ابدأ رحلة تجريبية", testRide:"رحلة تجريبية {c}", inviteLabel:"رابط الدعوة لأصدقائك", copyLink:"نسخ الرابط", copied:"تم نسخ الرابط. أرسله إلى أصدقائك.",
     waveLimit:"يمكنك التلويح لخمسة أشخاص كحد أقصى في كل رحلة.",
@@ -420,13 +433,163 @@ const REACT = {
   bye:{de:"Danke, gleichfalls! Vielleicht bis morgen.",en:"Thanks, you too! Maybe see you tomorrow.",ar:"شكراً، وأنت أيضاً! ربما نلتقي غداً."}
 };
 
+/* Zugpal chess rules. Squares 0..63, index = rank*8 + file (rank 0 = rank 1, file 0 = a).
+   Pieces: "wP","wN","wB","wR","wQ","wK","bP",... or null. */
+const ZChess = (function(){
+  const FILES = "abcdefgh";
+  const N_OFF = [[1,2],[2,1],[2,-1],[1,-2],[-1,-2],[-2,-1],[-2,1],[-1,2]];
+  const K_OFF = [[1,0],[1,1],[0,1],[-1,1],[-1,0],[-1,-1],[0,-1],[1,-1]];
+  const DIAG = [[1,1],[1,-1],[-1,1],[-1,-1]];
+  const ORTH = [[1,0],[-1,0],[0,1],[0,-1]];
+  const sqName = i => FILES[i % 8] + (Math.floor(i / 8) + 1);
+  const sqIndex = s => (parseInt(s[1], 10) - 1) * 8 + FILES.indexOf(s[0]);
+  const at = (f, r) => (f < 0 || f > 7 || r < 0 || r > 7) ? -1 : r * 8 + f;
+
+  function newGame(){
+    const b = new Array(64).fill(null);
+    const back = ["R","N","B","Q","K","B","N","R"];
+    for(let f = 0; f < 8; f++){ b[f] = "w" + back[f]; b[8 + f] = "wP"; b[48 + f] = "bP"; b[56 + f] = "b" + back[f]; }
+    return { b, turn:"w", castle:{wK:true, wQ:true, bK:true, bQ:true}, ep:-1, half:0, full:1 };
+  }
+
+  function fromFen(fen){
+    const [pos, turn, cas, ep, half, full] = fen.split(" ");
+    const b = new Array(64).fill(null); const rows = pos.split("/");
+    for(let i = 0; i < 8; i++){ let f = 0; const r = 7 - i;
+      for(const ch of rows[i]){ if(/\d/.test(ch)) f += +ch; else { b[r*8+f] = (ch === ch.toUpperCase() ? "w" : "b") + ch.toUpperCase(); f++; } } }
+    return { b, turn, castle:{wK:cas.includes("K"), wQ:cas.includes("Q"), bK:cas.includes("k"), bQ:cas.includes("q")},
+      ep: ep === "-" ? -1 : sqIndex(ep), half: +half || 0, full: +full || 1 };
+  }
+
+  function attacked(st, sq, by){
+    const b = st.b, f0 = sq % 8, r0 = Math.floor(sq / 8);
+    const pr = by === "w" ? r0 - 1 : r0 + 1;
+    for(const df of [-1, 1]){ const i = at(f0 + df, pr); if(i >= 0 && b[i] === by + "P") return true; }
+    for(const [df, dr] of N_OFF){ const i = at(f0 + df, r0 + dr); if(i >= 0 && b[i] === by + "N") return true; }
+    for(const [df, dr] of K_OFF){ const i = at(f0 + df, r0 + dr); if(i >= 0 && b[i] === by + "K") return true; }
+    for(const [dirs, kinds] of [[DIAG, "BQ"], [ORTH, "RQ"]]){
+      for(const [df, dr] of dirs){ let f = f0 + df, r = r0 + dr;
+        while(f >= 0 && f < 8 && r >= 0 && r < 8){ const p = b[r*8+f];
+          if(p){ if(p[0] === by && kinds.includes(p[1])) return true; break; }
+          f += df; r += dr; } }
+    }
+    return false;
+  }
+
+  function pseudo(st){
+    const b = st.b, me = st.turn, opp = me === "w" ? "b" : "w", out = [];
+    const add = (from, to, extra) => out.push(Object.assign({from, to}, extra || {}));
+    for(let sq = 0; sq < 64; sq++){
+      const p = b[sq]; if(!p || p[0] !== me) continue;
+      const f0 = sq % 8, r0 = Math.floor(sq / 8), t = p[1];
+      if(t === "P"){
+        const dir = me === "w" ? 1 : -1, start = me === "w" ? 1 : 6, last = me === "w" ? 7 : 0;
+        const one = at(f0, r0 + dir);
+        const pushTo = (to, extra) => { if(Math.floor(to / 8) === last) for(const pr of ["Q","R","B","N"]) add(sq, to, Object.assign({promo:pr}, extra)); else add(sq, to, extra); };
+        if(one >= 0 && !b[one]){ pushTo(one);
+          const two = at(f0, r0 + 2*dir); if(r0 === start && !b[two]) add(sq, two, {double:true}); }
+        for(const df of [-1, 1]){ const to = at(f0 + df, r0 + dir); if(to < 0) continue;
+          if(b[to] && b[to][0] === opp) pushTo(to, {capture:true});
+          else if(to === st.ep) add(sq, to, {ep:true, capture:true}); }
+      } else if(t === "N" || t === "K"){
+        for(const [df, dr] of (t === "N" ? N_OFF : K_OFF)){ const to = at(f0 + df, r0 + dr);
+          if(to >= 0 && (!b[to] || b[to][0] === opp)) add(sq, to, b[to] ? {capture:true} : null); }
+        if(t === "K"){
+          const r = me === "w" ? 0 : 7;
+          if(sq === r*8 + 4 && !attacked(st, sq, opp)){
+            if(st.castle[me + "K"] && !b[r*8+5] && !b[r*8+6] && b[r*8+7] === me + "R" && !attacked(st, r*8+5, opp) && !attacked(st, r*8+6, opp)) add(sq, r*8+6, {castle:"K"});
+            if(st.castle[me + "Q"] && !b[r*8+3] && !b[r*8+2] && !b[r*8+1] && b[r*8] === me + "R" && !attacked(st, r*8+3, opp) && !attacked(st, r*8+2, opp)) add(sq, r*8+2, {castle:"Q"});
+          }
+        }
+      } else {
+        const dirs = t === "B" ? DIAG : t === "R" ? ORTH : DIAG.concat(ORTH);
+        for(const [df, dr] of dirs){ let f = f0 + df, r = r0 + dr;
+          while(f >= 0 && f < 8 && r >= 0 && r < 8){ const to = r*8+f;
+            if(!b[to]) add(sq, to); else { if(b[to][0] === opp) add(sq, to, {capture:true}); break; }
+            f += df; r += dr; } }
+      }
+    }
+    return out;
+  }
+
+  function apply(st, m){
+    const b = st.b.slice(), me = st.turn, opp = me === "w" ? "b" : "w", p = b[m.from];
+    const castle = Object.assign({}, st.castle);
+    b[m.to] = m.promo ? me + m.promo : p; b[m.from] = null;
+    if(m.ep) b[m.to + (me === "w" ? -8 : 8)] = null;
+    if(m.castle){ const r = me === "w" ? 0 : 7;
+      if(m.castle === "K"){ b[r*8+5] = b[r*8+7]; b[r*8+7] = null; } else { b[r*8+3] = b[r*8]; b[r*8] = null; } }
+    if(p[1] === "K"){ castle[me + "K"] = false; castle[me + "Q"] = false; }
+    const touch = s => { if(s === 0) castle.wQ = false; if(s === 7) castle.wK = false; if(s === 56) castle.bQ = false; if(s === 63) castle.bK = false; };
+    touch(m.from); touch(m.to);
+    return { b, turn:opp, castle, ep: m.double ? (m.from + m.to) / 2 : -1,
+      half: (p[1] === "P" || m.capture) ? 0 : st.half + 1, full: st.full + (me === "b" ? 1 : 0) };
+  }
+
+  const kingSq = (st, c) => st.b.indexOf(c + "K");
+  function inCheck(st, c){ c = c || st.turn; return attacked(st, kingSq(st, c), c === "w" ? "b" : "w"); }
+  function legal(st){ const me = st.turn; return pseudo(st).filter(m => !inCheck(apply(st, m), me)); }
+
+  function insufficient(st){
+    const ps = st.b.filter(Boolean).filter(p => p[1] !== "K");
+    if(ps.length === 0) return true;
+    return ps.length === 1 && (ps[0][1] === "B" || ps[0][1] === "N");
+  }
+  function status(st){
+    const moves = legal(st), check = inCheck(st);
+    return { check, mate: check && moves.length === 0, stalemate: !check && moves.length === 0,
+      draw: (!check && moves.length === 0) || st.half >= 100 || insufficient(st), over: moves.length === 0 || st.half >= 100 || insufficient(st) };
+  }
+
+  const uci = m => sqName(m.from) + sqName(m.to) + (m.promo ? m.promo.toLowerCase() : "");
+  function fromUci(st, u){
+    if(!/^[a-h][1-8][a-h][1-8][qrbn]?$/.test(String(u))) return null;
+    const from = sqIndex(u.slice(0,2)), to = sqIndex(u.slice(2,4)), pr = u[4] ? u[4].toUpperCase() : null;
+    return legal(st).find(m => m.from === from && m.to === to && (m.promo || null) === (m.promo ? (pr || "Q") : null)) || null;
+  }
+
+  /* Computer opponent: alpha-beta on material + simple position bonuses */
+  const VAL = {P:100, N:320, B:330, R:500, Q:900, K:0};
+  function evaluate(st){
+    let s = 0;
+    for(let i = 0; i < 64; i++){ const p = st.b[i]; if(!p) continue;
+      const f = i % 8, r = Math.floor(i / 8); let v = VAL[p[1]];
+      const center = 3.5 - Math.max(Math.abs(3.5 - f), Math.abs(3.5 - r));
+      if(p[1] === "N" || p[1] === "B") v += center * 8;
+      if(p[1] === "P") v += (p[0] === "w" ? r - 1 : 6 - r) * 8 + (f > 1 && f < 6 ? center * 4 : 0);
+      s += p[0] === "w" ? v : -v; }
+    return s;
+  }
+  function search(st, depth, alpha, beta){
+    const moves = legal(st);
+    if(moves.length === 0) return inCheck(st) ? (st.turn === "w" ? -100000 - depth : 100000 + depth) : 0;
+    if(depth === 0) return evaluate(st);
+    moves.sort((a, b2) => (b2.capture ? 1 : 0) - (a.capture ? 1 : 0));
+    if(st.turn === "w"){ let v = -Infinity;
+      for(const m of moves){ v = Math.max(v, search(apply(st, m), depth - 1, alpha, beta)); alpha = Math.max(alpha, v); if(beta <= alpha) break; } return v; }
+    let v = Infinity;
+    for(const m of moves){ v = Math.min(v, search(apply(st, m), depth - 1, alpha, beta)); beta = Math.min(beta, v); if(beta <= alpha) break; }
+    return v;
+  }
+  function bestMove(st, depth){
+    const moves = legal(st); if(!moves.length) return null;
+    for(let i = moves.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [moves[i], moves[j]] = [moves[j], moves[i]]; }
+    let best = moves[0], bv = st.turn === "w" ? -Infinity : Infinity;
+    for(const m of moves){ const v = search(apply(st, m), depth - 1, -Infinity, Infinity);
+      if(st.turn === "w" ? v > bv : v < bv){ bv = v; best = m; } }
+    return best;
+  }
+
+  return { newGame, fromFen, legal, apply, status, inCheck, uci, fromUci, bestMove, sqName, sqIndex };
+})();
+
 /* ---------------- State ---------------- */
 const STORE_KEY = "abteil.v1";
 const S = {
   lang:"de", profile:null, agreed:false, edit:null,
   ride:null, moods:new Set(["small"]), coach:"", womenOnly:false, chatOnly:true, open:true, moodBefore:null, moodAfter:null, autoTalk:false,
   screen:"welcome", riders:[], matches:[], seen:new Set(), buddySeen:new Set(), buddies:new Set(),
-  current:null, chatWith:null, messages:[], mediaDone:new Set(), mediaStatus:{}, playing:null, viewer:null, recording:null, iceIndex:0, draft:{}, fb:{}, toast:"", warnedEnd:false
+  current:null, chatWith:null, messages:[], mediaDone:new Set(), mediaStatus:{}, chess:null, gamesBack:"checkin", playing:null, viewer:null, recording:null, iceIndex:0, draft:{}, fb:{}, toast:"", warnedEnd:false
 };
 let backend = null, pollTimer = null, toastTimer = null;
 
@@ -541,6 +704,13 @@ function DemoBackend(){
       const list = msgs[id] = msgs[id] || []; list.push({mine:true, body, at:Date.now()});
       const p = people.find(x=>x.id===id); if(!p) return;
       const kind = parseMsg(body).type;
+      if(kind==="chess") return;
+      if(kind==="cm"){
+        const gid = parseMsg(body).val; let st = ZChess.newGame();
+        for(const x of list){ const q = parseMsg(x.body); if(q.type==="cm" && q.val===gid){ const mv = ZChess.fromUci(st, q.extra); if(mv) st = ZChess.apply(st, mv); } }
+        if(st.turn==="b"){ const bm = ZChess.bestMove(st, 2); if(bm) after(1200, ()=>list.push({mine:false, body:CARD+"cm:"+gid+":"+ZChess.uci(bm), at:Date.now()})); }
+        return;
+      }
       if(kind==="text"){
         const n = list.filter(m=>!m.mine && parseMsg(m.body).type==="text").length;
         if(n >= 5 || !p.reply.en) return;
@@ -697,6 +867,7 @@ const screens = {
         <div style="font-size:19px;font-weight:700">${esc(CONFIG.talkTrain[S.lang] || CONFIG.talkTrain.en)}</div>
         <div class="small">${t("talkTrainBody")}</div>
         <button class="btn mint" data-act="checkin" data-arg="talk">${t("joinTalk")}</button></div>
+      <button class="btn ghost" data-act="openGames">${t("games")}</button>
       <div class="card"><div class="pname">${t("testTitle")}</div><div class="small">${t("testBody")}</div>
         <button class="btn ghost" data-act="startTest">${t("testBtn")}</button></div>
       <div class="pname">${t("orOther")}</div>
@@ -754,7 +925,7 @@ const screens = {
       ${S.open ? (others.map(personCard).join("") || (S.matches.length ? "" : `<div class="empty"><div class="muted">${t("emptyBody")}</div></div>`)) : ""}
       <div class="word"><span class="lbl" style="color:var(--muted)">${t("wordTitle")}</span><span class="w" lang="de">${esc(w)}</span>
         <span class="muted">${esc(S.lang==="de"?de:S.lang==="ar"?ar:en)}</span></div>
-      <div class="end"><button class="btn ghost" data-act="go" data-arg="mood">${t("moodTitle")}</button><button class="link danger" data-act="endRide">${t("endRide")}</button></div>
+      <div class="end"><button class="btn ghost" data-act="openGames">${t("games")}</button><button class="btn ghost" data-act="go" data-arg="mood">${t("moodTitle")}</button><button class="link danger" data-act="endRide">${t("endRide")}</button></div>
     </div>`;
   },
 
@@ -793,6 +964,11 @@ const screens = {
       if(p.type==="spin"){ const meAsks = (x.mine && p.val==="me") || (!x.mine && p.val==="you"); return `<div class="gamecard"><span class="lbl">${t("spin")}</span><span class="big">${meAsks ? t("spinYou") : t("spinThem",{name})}</span></div>`; }
       if(p.type==="ttl") return `<div class="gamecard"><span class="lbl">${t("ttl")}</span><span>${x.mine ? t("ttlYou",{name}) : t("ttlThem",{name})}</span></div>`;
       if(p.type==="bye") return `<div class="msg${x.mine?" mine":""}">${t("bye")}</div>`;
+      if(p.type==="cm") return "";
+      if(p.type==="chess"){
+        const gid = String(p.val||""); if(!/^[A-Za-z0-9]{4,12}$/.test(gid)) return "";
+        return `<div class="gamecard"><span class="lbl">${t("chess")}</span><span>${x.mine ? t("chessStartMe") : t("chessStartThem",{name})}</span><button class="btn small" style="align-self:center" data-act="chessOpen" data-arg="${gid}">${t("openBoard")}</button></div>`;
+      }
       if(p.type==="media"){
         const id = String(p.val||""), kind = p.extra==="voice" ? "voice" : "photo";
         if(!/^[A-Za-z0-9-]{3,40}$/.test(id)) return "";
@@ -815,7 +991,8 @@ const screens = {
       <div class="games" role="toolbar">
         <button class="chip" data-act="game" data-arg="dice">${ICON.dice}${t("dice")}</button>
         <button class="chip" data-act="game" data-arg="spin">${ICON.spin}${t("spin")}</button>
-        <button class="chip" data-act="game" data-arg="ttl">${ICON.cards}${t("ttl")}</button></div>
+        <button class="chip" data-act="game" data-arg="ttl">${ICON.cards}${t("ttl")}</button>
+        <button class="chip" data-act="chessInvite"><span class="pc b" style="font-size:18px">${GLYPH.N}\uFE0E</span>${t("chess")}</button></div>
       <div id="chatLog" class="chatlog">${log}</div>
       <form class="chatbar" id="chatForm">${S.recording
         ? `<div class="recbar"><span class="dot"></span><span id="recTime">0:00</span><span class="small">${t("recording")}</span></div>
@@ -825,6 +1002,41 @@ const screens = {
            <input type="text" id="chatInput" data-bind="chat" maxlength="500" placeholder="${t("chatPh")}" value="${esc(S.draft.chat||"")}" aria-label="${t("chatPh")}">
            <button class="btn small" type="submit">${t("send")}</button>`}</form>
       <input type="file" id="mediaPhoto" accept="image/*" hidden>
+    </div>`;
+  },
+
+  games(){
+    return `<div class="screen">
+      <div class="row"><button class="iconbtn flip" data-act="go" data-arg="${S.gamesBack}" aria-label="${t("back")}">${ICON.back}</button><h1 class="grow" style="font-size:26px">${t("games")}</h1></div>
+      <p class="muted" style="margin:-6px 0 0">${t("gamesHint")}</p>
+      <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">${GLYPH.N}\uFE0E</span><div class="grow"><div class="pname">${t("vsComputer")}</div><div class="small">${t("vsComputerBody")}</div></div></div>
+        <button class="btn" data-act="chessCpu">${t("play")}</button></div>
+      <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">${GLYPH.K}\uFE0E</span><div class="grow"><div class="pname">${t("withMatch")}</div><div class="small">${t("withMatchBody")}</div></div></div></div>
+      <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">●</span><div class="grow"><div class="pname">${t("damaT")}</div><div class="small">${t("soon")}</div></div></div></div>
+      <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">♠\uFE0E</span><div class="grow"><div class="pname">${t("solT")}</div><div class="small">${t("soon")}</div></div></div></div>
+    </div>`;
+  },
+
+  chess(){
+    const c = S.chess, cs = chessState(); if(!c || !cs) return screens.games();
+    const {st, myColor} = cs, status = ZChess.status(st);
+    const m = c.mode==="online" ? (S.matches.find(x=>x.id===c.peerId) || {first_name:c.peerName||""}) : null;
+    const name = m ? esc(m.first_name) : t("computer");
+    let line;
+    if(status.mate) line = st.turn===myColor ? (c.mode==="cpu" ? t("cpuWins") : t("youLose",{name})) : t("youWin");
+    else if(status.draw) line = t("drawT");
+    else if(c.thinking) line = t("thinking");
+    else line = (st.turn===myColor ? t("yourMove") : (c.mode==="cpu" ? t("thinking") : t("peerMove",{name}))) + (status.check ? " · " + t("inCheck") : "");
+    const back = c.mode==="online" ? "chat" : "games";
+    return `<div class="screen">
+      <div class="row"><button class="iconbtn flip" data-act="chessBack" data-arg="${back}" aria-label="${t("back")}">${ICON.back}</button>
+        <div class="grow"><div class="pname">${t("chess")}</div><div class="small">${c.mode==="cpu" ? t("vsComputer") : name}</div></div></div>
+      <span class="pill${status.over?"":" off"}" style="align-self:flex-start">${line}</span>
+      ${boardHtml(st, myColor, c.sel)}
+      <div class="small">${t("autoQueen")}</div>
+      ${c.mode==="cpu" ? `<div class="row" style="flex-wrap:wrap">
+        <div class="seg"><button class="chip" data-act="chessLevel" data-arg="easy" aria-pressed="${c.level==="easy"}">${t("easy")}</button><button class="chip" data-act="chessLevel" data-arg="normal" aria-pressed="${c.level!=="easy"}">${t("normal")}</button></div>
+        <button class="btn ghost small" data-act="chessCpu">${t("newGame")}</button></div>` : `<button class="btn ghost" data-act="chessBack" data-arg="chat">${t("backChat")}</button>`}
     </div>`;
   },
 
@@ -928,6 +1140,32 @@ const actions = {
     safe(async()=>{ r.waved ? await backend.wave(id) : await backend.unwave(id); });
   },
   nextIce(){ S.iceIndex++; render(); },
+  openGames(){ S.gamesBack = S.screen==="nearby" ? "nearby" : "checkin"; S.screen = "games"; render(); },
+  chessCpu(){ const lvl = S.chess && S.chess.mode==="cpu" ? S.chess.level : "normal"; S.chess = {mode:"cpu", st:ZChess.newGame(), level:lvl, sel:null, last:null}; S.screen = "chess"; render(); },
+  chessLevel(v){ if(S.chess) S.chess.level = v; render(); },
+  chessInvite(){
+    if(!S.chatWith) return;
+    const abc = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let gid = ""; for(let i=0;i<6;i++) gid += abc[Math.floor(Math.random()*abc.length)];
+    sendBody(CARD + "chess:" + gid);
+    S.chess = {mode:"online", gid, peerId:S.chatWith, sel:null, last:null}; S.screen = "chess"; render();
+  },
+  chessOpen(gid){ const m = S.matches.find(x=>x.id===S.chatWith); S.chess = {mode:"online", gid, peerId:S.chatWith, peerName:m && m.first_name, sel:null, last:null}; S.screen = "chess"; render(); },
+  chessBack(where){ S.screen = where; render(); },
+  sq(arg){
+    const c = S.chess, cs = chessState(); if(!c || !cs || c.thinking) return;
+    const i = +arg, {st, myColor} = cs;
+    if(ZChess.status(st).over || st.turn !== myColor) return;
+    if(c.sel !== null && c.sel !== undefined){
+      const m = ZChess.legal(st).find(mv=>mv.from===c.sel && mv.to===i && (!mv.promo || mv.promo==="Q"));
+      if(m){
+        c.sel = null; c.last = {from:m.from, to:m.to};
+        if(c.mode==="cpu"){ c.st = ZChess.apply(st, m); render(); if(!ZChess.status(c.st).over) cpuTurn(); }
+        else sendBody(CARD + "cm:" + c.gid + ":" + ZChess.uci(m));
+        return;
+      }
+    }
+    c.sel = (st.b[i] && st.b[i][0]===myColor) ? i : null; render();
+  },
   pickPhoto(){
     const m = S.matches.find(x=>x.id===S.chatWith);
     if(m && m.accept_photos === false) return toast(t("photosOff",{name:m.first_name}));
@@ -1015,6 +1253,47 @@ async function finishRide(){
   save(); S.screen = "checkin"; toast(before && after && after > before ? t("moodUp") : t("endedToast"));
 }
 
+const GLYPH = {K:"\u265A",Q:"\u265B",R:"\u265C",B:"\u265D",N:"\u265E",P:"\u265F"};
+function onlineChess(gid){
+  let st = ZChess.newGame(), starter = null;
+  for(const x of S.messages){
+    const p = parseMsg(x.body);
+    if(p.type==="chess" && p.val===gid && starter===null) starter = x.mine ? "me" : "them";
+    if(p.type==="cm" && p.val===gid && starter!==null){
+      const myColor = starter==="me" ? "w" : "b";
+      if((st.turn===myColor) !== !!x.mine) continue;
+      const m = ZChess.fromUci(st, p.extra); if(m) st = ZChess.apply(st, m);
+    }
+  }
+  return {st, myColor: starter==="them" ? "b" : "w"};
+}
+function chessState(){
+  const c = S.chess; if(!c) return null;
+  if(c.mode==="cpu") return {st:c.st, myColor:"w"};
+  return onlineChess(c.gid);
+}
+function boardHtml(st, myColor, sel){
+  const legal = ZChess.legal(st);
+  const targets = new Set(sel===null || sel===undefined ? [] : legal.filter(m=>m.from===sel).map(m=>m.to));
+  const last = S.chess && S.chess.last;
+  let h = "";
+  for(let r = 0; r < 8; r++) for(let c = 0; c < 8; c++){
+    const rank = myColor==="w" ? 7 - r : r, file = myColor==="w" ? c : 7 - c, i = rank*8 + file;
+    const p = st.b[i], dark = (rank + file) % 2 === 0;
+    h += `<button class="sq ${dark?"d":"l"}${sel===i?" sel":""}${last && (last.from===i || last.to===i)?" last":""}" data-act="sq" data-arg="${i}" aria-label="${ZChess.sqName(i)}${p?" "+p:""}">${p?`<span class="pc ${p[0]}">${GLYPH[p[1]]}\uFE0E</span>`:""}${targets.has(i)?'<span class="dot"></span>':""}</button>`;
+  }
+  return `<div class="board" role="grid">${h}</div>`;
+}
+function cpuTurn(){
+  const c = S.chess; if(!c || c.mode!=="cpu") return;
+  c.thinking = true; render();
+  setTimeout(()=>{
+    if(S.chess!==c) return;
+    const m = ZChess.bestMove(c.st, c.level==="easy" ? 1 : 3);
+    if(m){ c.st = ZChess.apply(c.st, m); c.last = {from:m.from, to:m.to}; }
+    c.thinking = false; render();
+  }, 60);
+}
 const SAFE_PHOTO = /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/;
 const SAFE_AUDIO = /^data:audio\/(webm|mp4|ogg|aac|mpeg)(;[a-z0-9=._-]+)*;base64,[A-Za-z0-9+/=]+$/i;
 function resizeMax(file, max, quality){
@@ -1075,7 +1354,7 @@ async function loadMessages(){
   if(!S.chatWith) return;
   S.messages = await backend.messages(S.chatWith);
   try{ S.mediaStatus = await backend.mediaStatus(); }catch(e){}
-  if(S.screen==="chat" && !S.viewer) render();
+  if((S.screen==="chat" || S.screen==="chess") && !S.viewer) render();
 }
 
 /* ---------------- Polling ---------------- */
@@ -1091,8 +1370,9 @@ async function refresh(){
     if(S.screen!=="chat"){ S.current = fresh; S.iceIndex = 0; S.screen = "match"; try{ navigator.vibrate && navigator.vibrate([80,60,80]); }catch(e){} }
     else toast(t("newMatch",{name:fresh.first_name}));
   }
-  if(S.screen==="chat") await loadMessages();
-  if(["nearby","match","chat"].includes(S.screen)) render();
+  const onlineChessOpen = S.screen==="chess" && S.chess && S.chess.mode==="online";
+  if(S.screen==="chat" || onlineChessOpen) await loadMessages();
+  if(["nearby","match","chat"].includes(S.screen) || onlineChessOpen) render();
 }
 function startPolling(){ stopPolling(); const ms = backend.mode==="demo" ? 1500 : 6000; pollTimer = setInterval(()=>safe(refresh), ms); }
 function stopPolling(){ clearInterval(pollTimer); pollTimer = null; }
