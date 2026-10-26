@@ -61,8 +61,9 @@ Everything is currently **one file: `index.html`** (~100 KB): HTML + CSS + vanil
 
 - Project **ZugPal**, ref `vkyfnewnpsyuhbmvryws`, region eu-central-1. Anonymous sign-ins enabled. The Supabase connector may be available in your session; use it for migrations instead of asking Husam to paste SQL.
 - Current schema: `supabase/schema.sql` (tables `riders`, `waves`, `blocks`, `reports`, `messages`, `compliments`, `buddies`, `ride_moods`, `media_items`; RLS on every table; nobody reads `riders` directly).
-- Functions the app calls: `visible_riders()`, `my_matches()`, `send_media()`, `open_media()` (returns data once), `my_media_status()`, `report_media()`. Helpers: `can_see()`, `is_match()`, `had_match()`.
-- **PENDING (not applied yet):** `supabase/pending/2026-10-26_presence_and_wav_voice.sql`. Adds `riders.seen_at`, `riders.active_game`, raises the media size limit to 1.5 M chars, allows `audio/wav` in `send_media`, returns `seen_at`/`active_game` from `my_matches()`. The live app already expects this: until it is applied, WAV voice messages are rejected and presence is not shown. **Apply this first** (then move the file into `supabase/migrations/` and update `schema.sql`).
+- Functions the app calls: `visible_riders()`, `my_matches()`, `send_media()`, `open_media()` (returns data once), `my_media_status()`, `report_media()`. Only the `authenticated` role may execute them (the app always signs in anonymously); they are revoked from `PUBLIC` and `anon`.
+- Helpers `private.can_see()`, `private.is_match()`, `private.had_match()` live in the **`private` schema**, which the API does not expose. They are security definer, so in `public` anyone could have asked "did X and Y match / block each other?". Keep new security definer helpers in `private`, and revoke every new function from `PUBLIC`.
+- Migrations live in `supabase/migrations/` (applied 2026-10-26: `presence_and_wav_voice`, `private_helper_functions`). `schema.sql` is the full current state for a fresh project. Test a migration first with a dry run (`execute_sql` ending in `raise exception`, so everything rolls back), then apply it with `apply_migration`.
 - Never put the `service_role` key or the database password into code, commits or chat.
 
 ## 6. Known issues and gaps

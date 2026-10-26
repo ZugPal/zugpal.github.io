@@ -1,4 +1,5 @@
--- Zugpal database setup. Paste everything into Supabase > SQL Editor > New query, then press Run once.
+-- Zugpal database setup (full current state). For a new project: paste everything into Supabase > SQL Editor > New query,
+-- then press Run once. Safe to re-run. Changes to the live project go through supabase/migrations/.
 
 create table if not exists public.riders (
   id uuid primary key references auth.users on delete cascade,
@@ -20,6 +21,10 @@ create table if not exists public.riders (
   expires_at timestamptz not null,
   updated_at timestamptz not null default now()
 );
+alter table public.riders add column if not exists accept_photos boolean not null default true;
+alter table public.riders add column if not exists seen_at timestamptz;
+alter table public.riders add column if not exists active_game text check (active_game is null or char_length(active_game) <= 20);
+
 create table if not exists public.waves (
   from_id uuid not null references auth.users on delete cascade,
   to_id uuid not null references auth.users on delete cascade,
@@ -69,6 +74,19 @@ create table if not exists public.ride_moods (
   matched boolean,
   created_at timestamptz not null default now()
 );
+-- View-once photos and play-once voice messages
+create table if not exists public.media_items (
+  id uuid primary key default gen_random_uuid(),
+  ride_key text not null,
+  from_id uuid not null references auth.users on delete cascade,
+  to_id uuid not null references auth.users on delete cascade,
+  kind text not null check (kind in ('photo','voice')),
+  data text,
+  created_at timestamptz not null default now(),
+  opened_at timestamptz,
+  reported boolean not null default false);
+alter table public.media_items drop constraint if exists media_items_data_check;
+alter table public.media_items add constraint media_items_data_check check (data is null or char_length(data) <= 1500000);
 
 alter table public.riders enable row level security;
 alter table public.waves enable row level security;
@@ -78,9 +96,17 @@ alter table public.messages enable row level security;
 alter table public.compliments enable row level security;
 alter table public.buddies enable row level security;
 alter table public.ride_moods enable row level security;
+alter table public.media_items enable row level security;
+-- No direct access to media_items: only through the functions below.
+
+-- Helpers run with full rights, so they live in a private schema the API does not expose
+-- (otherwise anyone could ask "did X and Y match?" or "did X block Y?").
+create schema if not exists private;
+revoke all on schema private from public, anon;
+grant usage on schema private to authenticated;
 
 -- Who may see whom: same train, both open, not expired, women-only respected, nobody blocked
-create or replace function public.can_see(a public.riders, b public.riders)
+create or replace function private.can_see(a public.riders, b public.riders)
 returns boolean language sql stable security definer set search_path = public as $$
   select a.id <> b.id and a.ride_key = b.ride_key and a.is_open and b.is_open
      and a.expires_at > now() and b.expires_at > now()
@@ -89,21 +115,26 @@ returns boolean language sql stable security definer set search_path = public as
                      where (k.blocker = a.id and k.blocked = b.id) or (k.blocker = b.id and k.blocked = a.id));
 $$;
 
-create or replace function public.is_match(x uuid, y uuid, rk text)
+create or replace function private.is_match(x uuid, y uuid, rk text)
 returns boolean language sql stable security definer set search_path = public as $$
   select exists (
     select 1 from public.riders a join public.riders b on b.id = y
-    where a.id = x and a.ride_key = rk and public.can_see(a, b)
+    where a.id = x and a.ride_key = rk and private.can_see(a, b)
       and exists (select 1 from public.waves w where w.from_id = x and w.to_id = y and w.ride_key = rk)
       and exists (select 1 from public.waves w where w.from_id = y and w.to_id = x and w.ride_key = rk));
 $$;
 
-create or replace function public.had_match(x uuid, y uuid)
+create or replace function private.had_match(x uuid, y uuid)
 returns boolean language sql stable security definer set search_path = public as $$
   select exists (select 1 from public.waves a join public.waves b
                  on b.from_id = y and b.to_id = x and b.ride_key = a.ride_key
                  where a.from_id = x and a.to_id = y);
 $$;
+
+revoke all on function private.can_see(public.riders, public.riders), private.is_match(uuid, uuid, text),
+  private.had_match(uuid, uuid) from public, anon;
+grant execute on function private.can_see(public.riders, public.riders), private.is_match(uuid, uuid, text),
+  private.had_match(uuid, uuid) to authenticated;
 
 -- Everyone only touches their own rows
 drop policy if exists riders_own on public.riders;
@@ -136,18 +167,18 @@ drop policy if exists messages_delete_own on public.messages;
 create policy messages_read on public.messages for select to authenticated
   using (from_id = auth.uid() or to_id = auth.uid());
 create policy messages_send on public.messages for insert to authenticated
-  with check (from_id = auth.uid() and public.is_match(auth.uid(), to_id, ride_key));
+  with check (from_id = auth.uid() and private.is_match(auth.uid(), to_id, ride_key));
 create policy messages_delete_own on public.messages for delete to authenticated using (from_id = auth.uid());
 
 drop policy if exists compliments_give on public.compliments;
 drop policy if exists compliments_own on public.compliments;
 create policy compliments_give on public.compliments for insert to authenticated
-  with check (from_id = auth.uid() and public.had_match(auth.uid(), to_id));
+  with check (from_id = auth.uid() and private.had_match(auth.uid(), to_id));
 create policy compliments_own on public.compliments for select to authenticated using (from_id = auth.uid());
 
 drop policy if exists buddies_own on public.buddies;
 create policy buddies_own on public.buddies for all to authenticated
-  using (from_id = auth.uid()) with check (from_id = auth.uid() and public.had_match(auth.uid(), to_id));
+  using (from_id = auth.uid()) with check (from_id = auth.uid() and private.had_match(auth.uid(), to_id));
 
 drop policy if exists ride_moods_insert on public.ride_moods;
 create policy ride_moods_insert on public.ride_moods for insert to authenticated with check (true);
@@ -166,51 +197,27 @@ language sql stable security definer set search_path = public as $$
             from (select c.badge, count(*) as n from public.compliments c where c.to_id = b.id group by c.badge) x),
          (exists (select 1 from public.buddies k where k.from_id = a.id and k.to_id = b.id)
           and exists (select 1 from public.buddies k where k.from_id = b.id and k.to_id = a.id))
-  from public.riders a join public.riders b on public.can_see(a, b)
+  from public.riders a join public.riders b on private.can_see(a, b)
   where a.id = auth.uid();
 $$;
 
--- My mutual matches (full photo; coach only if neither chose chat only)
+-- My mutual matches (full photo; coach only if neither chose chat only; presence for "Active now" / "in the game")
 drop function if exists public.my_matches();
 create function public.my_matches()
-returns table (id uuid, first_name text, age_range text, languages text[], moods text[], chat_only boolean, coach text, photo text)
+returns table (id uuid, first_name text, age_range text, languages text[], moods text[], chat_only boolean, coach text, photo text,
+               accept_photos boolean, seen_at timestamptz, active_game text)
 language sql stable security definer set search_path = public as $$
   select b.id, b.first_name, b.age_range, b.languages, b.moods, (a.chat_only or b.chat_only),
-         case when a.chat_only or b.chat_only then null else b.coach end, b.photo
-  from public.riders a join public.riders b on public.can_see(a, b)
-  where a.id = auth.uid() and public.is_match(a.id, b.id, a.ride_key);
+         case when a.chat_only or b.chat_only then null else b.coach end, b.photo, b.accept_photos, b.seen_at, b.active_game
+  from public.riders a join public.riders b on private.can_see(a, b)
+  where a.id = auth.uid() and private.is_match(a.id, b.id, a.ride_key);
 $$;
-
-revoke all on function public.visible_riders() from anon;
-revoke all on function public.my_matches() from anon;
-grant usage on schema public to authenticated;
-grant select, insert, update, delete on public.riders, public.waves, public.blocks, public.messages,
-  public.compliments, public.buddies to authenticated;
-grant insert on public.reports, public.ride_moods to authenticated;
-grant execute on function public.visible_riders(), public.my_matches(), public.can_see(public.riders, public.riders),
-  public.is_match(uuid, uuid, text), public.had_match(uuid, uuid) to authenticated;
-
--- Zugpal: view-once photos and play-once voice messages. Run once in SQL Editor.
-alter table public.riders add column if not exists accept_photos boolean not null default true;
-
-create table if not exists public.media_items (
-  id uuid primary key default gen_random_uuid(),
-  ride_key text not null,
-  from_id uuid not null references auth.users on delete cascade,
-  to_id uuid not null references auth.users on delete cascade,
-  kind text not null check (kind in ('photo','voice')),
-  data text check (data is null or char_length(data) <= 600000),
-  created_at timestamptz not null default now(),
-  opened_at timestamptz,
-  reported boolean not null default false);
-alter table public.media_items enable row level security;
--- No direct access to media_items: only through the functions below.
 
 create or replace function public.send_media(p_to uuid, p_ride text, p_kind text, p_data text)
 returns uuid language plpgsql security definer set search_path = public as $$
 declare v_id uuid; me uuid := auth.uid();
 begin
-  if me is null or not public.is_match(me, p_to, p_ride) then raise exception 'not a match'; end if;
+  if me is null or not private.is_match(me, p_to, p_ride) then raise exception 'not a match'; end if;
   if p_kind = 'photo' then
     if p_data !~ '^data:image/jpeg;base64,' then raise exception 'bad photo'; end if;
     if not coalesce((select r.accept_photos from riders r where r.id = p_to), false) then raise exception 'photos off'; end if;
@@ -218,7 +225,7 @@ begin
     or (select count(*) from messages m where m.from_id = p_to and m.to_id = me and m.ride_key = p_ride and left(m.body,1) <> chr(1)) < 2
     then raise exception 'photos locked'; end if;
   elsif p_kind = 'voice' then
-    if p_data !~ '^data:audio/(webm|mp4|ogg|aac|mpeg)' then raise exception 'bad audio'; end if;
+    if p_data !~ '^data:audio/(wav|webm|mp4|ogg|aac|mpeg|x-m4a)' then raise exception 'bad audio'; end if;
   else raise exception 'bad kind'; end if;
   if (select count(*) from media_items x where x.from_id = me and x.created_at > now() - interval '1 hour') >= 30 then raise exception 'too many'; end if;
   delete from media_items x where x.created_at < now() - interval '24 hours' and not x.reported;
@@ -257,17 +264,13 @@ begin
   end if;
 end $$;
 
-drop function if exists public.my_matches();
-create function public.my_matches()
-returns table (id uuid, first_name text, age_range text, languages text[], moods text[], chat_only boolean, coach text, photo text, accept_photos boolean)
-language sql stable security definer set search_path = public as $$
-  select b.id, b.first_name, b.age_range, b.languages, b.moods, (a.chat_only or b.chat_only),
-         case when a.chat_only or b.chat_only then null else b.coach end, b.photo, b.accept_photos
-  from public.riders a join public.riders b on public.can_see(a, b)
-  where a.id = auth.uid() and public.is_match(a.id, b.id, a.ride_key);
-$$;
-
-revoke all on function public.send_media(uuid, text, text, text), public.open_media(uuid),
-  public.my_media_status(text), public.report_media(uuid), public.my_matches() from anon;
-grant execute on function public.send_media(uuid, text, text, text), public.open_media(uuid),
-  public.my_media_status(text), public.report_media(uuid), public.my_matches() to authenticated;
+-- Grants. The app always signs in (anonymously), so it uses the "authenticated" role.
+-- Functions are revoked from PUBLIC too, because Postgres grants every new function to PUBLIC by default.
+grant usage on schema public to authenticated;
+grant select, insert, update, delete on public.riders, public.waves, public.blocks, public.messages,
+  public.compliments, public.buddies to authenticated;
+grant insert on public.reports, public.ride_moods to authenticated;
+revoke all on function public.visible_riders(), public.my_matches(), public.send_media(uuid, text, text, text),
+  public.open_media(uuid), public.my_media_status(text), public.report_media(uuid) from public, anon;
+grant execute on function public.visible_riders(), public.my_matches(), public.send_media(uuid, text, text, text),
+  public.open_media(uuid), public.my_media_status(text), public.report_media(uuid) to authenticated;
