@@ -8,6 +8,7 @@ import { ICON, MONEY_RE, esc, hasContact, loc, minsLeft, moodName, parseMsg, pho
 import { lettersScreen, wordCard, wordSheet, zugwortScreen } from "./words.js";
 import { cgCard, cgSheet, classicScreen } from "./classic.js";
 import { bookCard, bookScreen, creditsScreen, libraryScreen } from "./library.js";
+import { partyCard, quizScreen, slfScreen } from "./party.js";
 
 /* ---------------- Screens ---------------- */
 function header(){
@@ -298,7 +299,8 @@ const screens = {
       if(p.type==="spin"){ const meAsks = (x.mine && p.val==="me") || (!x.mine && p.val==="you"); return `<div class="gamecard"><span class="lbl">${t("spin")}</span><span class="big">${meAsks ? t("spinYou") : t("spinThem",{name})}</span></div>`; }
       if(p.type==="ttl") return `<div class="gamecard"><span class="lbl">${t("ttl")}</span><span>${x.mine ? t("ttlYou",{name}) : t("ttlThem",{name})}</span></div>`;
       if(p.type==="bye") return `<div class="msg${x.mine?" mine":""}">${t("bye")}</div>`;
-      if(p.type==="cm" || p.type==="dm" || p.type==="zg" || p.type==="lg" || p.type==="cgm") return "";
+      if(["cm","dm","zg","lg","cgm","qa","slsub","slstop","slrej"].includes(p.type)) return "";
+      if(p.type==="qz" || p.type==="sl") return partyCard(p, x, name);
       if(p.type==="cg") return cgCard(p, x, name);
       if(p.type==="book") return bookCard(p, x, name);
       if(p.type==="zw" || p.type==="lt") return wordCard(p, x, name);
@@ -373,6 +375,11 @@ const screens = {
         <button class="btn" data-act="cgCpu" data-arg="muehle">${t("play")}</button></div>
       <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px;color:#B3261E">♥︎</span><div class="grow"><div class="pname">${t("mauName")}</div><div class="small">${t("mauBody")}</div></div></div>
         <button class="btn" data-act="cgCpu" data-arg="mau">${t("play")}</button></div>
+      <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">⚄︎</span><div class="grow"><div class="pname">${t("bgName")}</div><div class="small">${t("bgBody")}</div></div></div>
+        <button class="btn" data-act="cgCpu" data-arg="bg">${t("play")}</button></div>
+      <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">?</span><div class="grow"><div class="pname">${t("qzName")}</div><div class="small">${t("qzBody")}</div></div></div>
+        <button class="btn" data-act="qzCpu">${t("play")}</button></div>
+      <div class="card"><div class="gamecard2"><span class="tile g" style="width:34px;height:34px;font-size:18px;flex-shrink:0">S</span><div class="grow"><div class="pname">${t("slName")}</div><div class="small">${t("slBody")}</div></div></div></div>
       <div class="card"><div class="gamecard2"><span class="train mini-train" aria-hidden="true"><span class="loco"></span><span class="coach"></span><span class="coach"></span></span><div class="grow"><div class="pname">${t("ltName")}</div><div class="small">${t("ltBody")}</div></div></div>
         <button class="btn" data-act="ltCpu">${t("play")}</button></div>
     </div>`;
@@ -381,6 +388,8 @@ const screens = {
   zugwort(){ return zugwortScreen() || screens.games(); },
   classic(){ return classicScreen() || screens.games(); },
   library(){ return libraryScreen(); },
+  quiz(){ return quizScreen() || screens.games(); },
+  slf(){ return slfScreen() || screens.chat(); },
   book(){ return bookScreen(); },
   credits(){ return creditsScreen(); },
   letters(){ return lettersScreen() || screens.games(); },

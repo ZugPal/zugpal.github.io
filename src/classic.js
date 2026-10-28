@@ -8,12 +8,12 @@ import { render } from "./screens.js";
 import { S } from "./state.js";
 import { CARD, ICON, esc, parseMsg, t } from "./util.js";
 
-const GAMES = ["four", "muehle", "mau"];
-const ENG = () => ({ four: ZFour, muehle: ZMuehle, mau: ZMau });
+const GAMES = ["four", "muehle", "mau", "bg"];
+const ENG = () => ({ four: ZFour, muehle: ZMuehle, mau: ZMau, bg: ZBackgammon });
 const GID = /^[A-Za-z0-9]{4,12}$/;
 const newGid = () => Math.random().toString(36).slice(2, 10);
 const NAME = g => t(g + "Name");
-const fresh = (game, seed) => game === "mau" ? ZMau.newGame(seed) : ENG()[game].newGame();
+const fresh = (game, seed) => game === "mau" || game === "bg" ? ENG()[game].newGame(seed) : ENG()[game].newGame();
 
 function onlineCg(gid){
   let inv = null, st = null;
@@ -77,6 +77,33 @@ function mauTable(st, me, myTurn, sel, name){
     <div class="row" style="justify-content:center">${extra}</div></div>`;
 }
 
+// Backgammon: tap a checker, then where it goes; the board shows each step of the turn
+const DIE = ["", "⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
+const bare = m => String(m).replace("*", "");
+function bgChoices(st, part){
+  const match = ZBackgammon.paths(st).filter(p => part.every((m, i) => bare(p.steps[i]) === bare(m)));
+  return { match, nexts: match.map(p => p.steps[part.length]).filter(Boolean) };
+}
+function bgBoard(st, me, myTurn, c){
+  const part = c.part || [], { match, nexts } = myTurn ? bgChoices(st, part) : { match: [], nexts: [] };
+  const view = part.length && match.length ? match[0].states[part.length - 1] : st;
+  const froms = new Set(nexts.map(m => m.split("/")[0]));
+  const targets = c.sel != null ? new Set(nexts.filter(m => m.split("/")[0] === String(c.sel)).map(m => bare(m.split("/")[1]))) : new Set();
+  const stack = (n, cls) => { const k = Math.min(n, 5); return Array.from({ length: k }, (_, i) => `<i class="ck ${cls}">${i === k - 1 && n > 5 ? n : ""}</i>`).join(""); };
+  const pt = i => { const v = view.b[i], n = Math.abs(v), cls = v === 0 ? "" : (v > 0 ? "w" : "b") === me ? "me" : "op";
+    return `<button class="bpt${i % 2 ? " odd" : ""}${froms.has(String(i)) ? " hot" : ""}${targets.has(String(i)) ? " tgt" : ""}${String(c.sel) === String(i) ? " sel" : ""}" data-act="cgBg" data-arg="${i}" aria-label="${t("point")} ${i}${n ? ", " + n + " " + (cls === "me" ? t("yours") : t("theirs")) : ""}">${stack(n, cls)}<span class="pn">${i}</span></button>`; };
+  const row = list => list.map(i => i === "bar" ? `<button class="bbar${froms.has("bar") ? " hot" : ""}${String(c.sel) === "bar" ? " sel" : ""}" data-act="cgBg" data-arg="bar" aria-label="${t("bgBar")}">${stack(view.bar[me], "me")}${stack(view.bar[me === "w" ? "b" : "w"], "op")}</button>` : pt(i)).join("");
+  const top = [13,14,15,16,17,18,"bar",19,20,21,22,23,24], bottom = [12,11,10,9,8,7,"bar",6,5,4,3,2,1];
+  const canPass = myTurn && !nexts.length && !part.length && ZBackgammon.moves(st)[0] === "pass";
+  return `<div class="bgboard" dir="ltr"><div class="brow up">${row(top)}</div><div class="brow">${row(bottom).replace(/bbar/, "bbar low")}</div></div>
+    <div class="row" style="justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <span class="dice" aria-label="${t("bgDice")} ${st.dice.join(" ")}">${st.dice.map(d => DIE[d]).join(" ")}</span>
+      <button class="chip${targets.has("off") ? " tgt" : ""}" data-act="cgBg" data-arg="off"${targets.has("off") ? "" : " disabled"}>${t("bgOff")} · ${view.off[me]}/15</button>
+      ${part.length ? `<button class="btn ghost small" data-act="cgBgUndo">${t("bgUndo")}</button>` : ""}
+      ${canPass ? `<button class="btn small" data-act="cgMove" data-arg="pass">${t("bgPass")}</button>` : ""}</div>
+    <div class="small">${t("bgPips",{a:ZBackgammon.pips(view, me), b:ZBackgammon.pips(view, me === "w" ? "b" : "w")})}</div>`;
+}
+
 /* ---------------- Screen ---------------- */
 function classicScreen(){
   const c = S.cg, cs = cgState(); if(!c || !cs) return null;
@@ -86,7 +113,7 @@ function classicScreen(){
   if(s.over) line = !s.winner ? t("drawT") : s.winner === me ? t("cgYouWin") : c.mode==="cpu" ? t("cgCpuWins") : t("cgTheyWin",{name:esc(name)});
   else if(!myTurn) line = c.mode==="cpu" ? t("thinking") : t("peerMove",{name:esc(name)});
   else line = game === "muehle" && c.sel && c.sel.base ? t("cgCapture") : t("yourMove");
-  const board = game === "four" ? fourBoard(st, me, myTurn) : game === "muehle" ? muehleBoard(st, me, myTurn, c.sel) : mauTable(st, me, myTurn, c.sel, name);
+  const board = game === "four" ? fourBoard(st, me, myTurn) : game === "muehle" ? muehleBoard(st, me, myTurn, c.sel) : game === "bg" ? bgBoard(st, me, myTurn, c) : mauTable(st, me, myTurn, c.sel, name);
   const back = c.mode==="online" ? "chat" : "games";
   return `<div class="screen">
     <div class="row"><button class="iconbtn flip" data-act="chessBack" data-arg="${back}" aria-label="${t("back")}">${ICON.back}</button>
@@ -105,6 +132,8 @@ function cgSheet(){
   if(!S.cgSheet) return "";
   return `<div class="sheet" role="dialog" aria-modal="true"><div class="panel"><h2>${t("moreGames")}</h2>
     ${GAMES.map(g => `<button class="btn ghost" data-act="cgInvite" data-arg="${g}">${NAME(g)}</button>`).join("")}
+    <button class="btn ghost" data-act="qzInvite">${t("qzName")}</button>
+    <button class="btn ghost" data-act="slInvite">${t("slName")}</button>
     <div class="row" style="justify-content:flex-end"><button class="link" data-act="cgSheetClose">${t("cancel")}</button></div></div></div>`;
 }
 function cgCard(p, x, name){
@@ -130,7 +159,7 @@ function play(move){
   const E = ENG()[cs.game];
   if(cs.st.turn !== cs.me || c.thinking) return;
   const next = E.apply(cs.st, move); if(!next) return;
-  c.sel = null;
+  c.sel = null; c.part = [];
   if(c.mode === "cpu"){ c.st = next; render(); cpuPlay(); }
   else { sendBody(CARD + "cgm:" + c.gid + ":" + move); render(); }
 }
@@ -146,6 +175,21 @@ const classicActions = {
     const cs = cgState(); if(!cs) return;
     if(card[1] === "J"){ S.cg.sel = {jack:card}; render(); } else play("p" + card);
   },
+  cgBg(arg){
+    const c = S.cg, cs = cgState(); if(!c || !cs || cs.game !== "bg" || cs.st.turn !== cs.me || c.thinking) return;
+    const part = c.part || [], { match, nexts } = bgChoices(cs.st, part); arg = String(arg);
+    if(c.sel != null){
+      const mv = nexts.find(m => m.split("/")[0] === String(c.sel) && bare(m.split("/")[1]) === arg);
+      if(mv){
+        c.part = part.concat([mv]); c.sel = null;
+        const full = match.find(p => p.steps.length === c.part.length && p.steps.every((m, i) => bare(m) === bare(c.part[i])));
+        if(full){ c.part = []; play(full.move); } else render();
+        return;
+      }
+    }
+    c.sel = nexts.some(m => m.split("/")[0] === arg) ? arg : null; render();
+  },
+  cgBgUndo(){ if(S.cg){ S.cg.part = []; S.cg.sel = null; render(); } },
   cgPoint(i){
     const c = S.cg, cs = cgState(); if(!c || !cs || cs.game !== "muehle" || cs.st.turn !== cs.me) return;
     const ms = ZMuehle.moves(cs.st), sel = c.sel; i = Number(i);

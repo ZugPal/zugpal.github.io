@@ -9,6 +9,7 @@ import { CARD, MAX_WAVES, berlinDate, hasContact, norm, t, toast } from "./util.
 import { wordActions } from "./words.js";
 import { classicActions } from "./classic.js";
 import { libraryActions } from "./library.js";
+import { partyActions } from "./party.js";
 
 /* ---------------- Actions ---------------- */
 function selectInvite(){ const el = document.getElementById("inviteText"); if(!el) return; const r = document.createRange(); r.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
@@ -303,6 +304,6 @@ async function finishRide(){
   save(); S.screen = "checkin"; toast(before && after && after > before ? t("moodUp") : t("endedToast"));
 }
 
-Object.assign(actions, wordActions, classicActions, libraryActions);
+Object.assign(actions, wordActions, classicActions, libraryActions, partyActions);
 
 export { actions, inviteLink, joinTest, openProfile, safe, startFeedback };

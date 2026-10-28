@@ -88,6 +88,19 @@ for (const lang of ["de", "en", "ar"]) {
     await page.click('[data-act="chessBack"][data-arg="chat"] >> nth=0');
     await expect(page.locator('.gamecard [data-act="cgOpen"]')).toBeVisible();
 
+    // Quiz and Stadt-Land-Fluss with the match
+    await page.click('.games [data-act="cgSheet"]');
+    await page.click('[data-act="qzInvite"]');
+    await expect(page.locator('.quizq [data-act="qzAnswer"]')).toHaveCount(4);
+    await page.click('[data-act="chessBack"][data-arg="chat"] >> nth=0');
+    await page.click('.games [data-act="cgSheet"]');
+    await page.click('[data-act="slInvite"]');
+    await expect(page.locator(".slletter")).toBeVisible();
+    for (let k = 0; k < 6; k++) await page.fill("#sl" + k, "Test");
+    await page.click('[data-act="slSubmit"]');
+    await expect(page.locator('[data-act="slSubmit"]')).toHaveCount(0);
+    await page.click('[data-act="chessBack"][data-arg="chat"] >> nth=0');
+
     // Online chess with the match: invite card + board
     await page.click('[data-act="chessInvite"]');
     await expect(page.locator(".board .sq")).toHaveCount(64);
@@ -150,6 +163,19 @@ for (const lang of ["de", "en", "ar"]) {
     if (await fitting.count()) { await fitting.first().click(); const suit = page.locator('.chip.suit'); if (await suit.count()) await suit.first().click(); }
     else await page.click('[data-act="cgMove"][data-arg="d"]');
     await shot("14-maumau");
+
+    // Backgammon vs computer and the quiz played to the end
+    await page.click('[data-act="chessBack"][data-arg="games"]');
+    await page.click('[data-act="cgCpu"][data-arg="bg"]');
+    await expect(page.locator(".bgboard .bpt")).toHaveCount(24);
+    await page.locator(".bpt.hot").first().click();
+    await expect(page.locator(".bpt.tgt, .chip.tgt").first()).toBeVisible();
+    await shot("14b-backgammon");
+    await page.click('[data-act="chessBack"][data-arg="games"]');
+    await page.click('[data-act="qzCpu"]');
+    for (let q = 0; q < 6; q++) { await page.locator('[data-act="qzAnswer"]').first().click(); await page.click('[data-act="qzNext"]'); }
+    await expect(page.locator(".pill")).toContainText(":");
+    await shot("14c-quiz");
 
     // Library: 15-minute shelf, download a book, read it (epub.js), turn a page, Arabic book opens right-to-left
     await page.goto("/?demo");
