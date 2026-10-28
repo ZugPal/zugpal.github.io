@@ -45,20 +45,37 @@ Features:
 
 ## 4. Architecture
 
-Everything is currently **one file: `index.html`** (~100 KB): HTML + CSS + vanilla JS, no build step, no framework.
+Plain **ES modules, no build step, no framework**: a push to `main` is live as-is on GitHub Pages. `index.html` is a small shell that loads `src/styles.css`, the three engines from `engines/` (classic scripts, globals `ZChess`, `ZDama`, `ZSol`) and `src/main.js` (type=module).
+
+| File | What is in it |
+|---|---|
+| `src/config.js` | `CONFIG` (Supabase URL + public anon key, Talk Train label, contact email) |
+| `src/i18n.js` | texts `T` (de/en/ar) |
+| `src/data.js` | moods, topics, languages, badges, icebreakers, words |
+| `src/state.js` | state `S`, `load()`/`save()`, `backend` + `setBackend()` |
+| `src/util.js` | `t()`, `esc()`, photos, icons, `parseMsg()`, `toast()` |
+| `src/backend-demo.js`, `src/backend-live.js` | the two backends |
+| `src/screens.js` | `screens.<name>()`, overlays (report sheet, notices), `render()` |
+| `src/actions.js` | `actions.<name>()` for `data-act` buttons, feedback/end of ride |
+| `src/games.js` | chess/dama/solitaire boards and online-game helpers |
+| `src/chat.js` | sending text/photos/voice, WAV encoder, loading messages |
+| `src/polling.js` | `refresh()`, start/stop polling |
+| `src/main.js` | event wiring and start-up |
+
+Modules only reassign their own top-level variables (ES imports are read-only), e.g. `setBackend()` instead of `backend = …`. Run the app locally with `npm start` (http://localhost:8080, `?demo` for simulated riders).
 
 - `CONFIG` at the top of the script: `supabaseUrl`, `supabaseAnonKey` (the anon key is public by design), Talk Train label per language. Empty URL → demo mode.
 - Texts: object `T` with `en`, `de`, `ar`. Helper `t(key, vars)`.
 - State: single object `S`. Rendering: `render()` rebuilds `#app` with template strings from `screens.<name>()`. Event delegation via `data-act` / `data-arg` attributes → `actions.<name>()`. Inputs use `data-bind`.
-- Backends with the same interface: `DemoBackend()` (simulated riders Lena, Karim, Aylin, Mira, Jonas) and `LiveBackend()` (Supabase JS v2.45.4 from jsDelivr, anonymous auth).
+- Backends with the same interface: `DemoBackend()` (simulated riders Lena, Karim, Aylin, Mira, Jonas) and `LiveBackend()` (Supabase JS v2.45.4 from `vendor/`, anonymous auth).
 - Polling every 6 s (`refresh()`), no Realtime yet. Polling re-renders the screen, so anything that must survive a re-render (file inputs) lives outside `#app`.
 - Special chat messages start with `\u0001` (`CARD`) and are parsed by `parseMsg()` as `type:val:extra`:
   `dice:<n>`, `spin:me|you`, `ttl`, `bye`, `media:<uuid>:photo|voice`, `chess:<gid>` (invite, sender = white), `cm:<gid>:<uci>`, `dama:<gid>`, `dm:<gid>:<path e.g. 10-26-42>`. Moves are replayed in order and validated; out-of-turn moves are ignored.
-- Game engines embedded in `index.html`; standalone copies with tests in `engines/`:
+- Game engines live only in `engines/` (one copy, used by the app and the tests):
   - `ZChess`: own legal move generator (castling, en passant, promotion, check, mate, stalemate, 50-move, insufficient material) + alpha-beta. Verified with perft (start 4 plies = 197281, Kiwipete, positions 3–5).
   - `ZDama`: Turkish/Arabic rules: men move 1 forward or sideways, capture forward/sideways, captured pieces removed immediately, **mandatory maximum capture**, flying kings, no 180° turn during a capture, promotion at end of move.
   - `ZSol`: Klondike rules.
-- Run tests: `node tests/perft.js engines/chess-engine.js`, `node tests/damatest.js engines/dama-engine.js`, `node tests/soltest.js engines/solitaire-engine.js`. If you change an engine inside `index.html`, change the copy in `engines/` too and re-run the tests.
+- Run tests: `npm test` = engine tests (`npm run test:engines`) + Playwright UI smoke test (`npm run test:ui`: profile → check-in → match → chat → report sheet → online chess → chess vs computer → solitaire, in DE/EN/AR at 390×844, demo mode; screenshots in `test-results/screens/`).
 
 ## 5. Backend: Supabase
 
@@ -77,7 +94,6 @@ Everything is currently **one file: `index.html`** (~100 KB): HTML + CSS + vanil
 - Gender is self-declared; no verification yet.
 - No push notifications, no Bluetooth, no offline caching (no service worker yet).
 - No email login yet: identity = anonymous session in one browser. Badges and buddies are lost when the browser data is cleared.
-- Single large file is getting hard to maintain.
 - Media is stored as base64 text in Postgres (fine for a test, not for scale; move to Supabase Storage later).
 
 ## 7. Roadmap
@@ -95,7 +111,7 @@ Do these roughly in this order and confirm with Husam before big changes.
 
 ## 8. How to work on this project
 
-- Before pushing: run the engine tests, check that `index.html` parses, and test the main flow in a phone-sized viewport (390×844), in German, English and Arabic.
+- Before pushing: run `npm test` (engines + UI smoke test in DE/EN/AR at 390×844) and look at the screenshots.
 - Keep the live keys in `CONFIG` (they are public by design); demo mode must keep working when `supabaseUrl` is empty.
 - Deploy = commit + push to `main`. Use clear commit messages. Tell Husam in one or two plain sentences what changed and what he should try on his phone.
 - Database changes go through migrations (connector or SQL files in `supabase/`), tested before applying, safe to re-run.
