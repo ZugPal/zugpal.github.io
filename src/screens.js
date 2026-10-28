@@ -7,6 +7,7 @@ import { S, backend } from "./state.js";
 import { ICON, MONEY_RE, esc, hasContact, loc, minsLeft, moodName, parseMsg, photo, t, todaysWord } from "./util.js";
 import { lettersScreen, wordCard, wordSheet, zugwortScreen } from "./words.js";
 import { cgCard, cgSheet, classicScreen } from "./classic.js";
+import { bookCard, bookScreen, creditsScreen, libraryScreen } from "./library.js";
 
 /* ---------------- Screens ---------------- */
 function header(){
@@ -176,6 +177,7 @@ const screens = {
         <div class="small">${t("talkTrainBody")}</div>
         <button class="btn mint" data-act="checkin" data-arg="talk">${t("joinTalk")}</button></div>
       <button class="btn ghost" data-act="openGames">${t("games")}</button>
+      <button class="btn ghost" data-act="openLibrary">${ICON.book}${t("libTitle")}</button>
       ${S.installPrompt ? `<div class="card"><div class="pname">${t("installTitle")}</div><div class="small">${t("installBody")}</div><button class="btn ghost" data-act="install">${t("installBtn")}</button></div>` : ""}
       <div class="card"><div class="pname">${t("testTitle")}</div><div class="small">${t("testBody")}</div>
         <button class="btn ghost" data-act="startTest">${t("testBtn")}</button></div>
@@ -235,7 +237,7 @@ const screens = {
       ${S.open ? (others.map(personCard).join("") || (S.matches.length ? "" : `<div class="empty"><div class="muted">${t("emptyBody")}</div></div>`)) : ""}
       <div class="word"><span class="lbl" style="color:var(--muted)">${t("wordTitle")}</span><span class="w" lang="de">${esc(w)}</span>
         <span class="muted">${esc(S.lang==="de"?de:S.lang==="ar"?ar:en)}</span></div>
-      <div class="end"><button class="btn ghost" data-act="openGames">${t("games")}</button><button class="btn ghost" data-act="go" data-arg="mood">${t("moodTitle")}</button><button class="link danger" data-act="endRide">${t("endRide")}</button></div>
+      <div class="end"><button class="btn ghost" data-act="openGames">${t("games")}</button><button class="btn ghost" data-act="openLibrary">${ICON.book}${t("libTitle")}</button><button class="btn ghost" data-act="go" data-arg="mood">${t("moodTitle")}</button><button class="link danger" data-act="endRide">${t("endRide")}</button></div>
     </div>`;
   },
 
@@ -279,6 +281,7 @@ const screens = {
       if(p.type==="bye") return `<div class="msg${x.mine?" mine":""}">${t("bye")}</div>`;
       if(p.type==="cm" || p.type==="dm" || p.type==="zg" || p.type==="lg" || p.type==="cgm") return "";
       if(p.type==="cg") return cgCard(p, x, name);
+      if(p.type==="book") return bookCard(p, x, name);
       if(p.type==="zw" || p.type==="lt") return wordCard(p, x, name);
       if(p.type==="dama"){
         const gid = String(p.val||""); if(!/^[A-Za-z0-9]{4,12}$/.test(gid)) return "";
@@ -309,6 +312,7 @@ const screens = {
       ${safetyBar(m.id)}
       ${endingBanner()}
       <div class="games" role="toolbar">
+        <button class="chip" data-act="libPick">${ICON.book}${t("libStory")}</button>
         <button class="chip" data-act="sendWord">${ICON.bubble}${t("wordTitle")}</button>
         <button class="chip" data-act="game" data-arg="dice">${ICON.dice}${t("dice")}</button>
         <button class="chip" data-act="game" data-arg="spin">${ICON.spin}${t("spin")}</button>
@@ -357,6 +361,9 @@ const screens = {
 
   zugwort(){ return zugwortScreen() || screens.games(); },
   classic(){ return classicScreen() || screens.games(); },
+  library(){ return libraryScreen(); },
+  book(){ return bookScreen(); },
+  credits(){ return creditsScreen(); },
   letters(){ return lettersScreen() || screens.games(); },
 
   chess(){

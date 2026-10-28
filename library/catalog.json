@@ -1,0 +1,1071 @@
+{
+ "updated": "2026-10-28",
+ "books": [
+  {
+   "id": "pg24043",
+   "file": "library/books/pg24043.epub",
+   "title": "Die Weise von Liebe und Tod des Cornets Christoph Rilke",
+   "author": "Rainer Maria Rilke",
+   "dates": "1875–1926",
+   "others": [],
+   "lang": "de",
+   "words": 2587,
+   "minutes": 15,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/24043",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg17161",
+   "file": "library/books/pg17161.epub",
+   "title": "Max und Moritz: Eine Bubengeschichte in sieben Streichen",
+   "author": "Wilhelm Busch",
+   "dates": "1832–1908",
+   "others": [],
+   "lang": "de",
+   "words": 2555,
+   "minutes": 15,
+   "easy": true,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/17161",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License.",
+   "audio": {
+    "librivoxId": "539",
+    "title": "Max und Moritz (version 2)",
+    "page": "https://librivox.org/max-und-moritz-by-wilhelm-busch-version-2/",
+    "minutes": 17,
+    "readers": [
+     "Roman Buettner"
+    ],
+    "parts": [
+     {
+      "title": "Max und Moritz ",
+      "url": "https://archive.org/download/max_und_moritz2_librivox/maxundmoritz_german_busch_64kb.mp3",
+      "minutes": 17
+     }
+    ],
+    "licence": "LibriVox recording, public domain (librivox.org). Streamed from archive.org."
+   }
+  },
+  {
+   "id": "pg21593",
+   "file": "library/books/pg21593.epub",
+   "title": "Das Urteil: Eine Geschichte",
+   "author": "Franz Kafka",
+   "dates": "1883–1924",
+   "others": [],
+   "lang": "de",
+   "words": 4088,
+   "minutes": 24,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/21593",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg8916",
+   "file": "library/books/pg8916.epub",
+   "title": "Bulemanns Haus",
+   "author": "Theodor Storm",
+   "dates": "1817–1888",
+   "others": [],
+   "lang": "de",
+   "words": 6868,
+   "minutes": 40,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/8916",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg9158",
+   "file": "library/books/pg9158.epub",
+   "title": "Fabeln und Erzählungen",
+   "author": "Gotthold Ephraim Lessing",
+   "dates": "1729–1781",
+   "others": [],
+   "lang": "de",
+   "words": 6827,
+   "minutes": 40,
+   "easy": true,
+   "collection": true,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/9158",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License.",
+   "audio": {
+    "librivoxId": "3839",
+    "title": "Fabeln",
+    "page": "https://librivox.org/fabeln-by-gotthold-ephraim-lessing/",
+    "minutes": 167,
+    "readers": [
+     "redaer"
+    ],
+    "parts": [
+     {
+      "title": "Fabeln und Erzaehlungen 1 - 12",
+      "url": "https://archive.org/download/fabeln_1001_librivox/fabeln_1_lessing_64kb.mp3",
+      "minutes": 26
+     },
+     {
+      "title": "Fabeln und Erzaehlungen 13 - 15",
+      "url": "https://archive.org/download/fabeln_1001_librivox/fabeln_2_lessing_64kb.mp3",
+      "minutes": 30
+     },
+     {
+      "title": "Fabeln. Drei Buecher. Erstes Buch",
+      "url": "https://archive.org/download/fabeln_1001_librivox/fabeln_3_lessing_64kb.mp3",
+      "minutes": 35
+     },
+     {
+      "title": "Fabeln. Drei Buecher. Zweites Buch",
+      "url": "https://archive.org/download/fabeln_1001_librivox/fabeln_4_lessing_64kb.mp3",
+      "minutes": 39
+     },
+     {
+      "title": "Fabeln. Drei Buecher. Drittes Buch",
+      "url": "https://archive.org/download/fabeln_1001_librivox/fabeln_5_lessing_64kb.mp3",
+      "minutes": 36
+     }
+    ],
+    "licence": "LibriVox recording, public domain (librivox.org). Streamed from archive.org."
+   }
+  },
+  {
+   "id": "pg2320",
+   "file": "library/books/pg2320.epub",
+   "title": "Novelle",
+   "author": "Johann Wolfgang von Goethe",
+   "dates": "1749–1832",
+   "others": [],
+   "lang": "de",
+   "words": 7110,
+   "minutes": 42,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/2320",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License.",
+   "audio": {
+    "librivoxId": "2975",
+    "title": "Novelle",
+    "page": "https://librivox.org/novelle-by-johann-wolfgang-von-goethe/",
+    "minutes": 55,
+    "readers": [
+     "Gesine"
+    ],
+    "parts": [
+     {
+      "title": "Kapitel 1",
+      "url": "https://archive.org/download/novelle_ge_0904_librivox/novelle_1_goethe_64kb.mp3",
+      "minutes": 8
+     },
+     {
+      "title": "Kapitel 2",
+      "url": "https://archive.org/download/novelle_ge_0904_librivox/novelle_2_goethe_64kb.mp3",
+      "minutes": 8
+     },
+     {
+      "title": "Kapitel 3",
+      "url": "https://archive.org/download/novelle_ge_0904_librivox/novelle_3_goethe_64kb.mp3",
+      "minutes": 8
+     },
+     {
+      "title": "Kapitel 4",
+      "url": "https://archive.org/download/novelle_ge_0904_librivox/novelle_4_goethe_64kb.mp3",
+      "minutes": 8
+     },
+     {
+      "title": "Kapitel 5",
+      "url": "https://archive.org/download/novelle_ge_0904_librivox/novelle_5_goethe_64kb.mp3",
+      "minutes": 8
+     },
+     {
+      "title": "Kapitel 6",
+      "url": "https://archive.org/download/novelle_ge_0904_librivox/novelle_6_goethe_64kb.mp3",
+      "minutes": 8
+     },
+     {
+      "title": "Kapitel 7",
+      "url": "https://archive.org/download/novelle_ge_0904_librivox/novelle_7_goethe_64kb.mp3",
+      "minutes": 6
+     }
+    ],
+    "licence": "LibriVox recording, public domain (librivox.org). Streamed from archive.org."
+   }
+  },
+  {
+   "id": "ar-kalila",
+   "file": "library/books/ar-kalila.epub",
+   "title": "كليلة ودمنة (مختارات)",
+   "author": "ابن المقفع",
+   "dates": "ت. نحو 759",
+   "others": [],
+   "lang": "ar",
+   "words": 7462,
+   "minutes": 50,
+   "easy": false,
+   "collection": true,
+   "source": "ويكي مصدر / Wikisource",
+   "sourceUrl": "https://ar.wikisource.org/wiki/كليلة_ودمنة",
+   "licence": "Public domain. Text from Arabic Wikisource, converted to EPUB by Zugpal without changes (credits page inside)."
+  },
+  {
+   "id": "pg8923",
+   "file": "library/books/pg8923.epub",
+   "title": "Die Regentrude",
+   "author": "Theodor Storm",
+   "dates": "1817–1888",
+   "others": [],
+   "lang": "de",
+   "words": 8951,
+   "minutes": 53,
+   "easy": true,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/8923",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg6651",
+   "file": "library/books/pg6651.epub",
+   "title": "Immensee",
+   "author": "Theodor Storm",
+   "dates": "1817–1888",
+   "others": [],
+   "lang": "de",
+   "words": 9750,
+   "minutes": 57,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/6651",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "ar-manfaluti",
+   "file": "library/books/ar-manfaluti.epub",
+   "title": "النظرات (مختارات)",
+   "author": "مصطفى لطفي المنفلوطي",
+   "dates": "1876–1924",
+   "others": [],
+   "lang": "ar",
+   "words": 8889,
+   "minutes": 59,
+   "easy": false,
+   "collection": true,
+   "source": "ويكي مصدر / Wikisource",
+   "sourceUrl": "https://ar.wikisource.org/wiki/النظرات",
+   "licence": "Public domain. Text from Arabic Wikisource, converted to EPUB by Zugpal without changes (credits page inside)."
+  },
+  {
+   "id": "pg902",
+   "file": "library/books/pg902.epub",
+   "title": "The Happy Prince, and Other Tales",
+   "author": "Oscar Wilde",
+   "dates": "1854–1900",
+   "others": [],
+   "lang": "en",
+   "words": 16327,
+   "minutes": 74,
+   "easy": false,
+   "collection": true,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/902",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License.",
+   "audio": {
+    "librivoxId": "421",
+    "title": "Happy Prince and Other Tales",
+    "page": "https://librivox.org/the-happy-prince-and-other-tales-by-oscar-wilde/",
+    "minutes": 102,
+    "readers": [
+     "Joy Chan"
+    ],
+    "parts": [
+     {
+      "title": "The Happy Prince",
+      "url": "https://archive.org/download/hpot_librivox/hpot_01_happy_prince_64kb.mp3",
+      "minutes": 22
+     },
+     {
+      "title": "The Nightingale and the Rose",
+      "url": "https://archive.org/download/hpot_librivox/hpot_02_nightingale_rose_64kb.mp3",
+      "minutes": 14
+     },
+     {
+      "title": "The Selfish Giant",
+      "url": "https://archive.org/download/hpot_librivox/hpot_03_selfish_giant_64kb.mp3",
+      "minutes": 10
+     },
+     {
+      "title": "The Devoted Friend",
+      "url": "https://archive.org/download/hpot_librivox/hpot_04_devoted_friend_64kb.mp3",
+      "minutes": 26
+     },
+     {
+      "title": "The Remarkable Rocket",
+      "url": "https://archive.org/download/hpot_librivox/hpot_05_remarkable_rocket_64kb.mp3",
+      "minutes": 29
+     }
+    ],
+    "licence": "LibriVox recording, public domain (librivox.org). Streamed from archive.org."
+   }
+  },
+  {
+   "id": "pg21989",
+   "file": "library/books/pg21989.epub",
+   "title": "Ein Landarzt: Kleine Erzählungen",
+   "author": "Franz Kafka",
+   "dates": "1883–1924",
+   "others": [],
+   "lang": "de",
+   "words": 13216,
+   "minutes": 78,
+   "easy": false,
+   "collection": true,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/21989",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License.",
+   "audio": {
+    "librivoxId": "1599",
+    "title": "Landarzt. Kleine Erzählungen",
+    "page": "https://librivox.org/ein-landarzt-by-franz-kafka/",
+    "minutes": 113,
+    "readers": [
+     "Gesine",
+     "Ronald Kornfeil",
+     "Frank",
+     "noonday",
+     "Benjamin Liersch",
+     "Sonja",
+     "Igor Teaforay",
+     "Dirk Weber"
+    ],
+    "parts": [
+     {
+      "title": "Der neue Advokat",
+      "url": "https://archive.org/download/landarzt_0807_librivox/landarzt_01_kafka_64kb.mp3",
+      "minutes": 2
+     },
+     {
+      "title": "Ein Landarzt",
+      "url": "https://archive.org/download/landarzt_0807_librivox/landarzt_02_kafka_64kb.mp3",
+      "minutes": 18
+     },
+     {
+      "title": "Auf der Galerie",
+      "url": "https://archive.org/download/landarzt_0807_librivox/landarzt_03_kafka_64kb.mp3",
+      "minutes": 3
+     },
+     {
+      "title": "Ein altes Blatt",
+      "url": "https://archive.org/download/landarzt_0807_librivox/landarzt_04_kafka_64kb.mp3",
+      "minutes": 6
+     },
+     {
+      "title": "Vor dem Gesetz",
+      "url": "https://archive.org/download/landarzt_0807_librivox/landarzt_05_kafka_64kb.mp3",
+      "minutes": 5
+     },
+     {
+      "title": "Schakale und Araber",
+      "url": "https://archive.org/download/landarzt_0807_librivox/landarzt_06_kafka_64kb.mp3",
+      "minutes": 10
+     },
+     {
+      "title": "Ein Besuch im Bergwerk",
+      "url": "https://archive.org/download/landarzt_0807_librivox/landarzt_07_kafka_64kb.mp3",
+      "minutes": 6
+     },
+     {
+      "title": "Das naechste Dorf",
+      "url": "https://archive.org/download/landarzt_0807_librivox/landarzt_08_kafka_64kb.mp3",
+      "minutes": 1
+     },
+     {
+      "title": "Eine kaiserliche Botschaft",
+      "url": "https://archive.org/download/landarzt_0807_librivox/landarzt_09_kafka_64kb.mp3",
+      "minutes": 3
+     },
+     {
+      "title": "Die Sorge des Hausvaters ",
+      "url": "https://archive.org/download/landarzt_0807_librivox/landarzt_10_kafka_64kb.mp3",
+      "minutes": 4
+     },
+     {
+      "title": "Elf Soehne",
+      "url": "https://archive.org/download/landarzt_0807_librivox/landarzt_11_kafka_64kb.mp3",
+      "minutes": 15
+     },
+     {
+      "title": "Ein Brudermord",
+      "url": "https://archive.org/download/landarzt_0807_librivox/landarzt_12_kafka_64kb.mp3",
+      "minutes": 6
+     },
+     {
+      "title": "Ein Traum",
+      "url": "https://archive.org/download/landarzt_0807_librivox/landarzt_13_kafka_64kb.mp3",
+      "minutes": 6
+     },
+     {
+      "title": "Ein Bericht für eine Akademie",
+      "url": "https://archive.org/download/landarzt_0807_librivox/landarzt_14_kafka_64kb.mp3",
+      "minutes": 29
+     }
+    ],
+    "licence": "LibriVox recording, public domain (librivox.org). Streamed from archive.org."
+   }
+  },
+  {
+   "id": "pg13810",
+   "file": "library/books/pg13810.epub",
+   "title": "Tristan",
+   "author": "Thomas Mann",
+   "dates": "1875–1955",
+   "others": [],
+   "lang": "de",
+   "words": 13962,
+   "minutes": 82,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/13810",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg29376",
+   "file": "library/books/pg29376.epub",
+   "title": "Bahnwärter Thiel",
+   "author": "Gerhart Hauptmann",
+   "dates": "1862–1946",
+   "others": [],
+   "lang": "de",
+   "words": 15931,
+   "minutes": 94,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/29376",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License.",
+   "audio": {
+    "librivoxId": "11094",
+    "title": "Bahnwärter Thiel",
+    "page": "https://librivox.org/bahnwaerter-thiel-by-gerhart-hauptmann/",
+    "minutes": 82,
+    "readers": [
+     "Eva K."
+    ],
+    "parts": [
+     {
+      "title": "Kapitel 1",
+      "url": "https://archive.org/download/bahnwarter_thiel_1708_librivox/bahnwaerterthiel_01_hauptmann_64kb.mp3",
+      "minutes": 14
+     },
+     {
+      "title": "Kapitel 2",
+      "url": "https://archive.org/download/bahnwarter_thiel_1708_librivox/bahnwaerterthiel_02_hauptmann_64kb.mp3",
+      "minutes": 15
+     },
+     {
+      "title": "Kapitel 3",
+      "url": "https://archive.org/download/bahnwarter_thiel_1708_librivox/bahnwaerterthiel_03_hauptmann_64kb.mp3",
+      "minutes": 52
+     }
+    ],
+    "licence": "LibriVox recording, public domain (librivox.org). Streamed from archive.org."
+   }
+  },
+  {
+   "id": "pg8919",
+   "file": "library/books/pg8919.epub",
+   "title": "Pole Poppenspäler: Novelle (1874)",
+   "author": "Theodor Storm",
+   "dates": "1817–1888",
+   "others": [],
+   "lang": "de",
+   "words": 17296,
+   "minutes": 102,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/8919",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "ar-gibran-wings",
+   "file": "library/books/ar-gibran-wings.epub",
+   "title": "الأجنحة المتكسرة",
+   "author": "جبران خليل جبران",
+   "dates": "1883–1931",
+   "others": [],
+   "lang": "ar",
+   "words": 16006,
+   "minutes": 107,
+   "easy": false,
+   "collection": false,
+   "source": "ويكي مصدر / Wikisource",
+   "sourceUrl": "https://ar.wikisource.org/wiki/الأجنحة_المتكسرة",
+   "licence": "Public domain. Text from Arabic Wikisource, converted to EPUB by Zugpal without changes (credits page inside)."
+  },
+  {
+   "id": "pg22367",
+   "file": "library/books/pg22367.epub",
+   "title": "Die Verwandlung",
+   "author": "Franz Kafka",
+   "dates": "1883–1924",
+   "others": [],
+   "lang": "de",
+   "words": 19227,
+   "minutes": 113,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/22367",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License.",
+   "audio": {
+    "librivoxId": "2689",
+    "title": "Verwandlung",
+    "page": "https://librivox.org/die-verwandlung-von-franz-kafka/",
+    "minutes": 128,
+    "readers": [
+     "Markus Wachenheim"
+    ],
+    "parts": [
+     {
+      "title": "Abschnitt 1",
+      "url": "https://archive.org/download/verwandlung_mw_0811_librivox/verwandlung_01_kafka_64kb.mp3",
+      "minutes": 41
+     },
+     {
+      "title": "Abschnitt 2",
+      "url": "https://archive.org/download/verwandlung_mw_0811_librivox/verwandlung_02_kafka_64kb.mp3",
+      "minutes": 44
+     },
+     {
+      "title": "Abschnitt 3",
+      "url": "https://archive.org/download/verwandlung_mw_0811_librivox/verwandlung_03_kafka_64kb.mp3",
+      "minutes": 43
+     }
+    ],
+    "licence": "LibriVox recording, public domain (librivox.org). Streamed from archive.org."
+   }
+  },
+  {
+   "id": "pg7503",
+   "file": "library/books/pg7503.epub",
+   "title": "Mozart auf der Reise nach Prag",
+   "author": "Eduard Mörike",
+   "dates": "1804–1875",
+   "others": [],
+   "lang": "de",
+   "words": 19877,
+   "minutes": 117,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/7503",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg33266",
+   "file": "library/books/pg33266.epub",
+   "title": "Herr und Knecht: Novelle",
+   "author": "Leo Tolstoy",
+   "dates": "1828–1910",
+   "others": [
+    "Hermann Röhl (1851–1923), Translator"
+   ],
+   "lang": "de",
+   "words": 21033,
+   "minutes": 124,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/33266",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg23313",
+   "file": "library/books/pg23313.epub",
+   "title": "Tonio Kröger",
+   "author": "Thomas Mann",
+   "dates": "1875–1955",
+   "others": [],
+   "lang": "de",
+   "words": 21435,
+   "minutes": 126,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/23313",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg31538",
+   "file": "library/books/pg31538.epub",
+   "title": "Peter Schlemihls wundersame Geschichte",
+   "author": "Adelbert von Chamisso",
+   "dates": "1781–1838",
+   "others": [],
+   "lang": "de",
+   "words": 21557,
+   "minutes": 127,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/31538",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg2781",
+   "file": "library/books/pg2781.epub",
+   "title": "Just so stories",
+   "author": "Rudyard Kipling",
+   "dates": "1865–1936",
+   "others": [],
+   "lang": "en",
+   "words": 28755,
+   "minutes": 131,
+   "easy": false,
+   "collection": true,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/2781",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License.",
+   "audio": {
+    "librivoxId": "585",
+    "title": "Just So Stories",
+    "page": "https://librivox.org/just-so-stories-by-rudyard-kipling/",
+    "minutes": 213,
+    "readers": [
+     "Reynard T. Fox",
+     "Reynard T. Fox, Reynard's Dad"
+    ],
+    "parts": [
+     {
+      "title": "How the Whale got his Throat",
+      "url": "https://archive.org/download/just_so_stories/just_so_stories_01_kipling_reynard_64kb.mp3",
+      "minutes": 8
+     },
+     {
+      "title": "How the Camel got his Hump",
+      "url": "https://archive.org/download/just_so_stories/just_so_stories_02_kipling_reynard_64kb.mp3",
+      "minutes": 9
+     },
+     {
+      "title": "How the Rhinoceros got its Skin",
+      "url": "https://archive.org/download/just_so_stories/just_so_stories_03_kipling_reynard_64kb.mp3",
+      "minutes": 7
+     },
+     {
+      "title": "How the Leopard got his Spots",
+      "url": "https://archive.org/download/just_so_stories/just_so_stories_04_kipling_reynard_64kb.mp3",
+      "minutes": 17
+     },
+     {
+      "title": "The Elephant's Child",
+      "url": "https://archive.org/download/just_so_stories/just_so_stories_05_kipling_reynard_64kb.mp3",
+      "minutes": 17
+     },
+     {
+      "title": "The Sing-Song of Old Man Kangaroo",
+      "url": "https://archive.org/download/just_so_stories/just_so_stories_06_kipling_reynard_64kb.mp3",
+      "minutes": 10
+     },
+     {
+      "title": "The Beginning of the Armadillo",
+      "url": "https://archive.org/download/just_so_stories/just_so_stories_07_kipling_reynard_64kb.mp3",
+      "minutes": 20
+     },
+     {
+      "title": "How the First Letter was Written",
+      "url": "https://archive.org/download/just_so_stories/just_so_stories_08_kipling_reynard_64kb.mp3",
+      "minutes": 24
+     },
+     {
+      "title": "How the Alphabet was Made",
+      "url": "https://archive.org/download/just_so_stories/just_so_stories_09_kipling_reynard_64kb.mp3",
+      "minutes": 24
+     },
+     {
+      "title": "The Crab that Played with the Sea",
+      "url": "https://archive.org/download/just_so_stories/just_so_stories_10_kipling_reynard_64kb.mp3",
+      "minutes": 26
+     },
+     {
+      "title": "The Cat that walked by Himself",
+      "url": "https://archive.org/download/just_so_stories/just_so_stories_11_kipling_reynard_64kb.mp3",
+      "minutes": 28
+     },
+     {
+      "title": "The Butterfly that Stamped",
+      "url": "https://archive.org/download/just_so_stories/just_so_stories_12_kipling_reynard_64kb.mp3",
+      "minutes": 24
+     }
+    ],
+    "licence": "LibriVox recording, public domain (librivox.org). Streamed from archive.org."
+   }
+  },
+  {
+   "id": "pg24173",
+   "file": "library/books/pg24173.epub",
+   "title": "Brennendes Geheimnis: Erzählung",
+   "author": "Stefan Zweig",
+   "dates": "1881–1942",
+   "others": [],
+   "lang": "de",
+   "words": 22448,
+   "minutes": 132,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/24173",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg52605",
+   "file": "library/books/pg52605.epub",
+   "title": "Eine langweilige Geschichte: Aus den Aufzeichnungen eines alten Mannes",
+   "author": "Anton Pavlovich Chekhov",
+   "dates": "1860–1904",
+   "others": [
+    "Hermann Röhl (1851–1923), Translator"
+   ],
+   "lang": "de",
+   "words": 24611,
+   "minutes": 145,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/52605",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg12108",
+   "file": "library/books/pg12108.epub",
+   "title": "Der Tod in Venedig",
+   "author": "Thomas Mann",
+   "dates": "1875–1955",
+   "others": [],
+   "lang": "de",
+   "words": 24950,
+   "minutes": 147,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/12108",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg7888",
+   "file": "library/books/pg7888.epub",
+   "title": "Wie Wiselis Weg gefunden wird Erzählung",
+   "author": "Johanna Spyri",
+   "dates": "1827–1901",
+   "others": [],
+   "lang": "de",
+   "words": 27318,
+   "minutes": 161,
+   "easy": true,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/7888",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg22123",
+   "file": "library/books/pg22123.epub",
+   "title": "Zum wilden Mann",
+   "author": "Wilhelm Raabe",
+   "dates": "1831–1910",
+   "others": [],
+   "lang": "de",
+   "words": 28455,
+   "minutes": 167,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/22123",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg17362",
+   "file": "library/books/pg17362.epub",
+   "title": "Der Goldene Topf",
+   "author": "E. T. A. Hoffmann",
+   "dates": "1776–1822",
+   "others": [],
+   "lang": "de",
+   "words": 29257,
+   "minutes": 172,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/17362",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg35312",
+   "file": "library/books/pg35312.epub",
+   "title": "Aus dem Leben eines Taugenichts: Novelle",
+   "author": "Joseph Eichendorff",
+   "dates": "1788–1857",
+   "others": [],
+   "lang": "de",
+   "words": 31378,
+   "minutes": 185,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/35312",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg49871",
+   "file": "library/books/pg49871.epub",
+   "title": "Der Postsekretär im Himmel, und andere Geschichten",
+   "author": "Ludwig Thoma",
+   "dates": "1867–1921",
+   "others": [],
+   "lang": "de",
+   "words": 32100,
+   "minutes": 189,
+   "easy": false,
+   "collection": true,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/49871",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg26686",
+   "file": "library/books/pg26686.epub",
+   "title": "Unterm Birnbaum",
+   "author": "Theodor Fontane",
+   "dates": "1819–1898",
+   "others": [],
+   "lang": "de",
+   "words": 33406,
+   "minutes": 197,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/26686",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg9200",
+   "file": "library/books/pg9200.epub",
+   "title": "Klein Zaches, genannt Zinnober: Ein Märchen",
+   "author": "E. T. A. Hoffmann",
+   "dates": "1776–1822",
+   "others": [],
+   "lang": "de",
+   "words": 34693,
+   "minutes": 204,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/9200",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg19675",
+   "file": "library/books/pg19675.epub",
+   "title": "Herrn Mahlhubers Reiseabenteuer",
+   "author": "Friedrich Gerstäcker",
+   "dates": "1816–1872",
+   "others": [],
+   "lang": "de",
+   "words": 36409,
+   "minutes": 214,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/19675",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg74008",
+   "file": "library/books/pg74008.epub",
+   "title": "Der Schimmelreiter",
+   "author": "Theodor Storm",
+   "dates": "1817–1888",
+   "others": [],
+   "lang": "de",
+   "words": 38174,
+   "minutes": 225,
+   "easy": false,
+   "collection": false,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/74008",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License.",
+   "audio": {
+    "librivoxId": "173",
+    "title": "Schimmelreiter",
+    "page": "https://librivox.org/der-schimmelreiter-by-theodor-storm/",
+    "minutes": 257,
+    "readers": [
+     "Felix"
+    ],
+    "parts": [
+     {
+      "title": "Teil 1",
+      "url": "https://archive.org/download/schimmelreiter_storm_librivox/storm_schimmelreiter_01_64kb.mp3",
+      "minutes": 39
+     },
+     {
+      "title": "Teil 2",
+      "url": "https://archive.org/download/schimmelreiter_storm_librivox/storm_schimmelreiter_02_64kb.mp3",
+      "minutes": 39
+     },
+     {
+      "title": "Teil 3",
+      "url": "https://archive.org/download/schimmelreiter_storm_librivox/storm_schimmelreiter_03_64kb.mp3",
+      "minutes": 29
+     },
+     {
+      "title": "Teil 4",
+      "url": "https://archive.org/download/schimmelreiter_storm_librivox/storm_schimmelreiter_04_64kb.mp3",
+      "minutes": 42
+     },
+     {
+      "title": "Teil 5",
+      "url": "https://archive.org/download/schimmelreiter_storm_librivox/storm_schimmelreiter_05_64kb.mp3",
+      "minutes": 38
+     },
+     {
+      "title": "Teil 6",
+      "url": "https://archive.org/download/schimmelreiter_storm_librivox/storm_schimmelreiter_06_64kb.mp3",
+      "minutes": 39
+     },
+     {
+      "title": "Teil 7",
+      "url": "https://archive.org/download/schimmelreiter_storm_librivox/storm_schimmelreiter_07_64kb.mp3",
+      "minutes": 31
+     }
+    ],
+    "licence": "LibriVox recording, public domain (librivox.org). Streamed from archive.org."
+   }
+  },
+  {
+   "id": "pg2776",
+   "file": "library/books/pg2776.epub",
+   "title": "The Four Million",
+   "author": "O. Henry",
+   "dates": "1862–1910",
+   "others": [],
+   "lang": "en",
+   "words": 51849,
+   "minutes": 236,
+   "easy": false,
+   "collection": true,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/2776",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License.",
+   "audio": {
+    "librivoxId": "391",
+    "title": "Gift of the Magi",
+    "page": "https://librivox.org/the-gift-of-the-magi-by-o-henry/",
+    "minutes": 13,
+    "readers": [
+     "Betsie Bush"
+    ],
+    "parts": [
+     {
+      "title": "The Gift of the Magi",
+      "url": "https://archive.org/download/giftofmagi/gift_of_the_magi_henry_blb_64kb.mp3",
+      "minutes": 13
+     }
+    ],
+    "licence": "LibriVox recording, public domain (librivox.org). Streamed from archive.org."
+   }
+  },
+  {
+   "id": "pg6638",
+   "file": "library/books/pg6638.epub",
+   "title": "Märchen-Almanach auf das Jahr 1826",
+   "author": "Wilhelm Hauff",
+   "dates": "1802–1827",
+   "others": [],
+   "lang": "de",
+   "words": 41436,
+   "minutes": 244,
+   "easy": false,
+   "collection": true,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/6638",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg1732",
+   "file": "library/books/pg1732.epub",
+   "title": "The schoolmistress, and other stories",
+   "author": "Anton Pavlovich Chekhov",
+   "dates": "1860–1904",
+   "others": [
+    "Constance Garnett (1861–1946), Translator"
+   ],
+   "lang": "en",
+   "words": 63278,
+   "minutes": 288,
+   "easy": false,
+   "collection": true,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/1732",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg2814",
+   "file": "library/books/pg2814.epub",
+   "title": "Dubliners",
+   "author": "James Joyce",
+   "dates": "1882–1941",
+   "others": [],
+   "lang": "en",
+   "words": 67512,
+   "minutes": 307,
+   "easy": false,
+   "collection": true,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/2814",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg1661",
+   "file": "library/books/pg1661.epub",
+   "title": "The Adventures of Sherlock Holmes",
+   "author": "Arthur Conan Doyle",
+   "dates": "1859–1930",
+   "others": [],
+   "lang": "en",
+   "words": 104379,
+   "minutes": 474,
+   "easy": false,
+   "collection": true,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/1661",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  },
+  {
+   "id": "pg7810",
+   "file": "library/books/pg7810.epub",
+   "title": "Schatzkästlein des rheinischen Hausfreundes Eine Auswahl aus verschiedenen Quellen",
+   "author": "Johann Peter Hebel",
+   "dates": "1760–1826",
+   "others": [
+    "Johann Peter Hebel (1760–1826), Compiler"
+   ],
+   "lang": "de",
+   "words": 94721,
+   "minutes": 557,
+   "easy": true,
+   "collection": true,
+   "source": "Project Gutenberg",
+   "sourceUrl": "https://www.gutenberg.org/ebooks/7810",
+   "licence": "Public domain. The EPUB is the unchanged Project Gutenberg file and includes the Project Gutenberg License."
+  }
+ ]
+}

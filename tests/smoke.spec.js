@@ -151,6 +151,30 @@ for (const lang of ["de", "en", "ar"]) {
     else await page.click('[data-act="cgMove"][data-arg="d"]');
     await shot("14-maumau");
 
+    // Library: 15-minute shelf, download a book, read it (epub.js), turn a page, Arabic book opens right-to-left
+    await page.goto("/?demo");
+    await page.click('[data-act="openLibrary"] >> nth=0');
+    await expect(page.locator(".bookrow").first()).toBeVisible();
+    await shot("15-library");
+    await page.click('.bookrow[data-arg="pg17161"]');
+    await page.click('[data-act="libDownload"]');
+    await expect(page.locator('[data-act="libRemove"]')).toBeVisible();
+    await page.click('[data-act="libRead"]');
+    await expect(page.locator(".reader iframe")).toBeVisible({ timeout: 15000 });
+    await page.click('[data-act="readerTurn"][data-arg="next"]');
+    await expect.poll(() => page.evaluate(() => localStorage.getItem("zugpal.read.pg17161"))).not.toBeNull();
+    await shot("16-reader");
+    await page.click('[data-act="readerClose"]');
+    await page.click('[data-act="go"][data-arg="library"]');
+    await page.click('[data-act="libShelf"][data-arg="all"]');
+    await page.click('.bookrow[data-arg="ar-kalila"]');
+    await page.click('[data-act="libRead"]');
+    await expect(page.locator(".reader iframe")).toBeVisible({ timeout: 15000 });
+    await page.click('[data-act="readerClose"]');
+    await page.click('[data-act="go"][data-arg="library"]');
+    await page.click('[data-act="go"][data-arg="credits"]');
+    await expect(page.locator(".credit")).toHaveCount(40);
+
     expect(errors, errors.join("\n")).toEqual([]);
   });
 }

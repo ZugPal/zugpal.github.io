@@ -4,7 +4,7 @@
 const fs = require("fs"), path = require("path"), crypto = require("crypto");
 const ROOT = path.join(__dirname, "..");
 const DIRS = ["src", "engines", "vendor", "vendor/fonts", "icons"];
-const TOP = ["./", "index.html", "manifest.webmanifest", "legal.css", "impressum.html", "datenschutz.html", "regeln.html"];
+const TOP = ["./", "index.html", "manifest.webmanifest", "legal.css", "impressum.html", "datenschutz.html", "regeln.html", "library/catalog.json"];
 const skip = f => /LICENSE|\.txt$/.test(f);
 const files = TOP.concat(DIRS.flatMap(d => fs.readdirSync(path.join(ROOT, d)).filter(f => fs.statSync(path.join(ROOT, d, f)).isFile() && !skip(f)).sort().map(f => d + "/" + f)));
 const hash = crypto.createHash("sha256");
