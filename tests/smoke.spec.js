@@ -64,6 +64,18 @@ for (const lang of ["de", "en", "ar"]) {
     await shot("6-report");
     await page.click('[data-act="reportCancel"]');
 
+    // Word games with the match: Zugwort together, Letter Train with a picked word
+    await page.click('.games [data-act="wordSheet"][data-arg="zw"]');
+    await page.click('[data-act="zwInvite"][data-arg="coop"]');
+    await expect(page.locator(".tiles .tile")).toHaveCount(30);
+    await page.click('[data-act="chessBack"][data-arg="chat"] >> nth=0');
+    await expect(page.locator('.gamecard [data-act="zwOpen"]')).toBeVisible();
+    await page.click('.games [data-act="wordSheet"][data-arg="lt"]');
+    await page.fill("#ltWord", lang === "ar" ? "قطار" : "ZUG");
+    await page.click('[data-act="ltInvite"]');
+    await expect(page.locator(".slots .slot")).toHaveCount(lang === "ar" ? 4 : 3);
+    await page.click('[data-act="chessBack"][data-arg="chat"] >> nth=0');
+
     // Online chess with the match: invite card + board
     await page.click('[data-act="chessInvite"]');
     await expect(page.locator(".board .sq")).toHaveCount(64);
@@ -82,6 +94,25 @@ for (const lang of ["de", "en", "ar"]) {
     await page.click('[data-act="solNew"]');
     await expect(page.locator(".soltable")).toBeVisible();
     await shot("9-solitaire");
+
+    // Zugwort vs computer: type a word, the computer answers with a row
+    await page.goto("/?demo");
+    await page.click('[data-act="openGames"] >> nth=0');
+    await page.click('[data-act="zwCpu"]');
+    const keys = page.locator('.keyboard [data-act="zwKey"]');
+    for (let i = 0; i < 5; i++) await keys.nth(i).click();
+    await page.click('[data-act="zwEnter"]');
+    await expect(page.locator(".tiles .trow").first().locator(".tile.g, .tile.y, .tile.x")).toHaveCount(5);
+    await expect(page.locator(".vs .mrow")).toHaveCount(1);
+    await shot("10-zugwort");
+
+    // Letter Train vs computer: a tapped letter is used up
+    await page.click('[data-act="chessBack"][data-arg="games"]');
+    await page.click('[data-act="ltCpu"]');
+    await expect(page.locator(".train .coach")).toHaveCount(7);
+    await page.locator('.keyboard [data-act="ltKey"]').first().click();
+    await expect(page.locator('.keyboard [data-act="ltKey"]:disabled')).toHaveCount(1);
+    await shot("11-letter-train");
 
     expect(errors, errors.join("\n")).toEqual([]);
   });

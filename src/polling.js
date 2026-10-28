@@ -23,7 +23,8 @@ async function refresh(){
     if(S.screen!=="chat"){ S.current = fresh; S.iceIndex = 0; S.screen = "match"; try{ navigator.vibrate && navigator.vibrate([80,60,80]); }catch(e){} }
     else toast(t("newMatch",{name:fresh.first_name}));
   }
-  const onlineChessOpen = (S.screen==="chess" && S.chess && S.chess.mode==="online") || (S.screen==="dama" && S.dama && S.dama.mode==="online");
+  const onlineChessOpen = (S.screen==="chess" && S.chess && S.chess.mode==="online") || (S.screen==="dama" && S.dama && S.dama.mode==="online")
+    || (S.screen==="zugwort" && S.zw && S.zw.mode==="online") || (S.screen==="letters" && S.lt && S.lt.mode==="online");
   if(S.screen==="chat" || onlineChessOpen) await loadMessages();
   if(["nearby","match","chat"].includes(S.screen) || onlineChessOpen) render();
 }

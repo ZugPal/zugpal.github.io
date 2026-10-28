@@ -5,6 +5,7 @@ import { AGES, BADGES, DICE, ICE, LANGS, MOODS, TOPICS } from "./data.js";
 import { COUNTED, GLYPH, boardHtml, cardHtml, chessState, damaBoard, damaState, onlineInfo, sameSrc } from "./games.js";
 import { S, backend } from "./state.js";
 import { ICON, MONEY_RE, esc, hasContact, loc, minsLeft, moodName, parseMsg, photo, t, todaysWord } from "./util.js";
+import { lettersScreen, wordCard, wordSheet, zugwortScreen } from "./words.js";
 
 /* ---------------- Screens ---------------- */
 function header(){
@@ -54,6 +55,7 @@ function noticeText(n){
 }
 function overlays(){
   if(S.reportSheet) return reportSheet();
+  if(S.wordSheet) return wordSheet();
   if(S.reportDone) return `<div class="sheet" role="dialog" aria-modal="true"><div class="panel">
     <h2>${ICON.shield} ${t("reportThanksTitle")}</h2><p>${t("reportThanks",{n:Number(S.reportDone.n)||""})}</p>
     <div class="banner">${t("emergency")}</div>
@@ -239,7 +241,8 @@ const screens = {
       if(p.type==="spin"){ const meAsks = (x.mine && p.val==="me") || (!x.mine && p.val==="you"); return `<div class="gamecard"><span class="lbl">${t("spin")}</span><span class="big">${meAsks ? t("spinYou") : t("spinThem",{name})}</span></div>`; }
       if(p.type==="ttl") return `<div class="gamecard"><span class="lbl">${t("ttl")}</span><span>${x.mine ? t("ttlYou",{name}) : t("ttlThem",{name})}</span></div>`;
       if(p.type==="bye") return `<div class="msg${x.mine?" mine":""}">${t("bye")}</div>`;
-      if(p.type==="cm" || p.type==="dm") return "";
+      if(p.type==="cm" || p.type==="dm" || p.type==="zg" || p.type==="lg") return "";
+      if(p.type==="zw" || p.type==="lt") return wordCard(p, x, name);
       if(p.type==="dama"){
         const gid = String(p.val||""); if(!/^[A-Za-z0-9]{4,12}$/.test(gid)) return "";
         return `<div class="gamecard"><span class="lbl">${t("damaT")}</span><span>${x.mine ? t("damaStartMe") : t("damaStartThem",{name})}</span><button class="btn small" style="align-self:center" data-act="damaOpen" data-arg="${gid}">${t("openBoard")}</button></div>`;
@@ -273,6 +276,8 @@ const screens = {
         <button class="chip" data-act="game" data-arg="spin">${ICON.spin}${t("spin")}</button>
         <button class="chip" data-act="game" data-arg="ttl">${ICON.cards}${t("ttl")}</button>
         <button class="chip" data-act="chessInvite"><span class="pc b" style="font-size:18px">${GLYPH.N}\uFE0E</span>${t("chess")}</button>
+        <button class="chip" data-act="wordSheet" data-arg="zw"><span class="tile g" style="width:18px;height:18px;font-size:11px">Z</span>${t("zwName")}</button>
+        <button class="chip" data-act="wordSheet" data-arg="lt">${ICON.cards}${t("ltName")}</button>
         <button class="chip" data-act="damaInvite"><span class="dm b" style="width:16px;height:16px"></span>${t("damaT")}</button></div>
       <div id="chatLog" class="chatlog">${log}</div>
       <form class="chatbar" id="chatForm">${S.recording
@@ -298,8 +303,15 @@ const screens = {
         <button class="btn" data-act="damaCpuNew">${t("play")}</button></div>
       <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">♠\uFE0E</span><div class="grow"><div class="pname">${t("solVs")}</div><div class="small">${t("solBody")}</div></div></div>
         <button class="btn" data-act="solNew">${t("play")}</button></div>
+      <div class="card"><div class="gamecard2"><span class="tile g" style="width:34px;height:34px;font-size:18px;flex-shrink:0">Z</span><div class="grow"><div class="pname">${t("zwName")}</div><div class="small">${t("zwBody")}</div></div></div>
+        <button class="btn" data-act="zwCpu">${t("play")}</button></div>
+      <div class="card"><div class="gamecard2"><span class="train mini-train" aria-hidden="true"><span class="loco"></span><span class="coach"></span><span class="coach"></span></span><div class="grow"><div class="pname">${t("ltName")}</div><div class="small">${t("ltBody")}</div></div></div>
+        <button class="btn" data-act="ltCpu">${t("play")}</button></div>
     </div>`;
   },
+
+  zugwort(){ return zugwortScreen() || screens.games(); },
+  letters(){ return lettersScreen() || screens.games(); },
 
   chess(){
     const c = S.chess, cs = chessState(); if(!c || !cs) return screens.games();

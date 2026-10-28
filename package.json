@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node tools/serve.js 8080",
     "test": "npm run test:engines && npm run test:ui",
-    "test:engines": "node tests/perft.js engines/chess-engine.js && node tests/damatest.js engines/dama-engine.js && node tests/soltest.js engines/solitaire-engine.js",
+    "test:engines": "node tests/perft.js engines/chess-engine.js && node tests/damatest.js engines/dama-engine.js && node tests/soltest.js engines/solitaire-engine.js && node tests/wordtest.js",
     "test:ui": "playwright test"
   },
   "devDependencies": {

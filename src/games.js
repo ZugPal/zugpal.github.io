@@ -95,7 +95,7 @@ function solSrcFromArg(arg){
 }
 const sameSrc = (x, y) => x && y && x.kind===y.kind && x.i===y.i && x.idx===y.idx;
 const peerOf = id => S.matches.find(x=>x.id===id);
-const COUNTED = m => !["cm","dm","chess","dama"].includes(parseMsg(m.body).type);
+const COUNTED = m => !["cm","dm","chess","dama","zw","zg","lt","lg"].includes(parseMsg(m.body).type);
 function presenceOf(m, gid){
   if(!m || !m.seen_at) return null;
   const age = Date.now() - Date.parse(m.seen_at);
@@ -123,6 +123,8 @@ function currentActivity(){
   if(S.screen==="chat") return "chat";
   if(S.screen==="chess" && S.chess && S.chess.mode==="online") return "g:" + S.chess.gid;
   if(S.screen==="dama" && S.dama && S.dama.mode==="online") return "g:" + S.dama.gid;
+  if(S.screen==="zugwort" && S.zw && S.zw.mode==="online") return "g:" + S.zw.gid;
+  if(S.screen==="letters" && S.lt && S.lt.mode==="online") return "g:" + S.lt.gid;
   return "";
 }
 

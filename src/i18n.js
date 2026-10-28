@@ -88,7 +88,16 @@ const T = {
     n_decided_none:"Report #{n}: we reviewed it and found no rule break, so we took no action.",
     n_removed:"We removed messages you sent because they broke our rules. Reason: {r}",
     n_suspended:"Your account is paused until {d}. Reason: {r}", n_ban:"Your account is closed. Reason: {r}",
-    objectHint:"Disagree? Write to us:", gotIt:"OK", pausedError:"Your account is paused. See the message from the Zugpal team.", reportShort:"Report"
+    objectHint:"Disagree? Write to us:", gotIt:"OK", pausedError:"Your account is paused. See the message from the Zugpal team.", reportShort:"Report",
+    zwName:"Zugwort", zwBody:"Our 5-letter word game. Race the computer, or play with or against your match.", zwHelp:"Find the 5-letter word in 6 tries. Green: right place. Yellow: in the word, other place. Grey: not in the word.",
+    zwRaceCpu:"Race against the computer", zwTogether:"Together", zwRace:"Race", coopNote:"You take turns and share 6 tries.", raceNote:"Same word, each of you guesses alone. Fewer tries wins.",
+    zwWon:"Found in {n}!", zwWonTogether:"Found together in {n}!", zwDraw:"You both found it in the same round.", zwCpuWon:"The computer was faster.", zwCpuFound:"The computer found it in {n}. Keep going!",
+    zwTheyWon:"{name} was faster.", zwWas:"The word was {w}.", zwWaiting:"Waiting for {name}.", zwFive:"Five letters, please.",
+    zwStartMe:"You started a round of Zugwort", zwStartThem:"{name} started a round of Zugwort", wordLang:"Words:", enterKey:"OK", delKey:"Delete",
+    ltName:"Letter Train", againstCpu:"Against the computer", ltBody:"Guess the word letter by letter. Each wrong letter uncouples a coach.", ltHelp:"Each wrong letter uncouples one of 7 coaches.",
+    ltLeft:"{n} coaches left", ltWon:"You found it! The train is complete.", ltLost:"The train has gone. The word was {w}.", ltSetterView:"{name} is guessing your word.",
+    ltTheyWon:"{name} found your word!", ltTheyLost:"{name} didn't find your word.", ltTried:"Tried", ltPick:"A word for {name} to guess", ltPickHint:"3–12 letters, no names or contact details.",
+    ltBadWord:"Please use 3–12 letters only.", ltSend:"Send word", ltStartMe:"You sent a word to guess", ltStartThem:"{name} sent you a word to guess"
   },
   de: {
     tagline:"Für alle, die im Zug gern reden würden.",
@@ -176,7 +185,16 @@ const T = {
     n_decided_none:"Meldung Nr. {n}: Wir haben sie geprüft und keinen Regelverstoß gefunden. Deshalb haben wir nichts unternommen.",
     n_removed:"Wir haben Nachrichten von dir entfernt, weil sie gegen unsere Regeln verstoßen. Grund: {r}",
     n_suspended:"Dein Konto ist bis {d} pausiert. Grund: {r}", n_ban:"Dein Konto ist geschlossen. Grund: {r}",
-    objectHint:"Nicht einverstanden? Schreib uns:", gotIt:"OK", pausedError:"Dein Konto ist pausiert. Siehe die Nachricht vom Zugpal-Team.", reportShort:"Melden"
+    objectHint:"Nicht einverstanden? Schreib uns:", gotIt:"OK", pausedError:"Dein Konto ist pausiert. Siehe die Nachricht vom Zugpal-Team.", reportShort:"Melden",
+    zwName:"Zugwort", zwBody:"Unser Wortspiel mit 5 Buchstaben. Gegen den Computer, mit oder gegen dein Match.", zwHelp:"Finde das Wort mit 5 Buchstaben in 6 Versuchen. Grün: richtige Stelle. Gelb: im Wort, andere Stelle. Grau: nicht im Wort.",
+    zwRaceCpu:"Wettlauf gegen den Computer", zwTogether:"Zusammen", zwRace:"Gegeneinander", coopNote:"Ihr ratet abwechselnd und teilt euch 6 Versuche.", raceNote:"Gleiches Wort, jede und jeder rät für sich. Weniger Versuche gewinnt.",
+    zwWon:"Gefunden in {n}!", zwWonTogether:"Zusammen gefunden in {n}!", zwDraw:"Ihr habt es in derselben Runde gefunden.", zwCpuWon:"Der Computer war schneller.", zwCpuFound:"Der Computer hat es in {n} gefunden. Weiter so!",
+    zwTheyWon:"{name} war schneller.", zwWas:"Das Wort war {w}.", zwWaiting:"Warte auf {name}.", zwFive:"Bitte fünf Buchstaben.",
+    zwStartMe:"Du hast eine Runde Zugwort gestartet", zwStartThem:"{name} hat eine Runde Zugwort gestartet", wordLang:"Wörter:", enterKey:"OK", delKey:"Löschen",
+    ltName:"Buchstabenzug", againstCpu:"Gegen den Computer", ltBody:"Errate das Wort Buchstabe für Buchstabe. Jeder falsche Buchstabe koppelt einen Wagen ab.", ltHelp:"Jeder falsche Buchstabe koppelt einen von 7 Wagen ab.",
+    ltLeft:"Noch {n} Wagen", ltWon:"Gefunden! Der Zug ist komplett.", ltLost:"Der Zug ist weg. Das Wort war {w}.", ltSetterView:"{name} rät dein Wort.",
+    ltTheyWon:"{name} hat dein Wort gefunden!", ltTheyLost:"{name} hat dein Wort nicht gefunden.", ltTried:"Versucht", ltPick:"Ein Wort, das {name} raten soll", ltPickHint:"3–12 Buchstaben, keine Namen oder Kontaktdaten.",
+    ltBadWord:"Bitte nur 3–12 Buchstaben.", ltSend:"Wort senden", ltStartMe:"Du hast ein Wort zum Raten geschickt", ltStartThem:"{name} hat dir ein Wort zum Raten geschickt"
   },
   ar: {
     tagline:"لكل من يرغب في الحديث أثناء رحلة القطار.",
@@ -264,7 +282,16 @@ const T = {
     n_decided_none:"البلاغ رقم {n}: راجعناه ولم نجد مخالفة للقواعد، لذلك لم نتخذ أي إجراء.",
     n_removed:"حذفنا رسائل أرسلتها لأنها خالفت قواعدنا. السبب: {r}",
     n_suspended:"حسابك موقوف مؤقتاً حتى {d}. السبب: {r}", n_ban:"تم إغلاق حسابك. السبب: {r}",
-    objectHint:"غير موافق؟ راسلنا:", gotIt:"حسناً", pausedError:"حسابك موقوف مؤقتاً. انظر رسالة فريق Zugpal.", reportShort:"إبلاغ"
+    objectHint:"غير موافق؟ راسلنا:", gotIt:"حسناً", pausedError:"حسابك موقوف مؤقتاً. انظر رسالة فريق Zugpal.", reportShort:"إبلاغ",
+    zwName:"كلمة القطار", zwBody:"لعبة كلمات من 5 أحرف. ضد الكمبيوتر، أو مع من تطابقت معه أو ضده.", zwHelp:"اعثر على الكلمة المكوّنة من 5 أحرف في 6 محاولات. أخضر: في مكانه. أصفر: في الكلمة بمكان آخر. رمادي: ليس في الكلمة.",
+    zwRaceCpu:"سباق ضد الكمبيوتر", zwTogether:"معاً", zwRace:"ضد بعض", coopNote:"تتناوبان على التخمين وتتشاركان 6 محاولات.", raceNote:"الكلمة نفسها، وكل واحد يخمّن وحده. الأقل محاولات يفوز.",
+    zwWon:"وجدتها في {n}!", zwWonTogether:"وجدتماها معاً في {n}!", zwDraw:"وجدتماها في الجولة نفسها.", zwCpuWon:"الكمبيوتر كان أسرع.", zwCpuFound:"وجدها الكمبيوتر في {n}. تابع!",
+    zwTheyWon:"{name} كان أسرع.", zwWas:"الكلمة كانت {w}.", zwWaiting:"بانتظار {name}.", zwFive:"خمسة أحرف من فضلك.",
+    zwStartMe:"بدأت جولة كلمة القطار", zwStartThem:"بدأ {name} جولة كلمة القطار", wordLang:"الكلمات:", enterKey:"تم", delKey:"حذف",
+    ltName:"قطار الحروف", againstCpu:"ضد الكمبيوتر", ltBody:"خمّن الكلمة حرفاً حرفاً. كل حرف خاطئ يفصل عربة.", ltHelp:"كل حرف خاطئ يفصل عربة من 7 عربات.",
+    ltLeft:"بقيت {n} عربات", ltWon:"وجدتها! القطار كامل.", ltLost:"رحل القطار. الكلمة كانت {w}.", ltSetterView:"{name} يخمّن كلمتك.",
+    ltTheyWon:"وجد {name} كلمتك!", ltTheyLost:"لم يجد {name} كلمتك.", ltTried:"جُرّبت", ltPick:"كلمة ليخمّنها {name}", ltPickHint:"من 3 إلى 12 حرفاً، بلا أسماء أو بيانات اتصال.",
+    ltBadWord:"استخدم من 3 إلى 12 حرفاً فقط.", ltSend:"أرسل الكلمة", ltStartMe:"أرسلت كلمة للتخمين", ltStartThem:"أرسل لك {name} كلمة لتخمّنها"
   }
 };
 
