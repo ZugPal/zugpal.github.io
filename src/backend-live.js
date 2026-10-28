@@ -11,17 +11,35 @@ async function LiveBackend(){
   if(!session){ const { data, error } = await sb.auth.signInAnonymously(); if(error) throw error; session = data.session; }
   const uid = session.user.id;
   const ok = ({data, error}) => { if(error) throw error; return data; };
-  return {
-    mode:"live",
-    async checkIn(){ await this.update(); },
+  // Realtime: new messages to me arrive instantly (RLS applies). Waves stay private, so after a wave we send an
+  // empty "poke" on the ride's broadcast channel and everyone re-reads what they are allowed to see.
+  let onChange = () => {}, msgCh = null, rideCh = null, rideKey = null;
+  const poke = () => { if(rideCh) rideCh.send({ type:"broadcast", event:"poke", payload:{} }).catch(()=>{}); };
+  function joinRide(){
+    const k = S.ride ? S.ride.key : null; if(k === rideKey) return;
+    if(rideCh){ sb.removeChannel(rideCh); rideCh = null; }
+    rideKey = k;
+    if(k) rideCh = sb.channel("ride-" + k, { config:{ broadcast:{ self:false } } }).on("broadcast", { event:"poke" }, () => onChange("ride")).subscribe();
+  }
+  const api = {
+    mode:"live", realtime:false,
+    listen(fn){
+      onChange = fn;
+      if(!msgCh) msgCh = sb.channel("me-" + uid)
+        .on("postgres_changes", { event:"INSERT", schema:"public", table:"messages", filter:"to_id=eq." + uid }, () => onChange("msg"))
+        .subscribe(st => { api.realtime = st === "SUBSCRIBED"; });
+      joinRide();
+    },
+    unlisten(){ onChange = () => {}; if(rideCh){ sb.removeChannel(rideCh); rideCh = null; rideKey = null; } },
+    async checkIn(){ await this.update(); joinRide(); poke(); },
     async update(){ const p = S.profile; ok(await sb.from("riders").upsert({
       id:uid, ride_key:S.ride.key, first_name:p.name, gender:p.gender, age_range:p.age || null, ask_me:p.askMe || null, languages:p.langs, topics:p.topics,
       photo_small:p.photoSmall || null, photo:p.photo || null, moods:[...S.moods],
       women_only:S.womenOnly && p.gender==="woman", chat_only:S.chatOnly, accept_photos:p.acceptPhotos !== false, practice:p.practice || null, coach:S.coach || null, is_open:S.open, lang:S.lang,
       expires_at:new Date(S.ride.expiresAt).toISOString(), updated_at:new Date().toISOString() })); },
     async visible(){ return ok(await sb.rpc("visible_riders")) || []; },
-    async wave(id){ ok(await sb.from("waves").upsert({from_id:uid, to_id:id, ride_key:S.ride.key})); },
-    async unwave(id){ ok(await sb.from("waves").delete().match({from_id:uid, to_id:id, ride_key:S.ride.key})); },
+    async wave(id){ ok(await sb.from("waves").upsert({from_id:uid, to_id:id, ride_key:S.ride.key})); poke(); },
+    async unwave(id){ ok(await sb.from("waves").delete().match({from_id:uid, to_id:id, ride_key:S.ride.key})); poke(); },
     async matches(){ return ok(await sb.rpc("my_matches")) || []; },
     async messages(id){ const rows = ok(await sb.from("messages").select("from_id,body,created_at").eq("ride_key",S.ride.key)
         .or(`and(from_id.eq.${uid},to_id.eq.${id}),and(from_id.eq.${id},to_id.eq.${uid})`).order("created_at"));
@@ -32,7 +50,7 @@ async function LiveBackend(){
     async fileReport(id, reason, details){ return ok(await sb.rpc("file_report", {p_reported:id, p_ride:(S.ride && S.ride.key) || "", p_reason:reason, p_details:details || ""})); },
     async notices(){ return ok(await sb.rpc("my_notices")) || []; },
     async noticesSeen(ids){ ok(await sb.rpc("notices_seen", {p_ids:ids})); },
-    async leave(id){ if(S.ride) ok(await sb.from("waves").delete().match({from_id:uid, to_id:id, ride_key:S.ride.key})); },
+    async leave(id){ if(S.ride) ok(await sb.from("waves").delete().match({from_id:uid, to_id:id, ride_key:S.ride.key})); poke(); },
     async compliment(id, badge){ ok(await sb.from("compliments").upsert({from_id:uid, to_id:id, badge})); },
     async sendMedia(id, kind, data){ return ok(await sb.rpc("send_media", {p_to:id, p_ride:S.ride.key, p_kind:kind, p_data:data})); },
     async openMedia(mid){ const rows = ok(await sb.rpc("open_media", {p_id:mid})) || []; return rows[0] || null; },
@@ -41,8 +59,9 @@ async function LiveBackend(){
     async presence(act){ ok(await sb.from("riders").update({seen_at:new Date().toISOString(), active_game:act || null}).eq("id", uid)); },
     async recordMood(before, after, matched){ ok(await sb.from("ride_moods").insert({ride_key:S.ride ? S.ride.key.replace(/-\d{4}-\d{2}-\d{2}$/,"") : null, mood_before:before, mood_after:after, matched})); },
     async buddy(id, on){ on ? ok(await sb.from("buddies").upsert({from_id:uid, to_id:id})) : ok(await sb.from("buddies").delete().match({from_id:uid, to_id:id})); },
-    async checkOut(){ await sb.from("messages").delete().eq("from_id",uid); await sb.from("riders").delete().eq("id",uid); }
+    async checkOut(){ await sb.from("messages").delete().eq("from_id",uid); await sb.from("riders").delete().eq("id",uid); poke(); }
   };
+  return api;
 }
 
 export { LiveBackend };

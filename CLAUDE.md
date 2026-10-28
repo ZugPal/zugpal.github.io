@@ -69,7 +69,7 @@ Modules only reassign their own top-level variables (ES imports are read-only), 
 - Texts: object `T` with `en`, `de`, `ar`. Helper `t(key, vars)`.
 - State: single object `S`. Rendering: `render()` rebuilds `#app` with template strings from `screens.<name>()`. Event delegation via `data-act` / `data-arg` attributes → `actions.<name>()`. Inputs use `data-bind`.
 - Backends with the same interface: `DemoBackend()` (simulated riders Lena, Karim, Aylin, Mira, Jonas) and `LiveBackend()` (Supabase JS v2.45.4 from `vendor/`, anonymous auth).
-- Polling every 6 s (`refresh()`), no Realtime yet. Polling re-renders the screen, so anything that must survive a re-render (file inputs) lives outside `#app`.
+- **Realtime** (`backend.listen()`): `postgres_changes` INSERT on `messages` filtered to me (RLS applies, tested: others receive nothing) and an empty broadcast "poke" on channel `ride-<key>` after waves/check-in/leave, so everyone re-reads what RLS allows. Polling stays as fallback: 6 s, or 20 s while Realtime is connected. Polling re-renders the screen, so anything that must survive a re-render (file inputs) lives outside `#app`.
 - Special chat messages start with `\u0001` (`CARD`) and are parsed by `parseMsg()` as `type:val:extra`:
   `dice:<n>`, `spin:me|you`, `ttl`, `bye`, `media:<uuid>:photo|voice`, `chess:<gid>` (invite, sender = white), `cm:<gid>:<uci>`, `dama:<gid>`, `dm:<gid>:<path e.g. 10-26-42>`. Classic games: `cg:<gid>:<four|muehle|mau>`, `cgm:<gid>:<move>`. Word games: `zw:<gid>:<coop|race>-<lang>`, `zg:<gid>:<word>`, `lt:<gid>:<scrambled lang|word>`, `lg:<gid>:<letter>`. Moves are replayed in order and validated; out-of-turn moves are ignored.
 - Game engines live only in `engines/` (one copy, used by the app and the tests):
@@ -85,7 +85,7 @@ Modules only reassign their own top-level variables (ES imports are read-only), 
 - Functions the app calls: `visible_riders()`, `my_matches()`, `send_media()`, `open_media()` (returns data once), `my_media_status()`, `report_media()`. Only the `authenticated` role may execute them (the app always signs in anonymously); they are revoked from `PUBLIC` and `anon`.
 - Helpers `private.can_see()`, `private.is_match()`, `private.had_match()` live in the **`private` schema**, which the API does not expose. They are security definer, so in `public` anyone could have asked "did X and Y match / block each other?". Keep new security definer helpers in `private`, and revoke every new function from `PUBLIC`.
 - Reports: `file_report()` (keeps the last 20 messages as evidence), `my_notices()`, `notices_seen()`; tables `notices`, `suspensions`. Moderators decide with `private.decide_report(id, action, reason)`; open cases in `private.open_reports`. See `docs/MODERATION.md`. Paused users can't check in or write (`private.is_suspended`).
-- Migrations live in `supabase/migrations/` (applied: `presence_and_wav_voice`, `private_helper_functions` on 2026-10-26; `reports_notices_suspensions`, `auto_cleanup`, `language_practice` on 2026-10-28). `auto_cleanup` (2026-10-28): hourly pg_cron job `zugpal-cleanup` runs `private.cleanup()`; data from before 2026-10-28 is kept until Husam says to delete old test data. `schema.sql` is the full current state for a fresh project. Test a migration first with a dry run (`execute_sql` ending in `raise exception`, so everything rolls back), then apply it with `apply_migration`.
+- Migrations live in `supabase/migrations/` (applied: `presence_and_wav_voice`, `private_helper_functions` on 2026-10-26; `reports_notices_suspensions`, `auto_cleanup`, `language_practice`, `realtime_messages` on 2026-10-28). `auto_cleanup` (2026-10-28): hourly pg_cron job `zugpal-cleanup` runs `private.cleanup()`; data from before 2026-10-28 is kept until Husam says to delete old test data. `schema.sql` is the full current state for a fresh project. Test a migration first with a dry run (`execute_sql` ending in `raise exception`, so everything rolls back), then apply it with `apply_migration`.
 - Never put the `service_role` key or the database password into code, commits or chat.
 
 ## 6. Known issues and gaps
@@ -104,7 +104,7 @@ Do these roughly in this order and confirm with Husam before big changes.
 1. **Apply the pending migration** and verify voice between Android and iPhone.
 2. **Restructure the code** into modules (e.g. `src/` with ES modules or Vite + GitHub Actions deploying to Pages), keeping the same behavior, all three languages, RTL and demo mode. Add a small automated UI smoke test (Playwright) for: profile → check-in → match → chat → game.
 3. **Email login without password** (magic link) that upgrades the anonymous user (Supabase `linkIdentity`/`updateUser`), so testers keep their profile.
-4. **Supabase Realtime** for messages, waves and game moves (keep polling as fallback).
+4. ~~Supabase Realtime~~ (done 2026-10-28).
 5. **PWA**: manifest + service worker so the app installs on the home screen and Solitaire / chess vs computer work offline.
 6. **"My usual train"** with one-tap check-in, plus a "Hard" level for chess.
 7. Partner reporting: a small dashboard of anonymous mood-before/after and number of conversations per Talk Train.

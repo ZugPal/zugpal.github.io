@@ -8,7 +8,10 @@ const TOP = ["./", "index.html", "manifest.webmanifest", "legal.css", "impressum
 const skip = f => /LICENSE|\.txt$/.test(f);
 const files = TOP.concat(DIRS.flatMap(d => fs.readdirSync(path.join(ROOT, d)).filter(f => fs.statSync(path.join(ROOT, d, f)).isFile() && !skip(f)).sort().map(f => d + "/" + f)));
 const hash = crypto.createHash("sha256");
-for(const f of files){ const p = path.join(ROOT, f === "./" ? "index.html" : f); hash.update(f); hash.update(fs.readFileSync(p)); }
+// text files are hashed with LF line endings, so a Windows checkout (CRLF) gives the same version as GitHub
+const TEXT = /\.(html|js|css|json|webmanifest|svg|txt)$/;
+for(const f of files){ const p = path.join(ROOT, f === "./" ? "index.html" : f); const buf = fs.readFileSync(p);
+  hash.update(f); hash.update(TEXT.test(p) ? buf.toString("utf8").replace(/\r\n/g, "\n") : buf); }
 const version = hash.digest("hex").slice(0, 12);
 const swPath = path.join(ROOT, "sw.js");
 const sw = fs.readFileSync(swPath, "utf8");

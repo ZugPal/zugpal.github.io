@@ -1,4 +1,5 @@
-// Polling: refresh the train every few seconds (Realtime will come later).
+// Refreshing the train: Supabase Realtime triggers an instant refresh; polling stays as the fallback
+// (every 6 s, or every 20 s while Realtime is connected; 1.5 s in demo mode).
 import { safe, startFeedback } from "./actions.js";
 import { loadMessages } from "./chat.js";
 import { currentActivity } from "./games.js";
@@ -7,8 +8,9 @@ import { S, backend } from "./state.js";
 import { t, toast } from "./util.js";
 
 /* ---------------- Polling ---------------- */
-let pollTimer = null;
+let pollTimer = null, rtTimer = null, lastRefresh = 0;
 async function refresh(){
+  lastRefresh = Date.now();
   loadNotices();
   if(!S.ride || S.screen==="feedback") return;
   if(Date.now() > S.ride.expiresAt) return startFeedback();
@@ -29,7 +31,13 @@ async function refresh(){
   if(S.screen==="chat" || onlineChessOpen) await loadMessages();
   if(["nearby","match","chat"].includes(S.screen) || onlineChessOpen) render();
 }
-function startPolling(){ stopPolling(); const ms = backend.mode==="demo" ? 1500 : 6000; pollTimer = setInterval(()=>safe(refresh), ms); }
-function stopPolling(){ clearInterval(pollTimer); pollTimer = null; }
+function onRealtime(){ clearTimeout(rtTimer); rtTimer = setTimeout(()=>safe(refresh), 250); }
+function tick(){ if(backend.realtime && Date.now() - lastRefresh < 20000) return; safe(refresh); }
+function startPolling(){
+  stopPolling();
+  if(backend.listen) backend.listen(onRealtime);
+  pollTimer = setInterval(tick, backend.mode==="demo" ? 1500 : 6000);
+}
+function stopPolling(){ clearInterval(pollTimer); pollTimer = null; clearTimeout(rtTimer); if(backend && backend.unlisten) backend.unlisten(); }
 
 export { refresh, startPolling, stopPolling };
