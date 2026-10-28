@@ -36,6 +36,14 @@ document.addEventListener("change", async e => {
   if(el.dataset && el.dataset.bind) bind(el);
 });
 document.addEventListener("submit", e => { if(e.target.id==="chatForm"){ e.preventDefault(); sendChat(); } });
+// Offline + install (PWA). The service worker caches the app; see sw.js.
+if("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost"))
+  navigator.serviceWorker.register("sw.js").catch(e => console.error(e));
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); S.installPrompt = e; render(); });
+window.addEventListener("appinstalled", () => { S.installPrompt = null; render(); });
+window.addEventListener("online", () => render());
+window.addEventListener("offline", () => render());
+
 (async function start(){
   // File pickers live outside the re-rendered app so a re-render can't remove them mid-pick
   [["mediaPhoto", null], ["mediaCam", "environment"]].forEach(([id, cap])=>{

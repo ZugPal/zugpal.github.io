@@ -16,7 +16,8 @@ function header(){
       <option value="en"${S.lang==="en"?" selected":""}>English</option>
       <option value="ar"${S.lang==="ar"?" selected":""}>العربية</option>
     </select></div>
-    ${backend && backend.mode==="demo" ? `<div class="banner info">${t("demoBanner")}</div>` : ""}`;
+    ${backend && backend.mode==="demo" ? `<div class="banner info">${t("demoBanner")}</div>` : ""}
+    ${navigator.onLine === false ? `<div class="banner info">${t("offlineBanner")}</div>` : ""}`;
 }
 const trustStrip = () => `<ul class="trust" aria-label="Zugpal">${[1,2,3,4].map(i=>`<li>${ICON.shield}${t("trust"+i)}</li>`).join("")}</ul>`;
 function legalFooter(){
@@ -160,6 +161,7 @@ const screens = {
         <div class="small">${t("talkTrainBody")}</div>
         <button class="btn mint" data-act="checkin" data-arg="talk">${t("joinTalk")}</button></div>
       <button class="btn ghost" data-act="openGames">${t("games")}</button>
+      ${S.installPrompt ? `<div class="card"><div class="pname">${t("installTitle")}</div><div class="small">${t("installBody")}</div><button class="btn ghost" data-act="install">${t("installBtn")}</button></div>` : ""}
       <div class="card"><div class="pname">${t("testTitle")}</div><div class="small">${t("testBody")}</div>
         <button class="btn ghost" data-act="startTest">${t("testBtn")}</button></div>
       <div class="pname">${t("orOther")}</div>

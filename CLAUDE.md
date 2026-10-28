@@ -112,6 +112,7 @@ Do these roughly in this order and confirm with Husam before big changes.
 
 ## 8. How to work on this project
 
+- **PWA:** `manifest.webmanifest`, icons in `icons/`, `sw.js` caches the whole app as one versioned set (offline: games vs computer, legal pages). After changing ANY app file run `node tools/update-sw.js` (npm test fails otherwise), or phones keep the old version. Supabase is never cached.
 - Before pushing: run `npm test` (engines + UI smoke test in DE/EN/AR at 390×844) and look at the screenshots.
 - Keep the live keys in `CONFIG` (they are public by design); demo mode must keep working when `supabaseUrl` is empty.
 - Deploy = commit + push to `main`. Use clear commit messages. Tell Husam in one or two plain sentences what changed and what he should try on his phone.

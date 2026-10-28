@@ -202,6 +202,7 @@ const actions = {
   moodBefore(n){ n = +n; S.moodBefore = S.moodBefore===n ? null : n; render(); },
   moodAfterSet(n){ n = +n; S.moodAfter = S.moodAfter===n ? null : n; render(); },
   chat(id){ S.chatWith = id; S.current = S.matches.find(m=>m.id===id) || S.current; S.messages = []; S.screen = "chat"; render(); safe(loadMessages); },
+  install(){ const p = S.installPrompt; if(!p) return; S.installPrompt = null; p.prompt(); p.userChoice.finally(() => render()); },
   practice(v){ if(S.edit){ S.edit.practice = S.edit.practice === v ? "" : v; render(); } },
   practiceLevel(l){ if(S.edit && ["A1","A2","B1","B2","C1"].includes(l)){ S.edit.practice = "learner-" + l; render(); } },
   sendWord(){ const d = new Date(berlinDate()); sendBody(CARD + "word:" + (Math.floor(d.getTime()/86400000) % WORDS.length)); },
