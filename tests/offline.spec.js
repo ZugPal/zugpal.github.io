@@ -2,7 +2,7 @@
 const { test, expect } = require("@playwright/test");
 
 test("works offline after the first visit", async ({ page, context }) => {
-  await page.goto("/?demo");
+  await page.goto("/?demo&sw");
   await page.evaluate(() => navigator.serviceWorker.ready);
   await page.reload();                       // now controlled by the service worker
   await page.evaluate(() => navigator.serviceWorker.ready);

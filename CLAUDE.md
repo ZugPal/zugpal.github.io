@@ -85,7 +85,7 @@ Modules only reassign their own top-level variables (ES imports are read-only), 
 - Functions the app calls: `visible_riders()`, `my_matches()`, `send_media()`, `open_media()` (returns data once), `my_media_status()`, `report_media()`. Only the `authenticated` role may execute them (the app always signs in anonymously); they are revoked from `PUBLIC` and `anon`.
 - Helpers `private.can_see()`, `private.is_match()`, `private.had_match()` live in the **`private` schema**, which the API does not expose. They are security definer, so in `public` anyone could have asked "did X and Y match / block each other?". Keep new security definer helpers in `private`, and revoke every new function from `PUBLIC`.
 - Reports: `file_report()` (keeps the last 20 messages as evidence), `my_notices()`, `notices_seen()`; tables `notices`, `suspensions`. Moderators decide with `private.decide_report(id, action, reason)`; open cases in `private.open_reports`. See `docs/MODERATION.md`. Paused users can't check in or write (`private.is_suspended`).
-- Migrations live in `supabase/migrations/` (applied: `presence_and_wav_voice`, `private_helper_functions` on 2026-10-26; `reports_notices_suspensions`, `auto_cleanup`, `language_practice`, `realtime_messages` on 2026-10-28). `auto_cleanup` (2026-10-28): hourly pg_cron job `zugpal-cleanup` runs `private.cleanup()`; data from before 2026-10-28 is kept until Husam says to delete old test data. `schema.sql` is the full current state for a fresh project. Test a migration first with a dry run (`execute_sql` ending in `raise exception`, so everything rolls back), then apply it with `apply_migration`.
+- Migrations live in `supabase/migrations/` (applied: `presence_and_wav_voice`, `private_helper_functions` on 2026-10-26; `reports_notices_suspensions`, `auto_cleanup`, `language_practice`, `realtime_messages`, `profiles` on 2026-10-28). `auto_cleanup` (2026-10-28): hourly pg_cron job `zugpal-cleanup` runs `private.cleanup()`; data from before 2026-10-28 is kept until Husam says to delete old test data. `schema.sql` is the full current state for a fresh project. Test a migration first with a dry run (`execute_sql` ending in `raise exception`, so everything rolls back), then apply it with `apply_migration`.
 - Never put the `service_role` key or the database password into code, commits or chat.
 
 ## 6. Known issues and gaps
@@ -94,7 +94,7 @@ Modules only reassign their own top-level variables (ES imports are read-only), 
 - Polling only (6 s); Supabase Realtime would make chat and games instant.
 - Gender is self-declared; no verification yet.
 - No push notifications, no Bluetooth, no offline caching (no service worker yet).
-- No email login yet: identity = anonymous session in one browser. Badges and buddies are lost when the browser data is cleared.
+- Email login is optional; without it identity = anonymous session in one browser. Bans are weak for anonymous users.
 - Media is stored as base64 text in Postgres (fine for a test, not for scale; move to Supabase Storage later).
 
 ## 7. Roadmap
@@ -103,7 +103,7 @@ Do these roughly in this order and confirm with Husam before big changes.
 
 1. **Apply the pending migration** and verify voice between Android and iPhone.
 2. **Restructure the code** into modules (e.g. `src/` with ES modules or Vite + GitHub Actions deploying to Pages), keeping the same behavior, all three languages, RTL and demo mode. Add a small automated UI smoke test (Playwright) for: profile → check-in → match → chat → game.
-3. **Email login without password** (magic link) that upgrades the anonymous user (Supabase `linkIdentity`/`updateUser`), so testers keep their profile.
+3. ~~Email login~~ (built 2026-10-28: `updateUser({email})` keeps the same uid; `signInWithOtp` on a new phone; profile copy in `profiles`, only for non-anonymous users). **Needs custom SMTP (e.g. Resend) in Supabase Auth settings** before testers get the emails, and the Site URL / redirect URL `https://zugpal.github.io/`.
 4. ~~Supabase Realtime~~ (done 2026-10-28).
 5. **PWA**: manifest + service worker so the app installs on the home screen and Solitaire / chess vs computer work offline.
 6. **"My usual train"** with one-tap check-in, plus a "Hard" level for chess.

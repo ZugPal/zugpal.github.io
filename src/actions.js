@@ -40,6 +40,7 @@ const actions = {
     S.agreed = true; S.edit = null;
     if(e.gender!=="woman") S.womenOnly = false;
     save();
+    if(S.account && !S.account.anon && backend.saveProfile) backend.saveProfile(S.profile).catch(e=>console.error(e));
     if(S.ride){ S.screen = "nearby"; safe(async()=>{ await backend.update(); await refresh(); }); startPolling(); }
     else if(S.autoRide){ const c = S.autoRide; S.autoRide = null; return joinTest(c); }
     else if(S.autoTalk){ S.autoTalk = false; return actions.checkin("talk"); }
@@ -202,6 +203,15 @@ const actions = {
   moodBefore(n){ n = +n; S.moodBefore = S.moodBefore===n ? null : n; render(); },
   moodAfterSet(n){ n = +n; S.moodAfter = S.moodAfter===n ? null : n; render(); },
   chat(id){ S.chatWith = id; S.current = S.matches.find(m=>m.id===id) || S.current; S.messages = []; S.screen = "chat"; render(); safe(loadMessages); },
+  accLink(){
+    const email = String(S.draft.accEmail||"").trim();
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return toast(t("accBad"));
+    if(!backend.linkEmail) return toast(t("accDemo"));
+    safe(async()=>{ if(S.account && S.account.anon) await backend.linkEmail(email); else await backend.emailLogin(email); S.accSent = true; render(); });
+  },
+  accMode(m){ S.accLogin = m === "login"; render(); },
+  accSignOut(){ safe(async()=>{ await backend.signOut(); localStorage.removeItem("abteil.v1"); location.reload(); }); },
+  reloadApp(){ location.reload(); },
   install(){ const p = S.installPrompt; if(!p) return; S.installPrompt = null; p.prompt(); p.userChoice.finally(() => render()); },
   practice(v){ if(S.edit){ S.edit.practice = S.edit.practice === v ? "" : v; render(); } },
   practiceLevel(l){ if(S.edit && ["A1","A2","B1","B2","C1"].includes(l)){ S.edit.practice = "learner-" + l; render(); } },

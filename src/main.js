@@ -37,8 +37,12 @@ document.addEventListener("change", async e => {
 });
 document.addEventListener("submit", e => { if(e.target.id==="chatForm"){ e.preventDefault(); sendChat(); } });
 // Offline + install (PWA). The service worker caches the app; see sw.js.
-if("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost"))
+// On localhost only with ?sw (so local testing always shows the newest files). A new version shows an "update" bar.
+if("serviceWorker" in navigator && (location.protocol === "https:" || /[?&]sw(&|$)/.test(location.search))){
+  const hadController = !!navigator.serviceWorker.controller;
   navigator.serviceWorker.register("sw.js").catch(e => console.error(e));
+  navigator.serviceWorker.addEventListener("controllerchange", () => { if(hadController){ S.updateReady = true; render(); } });
+}
 window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); S.installPrompt = e; render(); });
 window.addEventListener("appinstalled", () => { S.installPrompt = null; render(); });
 window.addEventListener("online", () => render());
@@ -60,6 +64,8 @@ window.addEventListener("offline", () => render());
   try{ setBackend(CONFIG.supabaseUrl && !/[?&]demo\b/.test(location.search) ? await LiveBackend() : DemoBackend()); }
   catch(e){ console.error(e); setBackend(DemoBackend()); toast(t("netError")); }
   loadNotices(true);
+  // Email account: after a login link on a new phone, bring the saved profile back
+  if(backend.account){ try{ S.account = await backend.account(); if(S.account && !S.account.anon && !S.profile){ const p = await backend.loadProfile(); if(p && p.name){ S.profile = p; S.agreed = true; save(); } } }catch(e){ console.error(e); } }
   if(!S.profile) openProfile();
   else if(S.autoRide && !(S.ride && S.ride.key === "TEST-" + S.autoRide.toUpperCase())){ const c = S.autoRide; S.autoRide = null; joinTest(c); return; }
   else if(S.ride){ S.screen = "nearby"; safe(async()=>{ await backend.checkIn(); await refresh(); startPolling(); }); }

@@ -3,6 +3,7 @@ import { CONFIG } from "./config.js";
 import { S } from "./state.js";
 
 /* ---------------- Live backend (Supabase) ---------------- */
+const here = () => location.origin + location.pathname;
 function loadScript(src){ return new Promise((ok,fail)=>{ const s=document.createElement("script"); s.src=src; s.onload=ok; s.onerror=fail; document.head.appendChild(s); }); }
 async function LiveBackend(){
   await loadScript("vendor/supabase.js"); // supabase-js 2.45.4, hosted here so no CDN sees visitor IPs
@@ -30,6 +31,13 @@ async function LiveBackend(){
         .subscribe(st => { api.realtime = st === "SUBSCRIBED"; });
       joinRide();
     },
+    // Optional email account (magic link). updateUser keeps the same user id, so badges and buddies stay.
+    async account(){ const { data } = await sb.auth.getUser(); const u = data && data.user; return u ? { email: u.email || null, anon: !!u.is_anonymous, pending: u.new_email || null } : null; },
+    async linkEmail(email){ ok(await sb.auth.updateUser({ email }, { emailRedirectTo: here() })); },
+    async emailLogin(email){ ok(await sb.auth.signInWithOtp({ email, options: { shouldCreateUser: false, emailRedirectTo: here() } })); },
+    async signOut(){ await sb.auth.signOut(); },
+    async saveProfile(p){ ok(await sb.from("profiles").upsert({ id: uid, data: p, updated_at: new Date().toISOString() })); },
+    async loadProfile(){ const r = ok(await sb.from("profiles").select("data").eq("id", uid).maybeSingle()); return r ? r.data : null; },
     unlisten(){ onChange = () => {}; if(rideCh){ sb.removeChannel(rideCh); rideCh = null; rideKey = null; } },
     async checkIn(){ await this.update(); joinRide(); poke(); },
     async update(){ const p = S.profile; ok(await sb.from("riders").upsert({

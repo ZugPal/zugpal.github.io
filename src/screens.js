@@ -17,12 +17,26 @@ function header(){
       <option value="ar"${S.lang==="ar"?" selected":""}>العربية</option>
     </select></div>
     ${backend && backend.mode==="demo" ? `<div class="banner info">${t("demoBanner")}</div>` : ""}
+    ${S.updateReady ? `<div class="banner info action"><span>${t("updateReady")}</span><button class="btn small" data-act="reloadApp">${t("updateBtn")}</button></div>` : ""}
     ${navigator.onLine === false ? `<div class="banner info">${t("offlineBanner")}</div>` : ""}`;
 }
 const trustStrip = () => `<ul class="trust" aria-label="Zugpal">${[1,2,3,4].map(i=>`<li>${ICON.shield}${t("trust"+i)}</li>`).join("")}</ul>`;
 function legalFooter(){
   const h = S.lang==="de" ? "" : "#" + S.lang;
   return `<footer class="legal"><a href="impressum.html${h}" target="_blank" rel="noopener">${t("impressum")}</a><a href="datenschutz.html${h}" target="_blank" rel="noopener">${t("privacy")}</a><a href="regeln.html${h}" target="_blank" rel="noopener">${t("rulesLink")}</a></footer>`;
+}
+// Optional email account (magic link): shown on the profile screen
+function accountCard(){
+  if(!backend || backend.mode !== "live") return "";
+  const a = S.account;
+  if(a && !a.anon && a.email) return `<div class="card"><div class="pname">${ICON.shield} ${t("accSaved",{e:esc(a.email)})}</div><div class="small">${t("accSavedBody")}</div>
+    <button class="link" data-act="accSignOut" style="align-self:flex-start">${t("accSignOut")}</button></div>`;
+  if(S.accSent) return `<div class="card"><div class="pname">${t("accSentTitle")}</div><div class="small">${t("accSent")}</div></div>`;
+  const login = !!S.accLogin;
+  return `<div class="card"><div class="pname">${login ? t("accLoginTitle") : t("accTitle")}</div><div class="small">${login ? t("accLoginBody") : t("accBody")}</div>
+    <div class="field"><label for="accEmail">${t("accEmail")}</label><input type="text" inputmode="email" autocomplete="email" id="accEmail" data-bind="accEmail" value="${esc(S.draft.accEmail||"")}"></div>
+    <button class="btn ghost" data-act="accLink">${t("accSend")}</button>
+    <button class="link" data-act="accMode" data-arg="${login ? "save" : "login"}" style="align-self:flex-start">${login ? t("accToSave") : t("accToLogin")}</button></div>`;
 }
 function safetyBar(id){
   return `<div class="safety"><div class="row" style="flex-wrap:wrap;gap:8px">
@@ -147,6 +161,7 @@ const screens = {
         <ul class="rules"><li>${t("rule1")}</li><li>${t("rule2")}</li><li>${t("rule3")}</li><li>${t("rule4")}</li></ul>
         <label class="check" for="agree"><input type="checkbox" id="agree" data-bind="edit.agree"${e.agree?" checked":""}> ${t("agree")}</label></div>
       <div class="end"><button class="btn" data-act="saveProfile">${first ? t("start") : t("save")}</button></div>
+      ${accountCard()}
     </div>`;
   },
 
