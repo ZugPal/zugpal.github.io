@@ -20,11 +20,12 @@ async function refresh(){
   if(buddy){ S.buddySeen.add(buddy.id); toast(t("buddyHere",{name:buddy.first_name})); }
   const fresh = S.matches.find(m=>!S.seen.has(m.id));
   if(fresh){ S.matches.forEach(m=>S.seen.add(m.id));
-    if(S.screen!=="chat"){ S.current = fresh; S.iceIndex = 0; S.screen = "match"; try{ navigator.vibrate && navigator.vibrate([80,60,80]); }catch(e){} }
+    // only take over the screen from the people list; in a chat or game just show a notice
+    if(S.screen==="nearby"){ S.current = fresh; S.iceIndex = 0; S.screen = "match"; try{ navigator.vibrate && navigator.vibrate([80,60,80]); }catch(e){} }
     else toast(t("newMatch",{name:fresh.first_name}));
   }
   const onlineChessOpen = (S.screen==="chess" && S.chess && S.chess.mode==="online") || (S.screen==="dama" && S.dama && S.dama.mode==="online")
-    || (S.screen==="zugwort" && S.zw && S.zw.mode==="online") || (S.screen==="letters" && S.lt && S.lt.mode==="online");
+    || (S.screen==="zugwort" && S.zw && S.zw.mode==="online") || (S.screen==="letters" && S.lt && S.lt.mode==="online") || (S.screen==="classic" && S.cg && S.cg.mode==="online");
   if(S.screen==="chat" || onlineChessOpen) await loadMessages();
   if(["nearby","match","chat"].includes(S.screen) || onlineChessOpen) render();
 }

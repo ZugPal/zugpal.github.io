@@ -7,6 +7,7 @@ import { REPORT_REASONS, loadNotices, render } from "./screens.js";
 import { S, backend, save } from "./state.js";
 import { CARD, MAX_WAVES, berlinDate, hasContact, norm, t, toast } from "./util.js";
 import { wordActions } from "./words.js";
+import { classicActions } from "./classic.js";
 
 /* ---------------- Actions ---------------- */
 function selectInvite(){ const el = document.getElementById("inviteText"); if(!el) return; const r = document.createRange(); r.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
@@ -273,6 +274,6 @@ async function finishRide(){
   save(); S.screen = "checkin"; toast(before && after && after > before ? t("moodUp") : t("endedToast"));
 }
 
-Object.assign(actions, wordActions);
+Object.assign(actions, wordActions, classicActions);
 
 export { actions, inviteLink, joinTest, openProfile, safe, startFeedback };

@@ -76,6 +76,13 @@ for (const lang of ["de", "en", "ar"]) {
     await expect(page.locator(".slots .slot")).toHaveCount(lang === "ar" ? 4 : 3);
     await page.click('[data-act="chessBack"][data-arg="chat"] >> nth=0');
 
+    // Classic games with the match: Mau-Mau invite deals the same cards from the game id
+    await page.click('.games [data-act="cgSheet"]');
+    await page.click('[data-act="cgInvite"][data-arg="mau"]');
+    await expect(page.locator(".mhand .mcard")).toHaveCount(5);
+    await page.click('[data-act="chessBack"][data-arg="chat"] >> nth=0');
+    await expect(page.locator('.gamecard [data-act="cgOpen"]')).toBeVisible();
+
     // Online chess with the match: invite card + board
     await page.click('[data-act="chessInvite"]');
     await expect(page.locator(".board .sq")).toHaveCount(64);
@@ -113,6 +120,31 @@ for (const lang of ["de", "en", "ar"]) {
     await page.locator('.keyboard [data-act="ltKey"]').first().click();
     await expect(page.locator('.keyboard [data-act="ltKey"]:disabled')).toHaveCount(1);
     await shot("11-letter-train");
+
+    // Vier in einer Reihe: my disc lands, the computer answers
+    await page.click('[data-act="chessBack"][data-arg="games"]');
+    await page.click('[data-act="cgCpu"][data-arg="four"]');
+    await page.click('.fcol[data-arg="3"]');
+    await expect(page.locator(".disc.me")).toHaveCount(1);
+    await expect(page.locator(".disc.op")).toHaveCount(1);
+    await shot("12-four");
+
+    // Mühle: place a piece, the computer places one
+    await page.click('[data-act="chessBack"][data-arg="games"]');
+    await page.click('[data-act="cgCpu"][data-arg="muehle"]');
+    await page.click('.mpt[data-arg="0"]');
+    await expect(page.locator(".mpt.me")).toHaveCount(1);
+    await expect(page.locator(".mpt.op")).toHaveCount(1);
+    await shot("13-muehle");
+
+    // Mau-Mau: play a fitting card or draw; either way the turn comes back
+    await page.click('[data-act="chessBack"][data-arg="games"]');
+    await page.click('[data-act="cgCpu"][data-arg="mau"]');
+    await expect(page.locator(".mhand .mcard")).toHaveCount(5);
+    const fitting = page.locator('.mhand .mcard[data-act="cgCard"]');
+    if (await fitting.count()) { await fitting.first().click(); const suit = page.locator('.chip.suit'); if (await suit.count()) await suit.first().click(); }
+    else await page.click('[data-act="cgMove"][data-arg="d"]');
+    await shot("14-maumau");
 
     expect(errors, errors.join("\n")).toEqual([]);
   });
