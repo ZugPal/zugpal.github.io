@@ -109,6 +109,19 @@ html[lang="ar"] .lbl{letter-spacing:0}
 .trust svg{width:16px;height:16px;flex-shrink:0}
 footer.legal{display:flex;flex-wrap:wrap;justify-content:center;gap:0 18px;font-size:13px}
 footer.legal a{color:var(--muted);min-height:44px;display:inline-flex;align-items:center}
+.safety{display:flex;flex-direction:column;gap:6px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.btn.leave{background:var(--danger);color:var(--bg)}
+.link.quiet{display:inline-flex;align-items:center;gap:4px;color:var(--muted);font-size:13px;min-height:36px;padding:0;align-self:flex-start}
+.link.quiet svg,.onhero-link svg,.safety svg,.sheet h2 svg{width:16px;height:16px;vertical-align:-2px}
+.onhero-link{color:var(--hero-muted);display:inline-flex;align-items:center;gap:6px;justify-content:center;min-height:44px}
+.sheet{position:fixed;inset:0;z-index:40;background:rgba(10,16,14,.55);display:flex;align-items:flex-end;justify-content:center}
+.sheet .panel{background:var(--bg);color:var(--ink);width:100%;max-width:480px;max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;
+  padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px}
+.sheet h2{margin:0;font-family:var(--f-display);font-size:22px;display:flex;align-items:center;gap:8px}
+.sheet p{margin:0}
+.opts{display:flex;flex-direction:column;gap:8px}
+.chip.opt{justify-content:flex-start;text-align:start;width:100%;min-height:48px}
+.notice{background:var(--surface);border-radius:12px;padding:12px 14px}
 .chatbar{display:flex;gap:8px}
 .chatbar input{flex:1;min-width:0}
 .chatbar .iconbtn{color:var(--muted)}
@@ -171,6 +184,7 @@ button.mediacard{cursor:pointer;min-height:48px}
 const CONFIG = {
   supabaseUrl: "https://vkyfnewnpsyuhbmvryws.supabase.co",       // e.g. "https://abcd1234.supabase.co"
   supabaseAnonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZreWZuZXducHN5dWhibXZyeXdzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI3NTczMjUsImV4cCI6MjEwODMzMzMyNX0.FyGj1LjJkpDz6xtjKH28EscjSCtL_99M6mindIVG8rU",   // the "anon public" key from Supabase > Project Settings > API
+  contactEmail: "",   // shown for objections to moderation decisions; until set, the app links to the Impressum
   talkTrain: {
     de: "Dienstag 07:42 · RE 1 ab Düren · Wagen 5",
     en: "Tuesday 07:42 · RE 1 from Düren · coach 5",
@@ -252,7 +266,21 @@ const T = {
     moodUp:"Your mood went up on this ride.", moodPrivate:"Anonymous. It helps us show partners that Zugpal works.",
     m1:"Low", m2:"Meh", m3:"Okay", m4:"Good", m5:"Great",
     trust1:"No tracking.", trust2:"No ads.", trust3:"Servers in Frankfurt.", trust4:"Not a dating app.",
-    impressum:"Legal notice", privacy:"Privacy", rulesLink:"Rules & terms"
+    impressum:"Legal notice", privacy:"Privacy", rulesLink:"Rules & terms",
+    leaveChat:"Leave chat now", leftToast:"You left the chat. {name} can't write to you anymore.", safetyNote:"Reports are reviewed within 24 hours.",
+    reportTitle:"Report {name}", reportWhy:"What happened?", reportPick:"Please choose what happened.",
+    r_under18:"This person seems to be under 18", r_harassment:"Harassment or sexual messages", r_hate:"Insults, threats or hate",
+    r_scam:"Asks for money or seems like a scam", r_contact:"Pushes for contact details or advertises", r_fake:"Fake profile or wrong gender for women-only", r_other:"Something else",
+    reportDetails:"Anything else we should know? (optional)", alsoBlock:"Also block this person", sendReport:"Send report",
+    reportNext:"Your report is confidential: {name} won't find out who reported. You'll see our decision here in the app.",
+    emergency:"In danger right now? Call 110 (police) or 112.",
+    reportThanksTitle:"Report received", reportThanks:"Thank you. Report #{n} has arrived. We review it within 24 hours and tell you here what we decided.",
+    noticesTitle:"From the Zugpal team", n_received:"We received your report #{n}. We review it within 24 hours.",
+    n_decided_action:"Report #{n}: we reviewed it and took action. Thank you for helping keep Zugpal safe.",
+    n_decided_none:"Report #{n}: we reviewed it and found no rule break, so we took no action.",
+    n_removed:"We removed messages you sent because they broke our rules. Reason: {r}",
+    n_suspended:"Your account is paused until {d}. Reason: {r}", n_ban:"Your account is closed. Reason: {r}",
+    objectHint:"Disagree? Write to us:", gotIt:"OK", pausedError:"Your account is paused. See the message from the Zugpal team.", reportShort:"Report"
   },
   de: {
     tagline:"Für alle, die im Zug gern reden würden.",
@@ -326,7 +354,21 @@ const T = {
     moodUp:"Deine Stimmung ist auf dieser Fahrt gestiegen.", moodPrivate:"Anonym. Damit zeigen wir Partnern, dass Zugpal wirkt.",
     m1:"Mies", m2:"Naja", m3:"Okay", m4:"Gut", m5:"Super",
     trust1:"Kein Tracking.", trust2:"Keine Werbung.", trust3:"Server in Frankfurt.", trust4:"Kein Dating.",
-    impressum:"Impressum", privacy:"Datenschutz", rulesLink:"Regeln & AGB"
+    impressum:"Impressum", privacy:"Datenschutz", rulesLink:"Regeln & AGB",
+    leaveChat:"Chat sofort verlassen", leftToast:"Du hast den Chat verlassen. {name} kann dir nicht mehr schreiben.", safetyNote:"Meldungen werden innerhalb von 24 Stunden geprüft.",
+    reportTitle:"{name} melden", reportWhy:"Was ist passiert?", reportPick:"Bitte wähle aus, was passiert ist.",
+    r_under18:"Diese Person scheint unter 18 zu sein", r_harassment:"Belästigung oder sexuelle Nachrichten", r_hate:"Beleidigung, Drohung oder Hass",
+    r_scam:"Fragt nach Geld oder wirkt wie Betrug", r_contact:"Drängt auf Kontaktdaten oder macht Werbung", r_fake:"Falsches Profil oder falsches Geschlecht bei „Nur Frauen“", r_other:"Etwas anderes",
+    reportDetails:"Möchtest du noch etwas ergänzen? (freiwillig)", alsoBlock:"Diese Person auch blockieren", sendReport:"Meldung senden",
+    reportNext:"Deine Meldung ist vertraulich: {name} erfährt nicht, wer gemeldet hat. Unsere Entscheidung siehst du hier in der App.",
+    emergency:"Akute Gefahr? Ruf 110 (Polizei) oder 112.",
+    reportThanksTitle:"Meldung eingegangen", reportThanks:"Danke. Meldung Nr. {n} ist angekommen. Wir prüfen sie innerhalb von 24 Stunden und sagen dir hier, wie wir entschieden haben.",
+    noticesTitle:"Vom Zugpal-Team", n_received:"Deine Meldung Nr. {n} ist eingegangen. Wir prüfen sie innerhalb von 24 Stunden.",
+    n_decided_action:"Meldung Nr. {n}: Wir haben sie geprüft und gehandelt. Danke, dass du Zugpal sicher machst.",
+    n_decided_none:"Meldung Nr. {n}: Wir haben sie geprüft und keinen Regelverstoß gefunden. Deshalb haben wir nichts unternommen.",
+    n_removed:"Wir haben Nachrichten von dir entfernt, weil sie gegen unsere Regeln verstoßen. Grund: {r}",
+    n_suspended:"Dein Konto ist bis {d} pausiert. Grund: {r}", n_ban:"Dein Konto ist geschlossen. Grund: {r}",
+    objectHint:"Nicht einverstanden? Schreib uns:", gotIt:"OK", pausedError:"Dein Konto ist pausiert. Siehe die Nachricht vom Zugpal-Team.", reportShort:"Melden"
   },
   ar: {
     tagline:"لكل من يرغب في الحديث أثناء رحلة القطار.",
@@ -400,7 +442,21 @@ const T = {
     moodUp:"تحسّن مزاجك خلال هذه الرحلة.", moodPrivate:"مجهول الهوية. يساعدنا ذلك على إثبات فائدة Zugpal للشركاء.",
     m1:"سيئ", m2:"عادي", m3:"لا بأس", m4:"جيد", m5:"رائع",
     trust1:"لا تتبّع.", trust2:"لا إعلانات.", trust3:"الخوادم في فرانكفورت.", trust4:"ليس تطبيق مواعدة.",
-    impressum:"بيانات الناشر", privacy:"الخصوصية", rulesLink:"القواعد والشروط"
+    impressum:"بيانات الناشر", privacy:"الخصوصية", rulesLink:"القواعد والشروط",
+    leaveChat:"غادر المحادثة الآن", leftToast:"غادرت المحادثة. لم يعد بإمكان {name} مراسلتك.", safetyNote:"تتم مراجعة البلاغات خلال 24 ساعة.",
+    reportTitle:"الإبلاغ عن {name}", reportWhy:"ماذا حدث؟", reportPick:"يرجى اختيار ما حدث.",
+    r_under18:"يبدو أن هذا الشخص دون 18 عاماً", r_harassment:"تحرّش أو رسائل جنسية", r_hate:"إهانة أو تهديد أو كراهية",
+    r_scam:"يطلب مالاً أو يبدو كاحتيال", r_contact:"يُلحّ على بيانات الاتصال أو يروّج لإعلانات", r_fake:"ملف مزيّف أو جنس غير صحيح في «نساء فقط»", r_other:"شيء آخر",
+    reportDetails:"هل تريد إضافة شيء؟ (اختياري)", alsoBlock:"احظر هذا الشخص أيضاً", sendReport:"إرسال البلاغ",
+    reportNext:"بلاغك سرّي: لن يعرف {name} من أبلغ عنه. سترى قرارنا هنا في التطبيق.",
+    emergency:"في خطر الآن؟ اتصل بالرقم 110 (الشرطة) أو 112.",
+    reportThanksTitle:"وصل البلاغ", reportThanks:"شكراً لك. وصل البلاغ رقم {n}. سنراجعه خلال 24 ساعة ونخبرك هنا بقرارنا.",
+    noticesTitle:"من فريق Zugpal", n_received:"وصلنا بلاغك رقم {n}. سنراجعه خلال 24 ساعة.",
+    n_decided_action:"البلاغ رقم {n}: راجعناه واتخذنا إجراءً. شكراً لمساعدتك في إبقاء Zugpal آمناً.",
+    n_decided_none:"البلاغ رقم {n}: راجعناه ولم نجد مخالفة للقواعد، لذلك لم نتخذ أي إجراء.",
+    n_removed:"حذفنا رسائل أرسلتها لأنها خالفت قواعدنا. السبب: {r}",
+    n_suspended:"حسابك موقوف مؤقتاً حتى {d}. السبب: {r}", n_ban:"تم إغلاق حسابك. السبب: {r}",
+    objectHint:"غير موافق؟ راسلنا:", gotIt:"حسناً", pausedError:"حسابك موقوف مؤقتاً. انظر رسالة فريق Zugpal.", reportShort:"إبلاغ"
   }
 };
 
@@ -816,7 +872,7 @@ const S = {
   lang:"de", profile:null, agreed:false, edit:null,
   ride:null, moods:new Set(["small"]), coach:"", womenOnly:false, chatOnly:true, open:true, moodBefore:null, moodAfter:null, autoTalk:false,
   screen:"welcome", riders:[], matches:[], seen:new Set(), buddySeen:new Set(), buddies:new Set(),
-  current:null, chatWith:null, messages:[], mediaDone:new Set(), mediaStatus:{}, mediaCache:{}, photoSheet:false, readCount:{}, lastUnread:0, presAct:null, presAt:0, chess:null, dama:null, sol:null, gamesBack:"checkin", playing:null, viewer:null, recording:null, iceIndex:0, draft:{}, fb:{}, toast:"", warnedEnd:false
+  current:null, chatWith:null, messages:[], mediaDone:new Set(), mediaStatus:{}, mediaCache:{}, photoSheet:false, readCount:{}, lastUnread:0, presAct:null, presAt:0, chess:null, dama:null, sol:null, gamesBack:"checkin", playing:null, viewer:null, reportSheet:null, reportDone:null, notices:[], noticesAt:0, recording:null, iceIndex:0, draft:{}, fb:{}, toast:"", warnedEnd:false
 };
 let backend = null, pollTimer = null, toastTimer = null;
 
@@ -911,6 +967,7 @@ function DemoBackend(){
      badges:{}, photo:portrait("#F7E7B4","#F3D2B5","#9A5A2B","#15211D","short"), reply:{}}
   ];
   let present=[], mine=new Set(), theirs=new Set(), blocked=new Set(), msgs={}, timers=[], reacted={}, media={};
+  let demoReports = 0; const demoNotices = [];
   let savedBuddies = new Set(); try{ savedBuddies = new Set(JSON.parse(localStorage.getItem("zugpal.demoBuddies")||"[]")); }catch(e){}
   const visibleTo = p => !blocked.has(p.id) && (!S.womenOnly || p.gender==="woman") && (!p.womenOnly || S.profile.gender==="woman");
   const isBuddy = p => savedBuddies.has(p.id) && S.buddies.has(p.id);
@@ -967,6 +1024,9 @@ function DemoBackend(){
     async mediaStatus(){ const o = {}; for(const k in media) if(media[k].mine) o[k] = media[k].opened; return o; },
     async reportMedia(){},
     async block(id){ blocked.add(id); }, async report(){}, async compliment(){}, async recordMood(){},
+    async fileReport(id, reason){ const n = ++demoReports; if(reason !== "comfort") demoNotices.unshift({id:n, kind:"received", report_id:n, created_at:new Date().toISOString(), seen:false}); return n; },
+    async notices(){ return demoNotices.slice(); }, async noticesSeen(ids){ demoNotices.forEach(n=>{ if(ids.includes(n.id)) n.seen = true; }); },
+    async leave(id){ mine.delete(id); theirs.delete(id); },
     async buddy(id, on){ const p = people.find(x=>x.id===id); if(on && p && p.buddyBack){ savedBuddies.add(id); } else savedBuddies.delete(id);
       try{ localStorage.setItem("zugpal.demoBuddies", JSON.stringify([...savedBuddies])); }catch(e){} },
     async checkOut(){ timers.forEach(clearTimeout); timers=[]; present=[]; mine.clear(); theirs.clear(); msgs={}; }
@@ -1000,6 +1060,10 @@ async function LiveBackend(){
     async send(id, body){ ok(await sb.from("messages").insert({ride_key:S.ride.key, to_id:id, body})); },
     async block(id){ ok(await sb.from("blocks").upsert({blocker:uid, blocked:id})); },
     async report(id, reason){ ok(await sb.from("reports").insert({reported:id, ride_key:S.ride && S.ride.key, reason:reason || "reported in app"})); },
+    async fileReport(id, reason, details){ return ok(await sb.rpc("file_report", {p_reported:id, p_ride:(S.ride && S.ride.key) || "", p_reason:reason, p_details:details || ""})); },
+    async notices(){ return ok(await sb.rpc("my_notices")) || []; },
+    async noticesSeen(ids){ ok(await sb.rpc("notices_seen", {p_ids:ids})); },
+    async leave(id){ if(S.ride) ok(await sb.from("waves").delete().match({from_id:uid, to_id:id, ride_key:S.ride.key})); },
     async compliment(id, badge){ ok(await sb.from("compliments").upsert({from_id:uid, to_id:id, badge})); },
     async sendMedia(id, kind, data){ return ok(await sb.rpc("send_media", {p_to:id, p_ride:S.ride.key, p_kind:kind, p_data:data})); },
     async openMedia(mid){ const rows = ok(await sb.rpc("open_media", {p_id:mid})) || []; return rows[0] || null; },
@@ -1038,6 +1102,56 @@ function legalFooter(){
   const h = S.lang==="de" ? "" : "#" + S.lang;
   return `<footer class="legal"><a href="impressum.html${h}" target="_blank" rel="noopener">${t("impressum")}</a><a href="datenschutz.html${h}" target="_blank" rel="noopener">${t("privacy")}</a><a href="regeln.html${h}" target="_blank" rel="noopener">${t("rulesLink")}</a></footer>`;
 }
+function safetyBar(id){
+  return `<div class="safety"><div class="row" style="flex-wrap:wrap;gap:8px">
+      <button class="btn small leave" data-act="leaveChat" data-arg="${esc(id)}">${t("leaveChat")}</button>
+      <button class="btn small ghost" data-act="reportOpen" data-arg="${esc(id)}">${ICON.shield}${t("reportShort")}</button>
+      <button class="link danger" data-act="block" data-arg="${esc(id)}">${t("block")}</button></div>
+    <div class="small">${t("safetyNote")}</div></div>`;
+}
+const objectLine = () => `<div class="small">${t("objectHint")} ${CONFIG.contactEmail ? `<a href="mailto:${esc(CONFIG.contactEmail)}">${esc(CONFIG.contactEmail)}</a>` : `<a href="impressum.html${S.lang==="de"?"":"#"+S.lang}" target="_blank" rel="noopener">${t("impressum")}</a>`}</div>`;
+const REPORT_REASONS = ["under18","harassment","hate","scam","contact","fake","other"];
+function reportSheet(){
+  const r = S.reportSheet, name = esc(r.name || "");
+  const reasons = REPORT_REASONS.map(k=>`<button class="chip opt" data-act="reportReason" data-arg="${k}" aria-pressed="${r.reason===k}">${t("r_"+k)}</button>`).join("");
+  return `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="rsT"><div class="panel">
+    <h2 id="rsT">${t("reportTitle",{name})}</h2>
+    <div class="flabel">${t("reportWhy")}</div><div class="opts">${reasons}</div>
+    <div class="field"><label for="rDetails">${t("reportDetails")}</label><input type="text" id="rDetails" data-bind="reportDetails" maxlength="500" value="${esc(S.draft.reportDetails||"")}"></div>
+    <label class="check" for="rBlock"><input type="checkbox" id="rBlock" data-bind="reportBlock"${S.draft.reportBlock!==false?" checked":""}> ${t("alsoBlock")}</label>
+    <div class="small">${t("safetyNote")} ${t("reportNext",{name})}</div>
+    <div class="banner">${t("emergency")}</div>
+    <div class="row" style="justify-content:flex-end;gap:12px"><button class="link" data-act="reportCancel">${t("cancel")}</button><button class="btn" data-act="reportSend">${t("sendReport")}</button></div>
+  </div></div>`;
+}
+function noticeText(n){
+  if(n.kind==="suspended"){
+    const until = n.until ? new Date(n.until) : null;
+    if(!until || until.getFullYear() - new Date().getFullYear() > 50) return t("n_ban",{r:esc(n.reason||"")});
+    return t("n_suspended",{d:esc(until.toLocaleString(S.lang, {dateStyle:"medium", timeStyle:"short"})), r:esc(n.reason||"")});
+  }
+  if(n.kind==="removed") return t("n_removed",{r:esc(n.reason||"")});
+  return t("n_"+n.kind,{n:Number(n.report_id)||""});
+}
+function overlays(){
+  if(S.reportSheet) return reportSheet();
+  if(S.reportDone) return `<div class="sheet" role="dialog" aria-modal="true"><div class="panel">
+    <h2>${ICON.shield} ${t("reportThanksTitle")}</h2><p>${t("reportThanks",{n:Number(S.reportDone.n)||""})}</p>
+    <div class="banner">${t("emergency")}</div>
+    <div class="row" style="justify-content:flex-end"><button class="btn" data-act="reportDoneClose">${t("gotIt")}</button></div></div></div>`;
+  const unseen = S.notices.filter(n=>!n.seen);
+  if(unseen.length) return `<div class="sheet" role="dialog" aria-modal="true"><div class="panel">
+    <h2>${ICON.shield} ${t("noticesTitle")}</h2>
+    ${unseen.map(n=>`<div class="notice">${noticeText(n)}</div>`).join("")}
+    ${unseen.some(n=>n.kind==="removed"||n.kind==="suspended"||n.kind==="decided_none") ? objectLine() : ""}
+    <div class="row" style="justify-content:flex-end"><button class="btn" data-act="noticesOk">${t("gotIt")}</button></div></div></div>`;
+  return "";
+}
+async function loadNotices(force){
+  if(!backend || !backend.notices || (!force && Date.now() - S.noticesAt < 30000)) return;
+  S.noticesAt = Date.now();
+  try{ const before = S.notices.filter(n=>!n.seen).length; S.notices = await backend.notices() || []; if(S.notices.filter(n=>!n.seen).length !== before) render(); }catch(e){ console.error(e); }
+}
 function endingBanner(){
   const n = minsLeft();
   if(!S.ride || n > 5 || !S.matches.length) return "";
@@ -1058,7 +1172,8 @@ function personCard(r){
       ${langs ? `<div class="small">${esc(t("speaks",{l:langs}))}</div>` : ""}
       ${tops ? `<div class="small">${esc(t("talksAbout",{t:tops}))}</div>` : ""}
       ${r.ask_me && !hasContact(r.ask_me) ? `<div class="small" style="color:var(--ink)" dir="auto">“${esc(t("askMeShown",{x:String(r.ask_me).slice(0,60)}))}”</div>` : ""}
-      ${tags.length ? `<div class="tags">${tags.join("")}</div>` : ""}</div>
+      ${tags.length ? `<div class="tags">${tags.join("")}</div>` : ""}
+      <button class="link quiet" data-act="reportOpen" data-arg="${esc(r.id)}">${ICON.shield}${t("reportShort")}</button></div>
     <button class="btn wave${r.waved?" done":""}" data-act="wave" data-arg="${esc(r.id)}" aria-pressed="${!!r.waved}">${r.waved?t("waved"):t("wave")}</button></div>`;
 }
 
@@ -1187,7 +1302,8 @@ const screens = {
         <div class="q">“${esc(q)}”</div><div class="small" style="color:inherit">${why ? t("iceBecause",{mood:esc(moodName(why))}) : t("iceGeneric")}</div></div>
       ${meet}
       <div class="end"><button class="btn mint" data-act="chat" data-arg="${esc(m.id)}">${t("sayHi")}</button>
-        <button class="btn onhero" data-act="go" data-arg="nearby">${t("notToday")}</button></div>
+        <button class="btn onhero" data-act="go" data-arg="nearby">${t("notToday")}</button>
+        <button class="link onhero-link" data-act="reportOpen" data-arg="${esc(m.id)}">${ICON.shield}${t("reportShort")}</button></div>
     </div></div>`;
   },
 
@@ -1231,9 +1347,8 @@ const screens = {
     return `<div class="screen">
       <div class="row"><button class="iconbtn flip" data-act="go" data-arg="nearby" aria-label="${t("back")}">${ICON.back}</button>
         ${photo(m.id, m.first_name, m.photo, 40, false)}<div class="grow"><div class="pname">${name}</div>${active ? `<div class="small" style="color:var(--accent)">● ${t("activeNow")}</div>` : ""}</div>
-        <button class="iconbtn" data-act="buddyToggle" data-arg="${esc(m.id)}" aria-pressed="${isB}" aria-label="${t("buddySave")}">${isB ? ICON.starFull : ICON.star}</button>
-        <button class="link" data-act="report" data-arg="${esc(m.id)}">${t("report")}</button>
-        <button class="link danger" data-act="block" data-arg="${esc(m.id)}">${t("block")}</button></div>
+        <button class="iconbtn" data-act="buddyToggle" data-arg="${esc(m.id)}" aria-pressed="${isB}" aria-label="${t("buddySave")}">${isB ? ICON.starFull : ICON.star}</button></div>
+      ${safetyBar(m.id)}
       ${endingBanner()}
       <div class="games" role="toolbar">
         <button class="chip" data-act="game" data-arg="dice">${ICON.dice}${t("dice")}</button>
@@ -1365,6 +1480,7 @@ function render(){
   app.innerHTML = header() + (screens[S.screen] || screens.welcome)()
     + (S.screen==="chat" || S.screen==="loading" ? "" : legalFooter())
     + (S.viewer ? `<div class="viewer" role="dialog" aria-modal="true"><img src="${esc(S.viewer)}" alt=""><div class="note">${t("onceNote")}</div><button class="btn mint small" data-act="closeViewer">${t("close")}</button></div>` : "")
+    + overlays()
     + (S.toast ? `<div class="toast" role="status">${esc(S.toast)}</div>` : "");
   if(active){ const el = document.getElementById(active); if(el && el.tagName==="INPUT" && el.type==="text"){ el.focus(); try{ const l=el.value.length; el.setSelectionRange(l,l); }catch(e){} } }
   const log = document.getElementById("chatLog"); if(log) log.scrollTop = log.scrollHeight;
@@ -1372,7 +1488,7 @@ function render(){
 
 /* ---------------- Actions ---------------- */
 function selectInvite(){ const el = document.getElementById("inviteText"); if(!el) return; const r = document.createRange(); r.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
-async function safe(fn){ try{ await fn(); } catch(e){ console.error(e); toast(t("netError")); } }
+async function safe(fn){ try{ await fn(); } catch(e){ console.error(e); const paused = /row-level security/i.test(String(e && e.message)); toast(paused ? t("pausedError") : t("netError")); if(paused) loadNotices(true); } }
 const inviteLink = () => location.href.split("#")[0] + "#ride-" + S.ride.key.slice(5);
 function joinTest(code){
   code = String(code).toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,8);
@@ -1555,7 +1671,7 @@ const actions = {
       }
     });
   },
-  reportMedia(id){ safe(async()=>{ await backend.reportMedia(id); toast(t("mediaReported")); }); },
+  reportMedia(id){ safe(async()=>{ await backend.reportMedia(id); toast(t("mediaReported") + " " + t("safetyNote")); }); },
   startTest(){ const abc = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; let c = ""; for(let i=0;i<5;i++) c += abc[Math.floor(Math.random()*abc.length)]; joinTest(c); },
   copyInvite(){
     const link = inviteLink();
@@ -1579,7 +1695,33 @@ const actions = {
     const on = !S.buddies.has(id); on ? S.buddies.add(id) : S.buddies.delete(id); save(); render();
     safe(()=>backend.buddy(id, on));
   },
-  report(id){ safe(async()=>{ await backend.report(id); toast(t("reportToast")); }); },
+  report(id){ actions.reportOpen(id); },
+  reportOpen(id){
+    const p = S.matches.find(x=>x.id===id) || S.riders.find(x=>x.id===id) || (S.current && S.current.id===id ? S.current : null);
+    S.reportSheet = {id, name:p ? p.first_name : "", reason:null}; S.draft.reportDetails = ""; S.draft.reportBlock = true; render();
+  },
+  reportReason(k){ if(S.reportSheet && REPORT_REASONS.includes(k)){ S.reportSheet.reason = k; render(); } },
+  reportCancel(){ S.reportSheet = null; render(); },
+  reportSend(){
+    const r = S.reportSheet; if(!r) return; if(!r.reason) return toast(t("reportPick"));
+    const details = String(S.draft.reportDetails||"").trim().slice(0,500), alsoBlock = S.draft.reportBlock !== false;
+    safe(async()=>{
+      const n = await backend.fileReport(r.id, r.reason, details);
+      S.reportSheet = null; S.reportDone = {n}; S.draft.reportDetails = "";
+      if(alsoBlock){ S.buddies.delete(r.id); save(); await backend.buddy(r.id, false).catch(()=>{}); await backend.block(r.id);
+        S.matches = S.matches.filter(m=>m.id!==r.id); S.riders = S.riders.filter(x=>x.id!==r.id);
+        if(S.chatWith===r.id || (S.current && S.current.id===r.id)){ S.screen = "nearby"; S.current = null; S.chatWith = null; } }
+      render(); loadNotices(true);
+    });
+  },
+  reportDoneClose(){ S.reportDone = null; render(); },
+  noticesOk(){ const ids = S.notices.filter(n=>!n.seen).map(n=>n.id); S.notices.forEach(n=>n.seen = true); render(); if(ids.length) safe(()=>backend.noticesSeen(ids)); },
+  leaveChat(id){
+    const m = S.matches.find(x=>x.id===id); const name = m ? m.first_name : "";
+    S.matches = S.matches.filter(x=>x.id!==id); S.riders.forEach(r=>{ if(r.id===id) r.waved = false; });
+    S.screen = "nearby"; S.current = null; S.chatWith = null; S.messages = []; render();
+    safe(async()=>{ await backend.leave(id); toast(t("leftToast",{name})); });
+  },
   block(id){ S.buddies.delete(id); save(); safe(async()=>{ await backend.buddy(id, false).catch(()=>{}); await backend.block(id); S.matches = S.matches.filter(m=>m.id!==id); S.riders = S.riders.filter(r=>r.id!==id); S.screen="nearby"; S.current=null; toast(t("blockedToast")); }); },
   endRide(){ startFeedback(); },
   fbComfy(arg){ const [id, v] = arg.split("|"); S.fb[id].comfy = v==="yes"; render(); },
@@ -1598,7 +1740,7 @@ async function finishRide(){
   const jobs = [];
   for(const id in S.fb){
     const f = S.fb[id];
-    if(f.comfy === false) jobs.push(backend.report(id, "did not feel comfortable"));
+    if(f.comfy === false) jobs.push(backend.fileReport(id, "comfort", "did not feel comfortable").catch(()=>backend.report(id, "did not feel comfortable")));
     f.badges.forEach(k=>jobs.push(backend.compliment(id, k)));
     if(f.buddy){ S.buddies.add(id); jobs.push(backend.buddy(id, true)); } else if(S.buddies.has(id)){ S.buddies.delete(id); jobs.push(backend.buddy(id, false)); }
   }
@@ -1826,6 +1968,7 @@ async function loadMessages(){
 
 /* ---------------- Polling ---------------- */
 async function refresh(){
+  loadNotices();
   if(!S.ride || S.screen==="feedback") return;
   if(Date.now() > S.ride.expiresAt) return startFeedback();
   const act = currentActivity();
@@ -1886,8 +2029,10 @@ document.addEventListener("submit", e => { if(e.target.id==="chatForm"){ e.preve
   S.autoTalk = location.hash === "#talk";
   const m = location.hash.match(/^#ride-([A-Za-z0-9]{4,8})$/); S.autoRide = m ? m[1] : null;
   S.screen = "loading"; render();
-  try{ backend = CONFIG.supabaseUrl ? await LiveBackend() : DemoBackend(); }
+  // ?demo forces the simulated riders (for testing without touching the live database)
+  try{ backend = CONFIG.supabaseUrl && !/[?&]demo\b/.test(location.search) ? await LiveBackend() : DemoBackend(); }
   catch(e){ console.error(e); backend = DemoBackend(); toast(t("netError")); }
+  loadNotices(true);
   if(!S.profile) openProfile();
   else if(S.autoRide && !(S.ride && S.ride.key === "TEST-" + S.autoRide.toUpperCase())){ const c = S.autoRide; S.autoRide = null; joinTest(c); return; }
   else if(S.ride){ S.screen = "nearby"; safe(async()=>{ await backend.checkIn(); await refresh(); startPolling(); }); }

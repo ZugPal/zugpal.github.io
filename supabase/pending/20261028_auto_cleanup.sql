@@ -17,6 +17,8 @@ returns void language sql security definer set search_path = public as $$
   -- Reports (and the media they kept): at most 6 months
   delete from public.reports where created_at < now() - interval '6 months';
   delete from public.media_items where reported and created_at < now() - interval '6 months';
+  delete from public.notices where created_at < now() - interval '6 months';
+  delete from public.suspensions where until < now() - interval '30 days';
 $$;
 revoke all on function private.cleanup() from public, anon, authenticated;
 

@@ -20,6 +20,7 @@ Zugpal ("Zug" = train, "pal" = friend) is a **non-dating** app that helps shy tr
 - Photos are **blurred until a match** (others only receive a 24 px thumbnail; the full photo is only returned to matches by the database).
 - **Chat-only is the default** for first contacts; the coach number is only shown after a match and only if neither person chose chat-only.
 - **Women-only** option (women see only women, only women see them).
+- Visible safety on every chat: "Leave chat now", Report (reasons incl. "seems under 18"), Block, "Reports are reviewed within 24 hours". Reporter gets a confirmation and the decision; the reported person gets the action and the reason.
 - Contact details (phone, email, links, social handles, IBAN) are blocked in chat and in "Ask me about…". Messages about money show a scam warning.
 - Positive-only **badges** (Great listener, Funny, Helped me with German, Kind, Great stories) instead of ratings. A private comfort check after the ride ("Did you feel comfortable?" → a "no" files a hidden report).
 - **View-once photos** (unlock only after both sent 2+ text messages, arrive blurred) and **play-once voice** (max 60 s). Report possible for 24 h; unreported media is deleted after 24 h.
@@ -27,6 +28,8 @@ Zugpal ("Zug" = train, "pal" = friend) is a **non-dating** app that helps shy tr
 - Privacy/GDPR: data in Frankfurt (eu-central-1), no ad tracking ever, check-ins are deleted when a ride ends, no check-in history exposed (ride buddies must stay mutual and silent when blocked).
 
 ## 3. What is built (status: working web app, tested with real friends)
+
+Legal pages: `impressum.html`, `datenschutz.html`, `regeln.html` (DE binding + EN/AR). Fonts and supabase-js are hosted in `vendor/` (no Google Fonts / CDN): the only third party is our Supabase project. `?demo` forces demo mode.
 
 Live at **https://zugpal.github.io** (GitHub Pages from `main` of `ZugPal/zugpal.github.io`; a push to `main` is live in 1–2 minutes).
 
@@ -63,7 +66,8 @@ Everything is currently **one file: `index.html`** (~100 KB): HTML + CSS + vanil
 - Current schema: `supabase/schema.sql` (tables `riders`, `waves`, `blocks`, `reports`, `messages`, `compliments`, `buddies`, `ride_moods`, `media_items`; RLS on every table; nobody reads `riders` directly).
 - Functions the app calls: `visible_riders()`, `my_matches()`, `send_media()`, `open_media()` (returns data once), `my_media_status()`, `report_media()`. Only the `authenticated` role may execute them (the app always signs in anonymously); they are revoked from `PUBLIC` and `anon`.
 - Helpers `private.can_see()`, `private.is_match()`, `private.had_match()` live in the **`private` schema**, which the API does not expose. They are security definer, so in `public` anyone could have asked "did X and Y match / block each other?". Keep new security definer helpers in `private`, and revoke every new function from `PUBLIC`.
-- Migrations live in `supabase/migrations/` (applied 2026-10-26: `presence_and_wav_voice`, `private_helper_functions`). `schema.sql` is the full current state for a fresh project. Test a migration first with a dry run (`execute_sql` ending in `raise exception`, so everything rolls back), then apply it with `apply_migration`.
+- Reports: `file_report()` (keeps the last 20 messages as evidence), `my_notices()`, `notices_seen()`; tables `notices`, `suspensions`. Moderators decide with `private.decide_report(id, action, reason)`; open cases in `private.open_reports`. See `docs/MODERATION.md`. Paused users can't check in or write (`private.is_suspended`).
+- Migrations live in `supabase/migrations/` (applied: `presence_and_wav_voice`, `private_helper_functions` on 2026-10-26; `reports_notices_suspensions` on 2026-10-28). Not applied yet: `supabase/pending/20261028_auto_cleanup.sql` (needs Husam's OK, it deletes old test data). `schema.sql` is the full current state for a fresh project. Test a migration first with a dry run (`execute_sql` ending in `raise exception`, so everything rolls back), then apply it with `apply_migration`.
 - Never put the `service_role` key or the database password into code, commits or chat.
 
 ## 6. Known issues and gaps
