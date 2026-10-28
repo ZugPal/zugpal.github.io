@@ -30,6 +30,8 @@ for (const lang of ["de", "en", "ar"]) {
     await page.click('[data-act="gender"][data-arg="man"]');
     await page.click('[data-act="lang2"] >> nth=0');
     await page.click('[data-act="topic"] >> nth=0');
+    await page.click('[data-act="practiceLevel"]');
+    await page.click('[data-act="practiceLevel"][data-arg="B1"]');
     await page.check("#agree");
     await page.click('[data-act="saveProfile"]');
 
@@ -40,6 +42,7 @@ for (const lang of ["de", "en", "ar"]) {
     await page.click('[data-act="mood"] >> nth=0');
     await shot("3-mood");
     await page.click('[data-act="goOpen"]');
+    await expect(page.locator(".person .tag.lang").first()).toBeVisible({ timeout: 15000 });
 
     // Wave until a simulated rider waves back
     const chatBtn = page.locator('[data-act="chat"]').first();
@@ -58,6 +61,8 @@ for (const lang of ["de", "en", "ar"]) {
     await page.fill("#chatInput", "Hallo! 👋");
     await page.click(".chatbar button[type=submit]");
     await expect(page.locator(".msg.mine").last()).toContainText("Hallo!");
+    await page.click('[data-act="sendWord"]');
+    await expect(page.locator(".gamecard .big[lang=de]").last()).toBeVisible();
     await shot("5-chat");
     await page.click('.safety [data-act="reportOpen"]');
     await expect(page.locator('.chip.opt[data-arg="under18"]')).toBeVisible();

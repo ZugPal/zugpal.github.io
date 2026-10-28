@@ -1,7 +1,7 @@
 // Screens: each returns HTML for #app; render() draws the current one.
 import { inviteLink } from "./actions.js";
 import { CONFIG } from "./config.js";
-import { AGES, BADGES, DICE, ICE, LANGS, MOODS, TOPICS } from "./data.js";
+import { AGES, BADGES, DICE, ICE, LANGS, MOODS, TOPICS, WORDS } from "./data.js";
 import { COUNTED, GLYPH, boardHtml, cardHtml, chessState, damaBoard, damaState, onlineInfo, sameSrc } from "./games.js";
 import { S, backend } from "./state.js";
 import { ICON, MONEY_RE, esc, hasContact, loc, minsLeft, moodName, parseMsg, photo, t, todaysWord } from "./util.js";
@@ -80,11 +80,22 @@ function endingBanner(){
   if(!S.ride || n > 5 || !S.matches.length) return "";
   return `<div class="banner action"><span>${t("endingSoon",{n:Math.max(n,1)})}</span><button class="btn small" data-act="sayBye">${t("sayBye")}</button></div>`;
 }
+// Sprachpraxis: "helper" = happy to speak slow German, "learner-B1" = practising German at that level
+function practiceTag(p){
+  if(p === "helper") return `<span class="tag lang">${t("prHelperTag")}</span>`;
+  const m = /^learner-(A1|A2|B1|B2|C1)$/.exec(p || ""); return m ? `<span class="tag lang">${t("prLearnerTag",{l:m[1]})}</span>` : "";
+}
+function practicePair(p){
+  const mine = S.profile && S.profile.practice; if(!mine || !p) return false;
+  return (mine === "helper" && p.startsWith("learner-")) || (mine.startsWith("learner-") && p === "helper");
+}
 function personCard(r){
   const tags = [];
   if(r.buddy) tags.push(`<span class="tag gold">${t("buddyTag")}</span>`);
   if(r.same_coach && !r.chat_only) tags.push(`<span class="tag">${t("sameCoach")}</span>`);
   if(r.chat_only) tags.push(`<span class="tag">${t("chatOnlyTag")}</span>`);
+  const pr = practiceTag(r.practice); if(pr) tags.push(pr);
+  if(practicePair(r.practice)) tags.push(`<span class="tag gold">${t("goodPractice")}</span>`);
   const b = r.badges || {};
   Object.keys(b).filter(k=>BADGES[k] && b[k]>0).sort((x,y)=>b[y]-b[x]).slice(0,2).forEach(k=>tags.push(`<span class="tag plain">${esc(loc(BADGES,k))} ×${Number(b[k])||0}</span>`));
   const langs = (r.languages||[]).filter(l=>LANGS.includes(l)).join(", ");
@@ -126,6 +137,10 @@ const screens = {
       <div class="field"><span class="flabel">${t("langs")}</span><div class="seg">${langChips}</div></div>
       <div class="field"><span class="flabel">${t("topics")}</span><div class="seg">${topicChips}</div></div>
       <div class="field"><label for="askme">${t("askMe")}</label><input type="text" id="askme" data-bind="edit.askMe" maxlength="60" placeholder="${t("askMePh")}" value="${esc(e.askMe||"")}"></div>
+      <div class="field"><span class="flabel">${t("prTitle")}</span><div class="small">${t("prHint")}</div>
+        <div class="seg"><button class="chip" data-act="practice" data-arg="helper" aria-pressed="${e.practice==="helper"}">${t("prHelper")}</button>
+          <button class="chip" data-act="practiceLevel" data-arg="${/^learner-/.test(e.practice||"") ? e.practice.slice(8) : "A2"}" aria-pressed="${/^learner-/.test(e.practice||"")}">${t("prLearner")}</button></div>
+        ${/^learner-/.test(e.practice||"") ? `<div class="seg">${["A1","A2","B1","B2","C1"].map(l=>`<button class="chip" data-act="practiceLevel" data-arg="${l}" aria-pressed="${e.practice==="learner-"+l}">${l}</button>`).join("")}</div>` : ""}</div>
       <label class="check" for="acceptPhotos"><input type="checkbox" id="acceptPhotos" data-bind="edit.acceptPhotos"${e.acceptPhotos!==false?" checked":""}> ${t("acceptPhotos")}</label>
       <div class="card"><div class="pname">${t("rulesTitle")}</div>
         <ul class="rules"><li>${t("rule1")}</li><li>${t("rule2")}</li><li>${t("rule3")}</li><li>${t("rule4")}</li></ul>
@@ -186,7 +201,7 @@ const screens = {
       <div class="person">${photo(m.id, m.first_name, m.photo, 56, false)}<div class="grow"><div class="pname">${esc(m.first_name)}</div><div class="small">${esc((m.moods||[]).map(moodName).join(" · "))}</div>
       ${m.chat_only ? `<div class="tags"><span class="tag">${t("chatOnlyTag")}</span></div>` : ""}</div>
       <button class="btn wave" data-act="chat" data-arg="${esc(m.id)}">${t("openChat")}</button></div>`).join("") : "";
-    const others = S.riders.filter(r=>!matchIds.has(r.id)).sort((a,b)=>(b.buddy?1:0)-(a.buddy?1:0));
+    const others = S.riders.filter(r=>!matchIds.has(r.id)).sort((a,b)=>((b.buddy?2:0)+(practicePair(b.practice)?1:0))-((a.buddy?2:0)+(practicePair(a.practice)?1:0)));
     const [w, de, en, ar] = todaysWord();
     return `<div class="screen">
       <div class="row" style="justify-content:space-between;flex-wrap:wrap">
@@ -239,6 +254,8 @@ const screens = {
         if(!x.mine && hasContact(x.body)) return `<div class="banner">${t("noContact")}</div>`;
         return `<div class="msg${x.mine?" mine":""}" dir="auto">${esc(x.body)}</div>` + (!x.mine && MONEY_RE.test(x.body) ? `<div class="banner">${t("moneyWarn")}</div>` : "");
       }
+      if(p.type==="word"){ const wd = WORDS[Math.abs(parseInt(p.val,10)||0) % WORDS.length];
+        return `<div class="gamecard"><span class="lbl">${t("wordTitle")}</span><span class="big" lang="de">${esc(wd[0])}</span><span>${esc(S.lang==="de"?wd[1]:S.lang==="ar"?wd[3]:wd[2])}</span><span class="small" style="color:inherit">${t("wordTask")}</span></div>`; }
       if(p.type==="dice"){ const i = Math.abs(parseInt(p.val,10)||0) % DICE.en.length; return `<div class="gamecard"><span class="lbl">${t("dice")}</span><span class="big">${esc(DICE[S.lang][i])}</span></div>`; }
       if(p.type==="spin"){ const meAsks = (x.mine && p.val==="me") || (!x.mine && p.val==="you"); return `<div class="gamecard"><span class="lbl">${t("spin")}</span><span class="big">${meAsks ? t("spinYou") : t("spinThem",{name})}</span></div>`; }
       if(p.type==="ttl") return `<div class="gamecard"><span class="lbl">${t("ttl")}</span><span>${x.mine ? t("ttlYou",{name}) : t("ttlThem",{name})}</span></div>`;
@@ -275,6 +292,7 @@ const screens = {
       ${safetyBar(m.id)}
       ${endingBanner()}
       <div class="games" role="toolbar">
+        <button class="chip" data-act="sendWord">${ICON.bubble}${t("wordTitle")}</button>
         <button class="chip" data-act="game" data-arg="dice">${ICON.dice}${t("dice")}</button>
         <button class="chip" data-act="game" data-arg="spin">${ICON.spin}${t("spin")}</button>
         <button class="chip" data-act="game" data-arg="ttl">${ICON.cards}${t("ttl")}</button>

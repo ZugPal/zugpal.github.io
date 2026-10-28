@@ -1,6 +1,6 @@
 // Actions: what happens when someone taps a [data-act] button.
 import { SAFE_AUDIO, SAFE_PHOTO, SILENT_WAV, loadMessages, sendBody, startRecording, stopRecording, textCount } from "./chat.js";
-import { AGES, DICE, LANGS, TOPICS } from "./data.js";
+import { AGES, DICE, LANGS, TOPICS, WORDS } from "./data.js";
 import { chessState, cpuTurn, damaCpu, damaState, sameSrc, solSrcFromArg } from "./games.js";
 import { refresh, startPolling, stopPolling } from "./polling.js";
 import { REPORT_REASONS, loadNotices, render } from "./screens.js";
@@ -21,7 +21,7 @@ function joinTest(code){
 }
 function openProfile(){
   const p = S.profile || {};
-  S.edit = {name:p.name||"", gender:p.gender||"", age:p.age||"", langs:[...(p.langs||[])], topics:[...(p.topics||[])], photo:p.photo||"", photoSmall:p.photoSmall||"", askMe:p.askMe||"", acceptPhotos:p.acceptPhotos!==false, agree:S.agreed};
+  S.edit = {name:p.name||"", gender:p.gender||"", age:p.age||"", langs:[...(p.langs||[])], topics:[...(p.topics||[])], photo:p.photo||"", photoSmall:p.photoSmall||"", askMe:p.askMe||"", acceptPhotos:p.acceptPhotos!==false, practice:p.practice||"", agree:S.agreed};
   S.screen = "welcome";
 }
 const toggleIn = (arr, v) => { const i = arr.indexOf(v); i>=0 ? arr.splice(i,1) : arr.push(v); };
@@ -36,7 +36,7 @@ const actions = {
     if(!e.gender) return toast(t("needGender"));
     if(!e.agree) return toast(t("needRules"));
     if(hasContact(e.askMe)) return toast(t("noContact"));
-    S.profile = {name:name.slice(0,30), gender:e.gender, age:AGES.includes(e.age)?e.age:"", langs:e.langs.filter(l=>LANGS.includes(l)), topics:e.topics.filter(x=>TOPICS[x]).slice(0,5), photo:e.photo, photoSmall:e.photoSmall, askMe:String(e.askMe||"").trim().slice(0,60), acceptPhotos:e.acceptPhotos!==false};
+    S.profile = {name:name.slice(0,30), gender:e.gender, age:AGES.includes(e.age)?e.age:"", langs:e.langs.filter(l=>LANGS.includes(l)), topics:e.topics.filter(x=>TOPICS[x]).slice(0,5), photo:e.photo, photoSmall:e.photoSmall, askMe:String(e.askMe||"").trim().slice(0,60), acceptPhotos:e.acceptPhotos!==false, practice:/^(helper|learner-(A1|A2|B1|B2|C1))$/.test(e.practice||"") ? e.practice : ""};
     S.agreed = true; S.edit = null;
     if(e.gender!=="woman") S.womenOnly = false;
     save();
@@ -202,6 +202,9 @@ const actions = {
   moodBefore(n){ n = +n; S.moodBefore = S.moodBefore===n ? null : n; render(); },
   moodAfterSet(n){ n = +n; S.moodAfter = S.moodAfter===n ? null : n; render(); },
   chat(id){ S.chatWith = id; S.current = S.matches.find(m=>m.id===id) || S.current; S.messages = []; S.screen = "chat"; render(); safe(loadMessages); },
+  practice(v){ if(S.edit){ S.edit.practice = S.edit.practice === v ? "" : v; render(); } },
+  practiceLevel(l){ if(S.edit && ["A1","A2","B1","B2","C1"].includes(l)){ S.edit.practice = "learner-" + l; render(); } },
+  sendWord(){ const d = new Date(berlinDate()); sendBody(CARD + "word:" + (Math.floor(d.getTime()/86400000) % WORDS.length)); },
   game(kind){
     let body = CARD + kind;
     if(kind==="dice") body += ":" + Math.floor(Math.random()*DICE.en.length);

@@ -17,7 +17,7 @@ async function LiveBackend(){
     async update(){ const p = S.profile; ok(await sb.from("riders").upsert({
       id:uid, ride_key:S.ride.key, first_name:p.name, gender:p.gender, age_range:p.age || null, ask_me:p.askMe || null, languages:p.langs, topics:p.topics,
       photo_small:p.photoSmall || null, photo:p.photo || null, moods:[...S.moods],
-      women_only:S.womenOnly && p.gender==="woman", chat_only:S.chatOnly, accept_photos:p.acceptPhotos !== false, coach:S.coach || null, is_open:S.open, lang:S.lang,
+      women_only:S.womenOnly && p.gender==="woman", chat_only:S.chatOnly, accept_photos:p.acceptPhotos !== false, practice:p.practice || null, coach:S.coach || null, is_open:S.open, lang:S.lang,
       expires_at:new Date(S.ride.expiresAt).toISOString(), updated_at:new Date().toISOString() })); },
     async visible(){ return ok(await sb.rpc("visible_riders")) || []; },
     async wave(id){ ok(await sb.from("waves").upsert({from_id:uid, to_id:id, ride_key:S.ride.key})); },

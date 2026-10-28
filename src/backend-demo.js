@@ -7,10 +7,10 @@ import { CARD, parseMsg, portrait } from "./util.js";
 /* ---------------- Demo backend (simulated riders) ---------------- */
 function DemoBackend(){
   const people = [
-    {id:"d-lena", askMe:{de:"meinem Jahr in Valencia",en:"my year in Valencia",ar:"السنة التي قضيتها في فالنسيا"}, name:"Lena", gender:"woman", age:"25–29", langs:["Deutsch","English","Español"], topics:["books","travel","films"], moods:["german","books"], coach:"5", womenOnly:false, chatOnly:false, wavesBack:true, buddyBack:true,
+    {id:"d-lena", practice:"helper", askMe:{de:"meinem Jahr in Valencia",en:"my year in Valencia",ar:"السنة التي قضيتها في فالنسيا"}, name:"Lena", gender:"woman", age:"25–29", langs:["Deutsch","English","Español"], topics:["books","travel","films"], moods:["german","books"], coach:"5", womenOnly:false, chatOnly:false, wavesBack:true, buddyBack:true,
      badges:{listener:4, german:7}, photo:portrait("#D9E6FB","#F1C9A5","#C8963E","#2D5BD0","long"),
      reply:{de:"Hallo! Ich sitze in Wagen 5, beim mittleren Eingang.",en:"Hi! I'm in coach 5, by the middle doors.",ar:"مرحباً! أنا في العربة 5 بجانب الباب الأوسط."}},
-    {id:"d-karim", askMe:{de:"dem besten Falafel in Köln",en:"the best falafel in Cologne",ar:"أفضل فلافل في كولونيا"}, name:"Karim", gender:"man", age:"30–39", langs:["العربية","Deutsch","Français"], topics:["football","tech","family"], moods:["small","football"], coach:"3", womenOnly:false, chatOnly:false, wavesBack:true, buddyBack:true,
+    {id:"d-karim", practice:"learner-B1", askMe:{de:"dem besten Falafel in Köln",en:"the best falafel in Cologne",ar:"أفضل فلافل في كولونيا"}, name:"Karim", gender:"man", age:"30–39", langs:["العربية","Deutsch","Français"], topics:["football","tech","family"], moods:["small","football"], coach:"3", womenOnly:false, chatOnly:false, wavesBack:true, buddyBack:true,
      badges:{funny:5, kind:2}, photo:portrait("#F5DFD0","#C68B5E","#2B2018","#1F6B50","short"),
      reply:{de:"Hey! Gerne, ich steige in Horrem aus.",en:"Hey! Sure, I get off at Horrem.",ar:"أهلاً! بكل سرور، سأنزل في محطة هورم."}},
     {id:"d-aylin", name:"Aylin", gender:"woman", age:"25–29", langs:["Türkçe","Deutsch","English"], topics:["psychology","music"], moods:["small","music"], coach:"", womenOnly:false, chatOnly:true, wavesBack:true, buddyBack:false,
@@ -33,7 +33,7 @@ function DemoBackend(){
       people.forEach((p,i)=>after(700 + i*1500, ()=>present.push(p))); },
     async update(){},
     async visible(){ if(!S.open) return []; return present.filter(visibleTo).map(p=>({id:p.id, first_name:p.name, ask_me:p.askMe ? (p.askMe[S.lang]||p.askMe.en) : null, age_range:p.age, languages:p.langs, topics:p.topics, moods:p.moods,
-      chat_only:p.chatOnly, same_coach:!!S.coach && S.coach===p.coach, waved:mine.has(p.id), photo_small:p.photo, badges:p.badges, buddy:isBuddy(p)})); },
+      chat_only:p.chatOnly, same_coach:!!S.coach && S.coach===p.coach, waved:mine.has(p.id), photo_small:p.photo, badges:p.badges, buddy:isBuddy(p), practice:p.practice || null})); },
     async wave(id){ mine.add(id); const p=people.find(x=>x.id===id); if(p && p.wavesBack) after(2500, ()=>theirs.add(id)); },
     async unwave(id){ mine.delete(id); },
     async matches(){ if(!S.open) return []; return present.filter(p=>visibleTo(p) && mine.has(p.id) && theirs.has(p.id)).map(p=>({id:p.id, first_name:p.name, age_range:p.age, languages:p.langs, moods:p.moods,

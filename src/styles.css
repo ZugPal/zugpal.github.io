@@ -70,6 +70,7 @@ html[lang="ar"] h1{letter-spacing:0;line-height:1.35}
 .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
 .tag{font-size:13px;font-weight:700;background:var(--soft);color:var(--soft-ink);padding:3px 8px;border-radius:10px}
 .tag.gold{background:var(--gold-bg);color:var(--gold)}
+.tag.lang{background:var(--info-bg);color:var(--info-ink)}
 .tag.plain{background:transparent;border:1px solid var(--line);color:var(--muted);font-weight:500}
 .btn.wave{min-height:48px;width:auto;font-size:15px;border-radius:24px;padding:0 18px;flex-shrink:0;align-self:center}
 .btn.wave.done{background:var(--soft);color:var(--soft-ink)}
