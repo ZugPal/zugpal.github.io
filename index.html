@@ -8,7 +8,7 @@
 <body>
 <title>Zugpal</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="vendor/fonts.css">
 <style>
 /* Layout: one phone-width column; header, screen content, primary action at the end of the flow. */
 :root{
@@ -104,6 +104,11 @@ html[lang="ar"] .lbl{letter-spacing:0}
 .msg.mine{align-self:flex-end;background:var(--accent);color:var(--accent-ink)}
 .gamecard{align-self:center;max-width:92%;background:var(--soft);color:var(--soft-ink);border-radius:16px;padding:12px 16px;text-align:center;display:flex;flex-direction:column;gap:4px}
 .gamecard .big{font-family:var(--f-display);font-size:18px;font-weight:700;color:var(--ink)}
+.trust{list-style:none;margin:0;padding:12px 14px;display:flex;flex-wrap:wrap;gap:8px 16px;background:var(--soft);color:var(--soft-ink);border-radius:12px;font-size:14px;font-weight:500}
+.trust li{display:flex;align-items:center;gap:6px}
+.trust svg{width:16px;height:16px;flex-shrink:0}
+footer.legal{display:flex;flex-wrap:wrap;justify-content:center;gap:0 18px;font-size:13px}
+footer.legal a{color:var(--muted);min-height:44px;display:inline-flex;align-items:center}
 .chatbar{display:flex;gap:8px}
 .chatbar input{flex:1;min-width:0}
 .chatbar .iconbtn{color:var(--muted)}
@@ -245,7 +250,9 @@ const T = {
     askMe:"Ask me about… (optional)", askMePh:"e.g. my cooking disasters", askMeShown:"Ask me about {x}",
     moodNow:"How's your mood right now? (optional)", moodAfter:"And how do you feel now?",
     moodUp:"Your mood went up on this ride.", moodPrivate:"Anonymous. It helps us show partners that Zugpal works.",
-    m1:"Low", m2:"Meh", m3:"Okay", m4:"Good", m5:"Great"
+    m1:"Low", m2:"Meh", m3:"Okay", m4:"Good", m5:"Great",
+    trust1:"No tracking.", trust2:"No ads.", trust3:"Servers in Frankfurt.", trust4:"Not a dating app.",
+    impressum:"Legal notice", privacy:"Privacy", rulesLink:"Rules & terms"
   },
   de: {
     tagline:"Für alle, die im Zug gern reden würden.",
@@ -317,7 +324,9 @@ const T = {
     askMe:"Frag mich nach… (optional)", askMePh:"z. B. meinen Kochunfällen", askMeShown:"Frag mich nach {x}",
     moodNow:"Wie ist deine Stimmung gerade? (optional)", moodAfter:"Und wie fühlst du dich jetzt?",
     moodUp:"Deine Stimmung ist auf dieser Fahrt gestiegen.", moodPrivate:"Anonym. Damit zeigen wir Partnern, dass Zugpal wirkt.",
-    m1:"Mies", m2:"Naja", m3:"Okay", m4:"Gut", m5:"Super"
+    m1:"Mies", m2:"Naja", m3:"Okay", m4:"Gut", m5:"Super",
+    trust1:"Kein Tracking.", trust2:"Keine Werbung.", trust3:"Server in Frankfurt.", trust4:"Kein Dating.",
+    impressum:"Impressum", privacy:"Datenschutz", rulesLink:"Regeln & AGB"
   },
   ar: {
     tagline:"لكل من يرغب في الحديث أثناء رحلة القطار.",
@@ -389,7 +398,9 @@ const T = {
     askMe:"اسألني عن… (اختياري)", askMePh:"مثلاً: مغامراتي في الطبخ", askMeShown:"اسألني عن {x}",
     moodNow:"كيف مزاجك الآن؟ (اختياري)", moodAfter:"وكيف تشعر الآن؟",
     moodUp:"تحسّن مزاجك خلال هذه الرحلة.", moodPrivate:"مجهول الهوية. يساعدنا ذلك على إثبات فائدة Zugpal للشركاء.",
-    m1:"سيئ", m2:"عادي", m3:"لا بأس", m4:"جيد", m5:"رائع"
+    m1:"سيئ", m2:"عادي", m3:"لا بأس", m4:"جيد", m5:"رائع",
+    trust1:"لا تتبّع.", trust2:"لا إعلانات.", trust3:"الخوادم في فرانكفورت.", trust4:"ليس تطبيق مواعدة.",
+    impressum:"بيانات الناشر", privacy:"الخصوصية", rulesLink:"القواعد والشروط"
   }
 };
 
@@ -965,7 +976,7 @@ function DemoBackend(){
 /* ---------------- Live backend (Supabase) ---------------- */
 function loadScript(src){ return new Promise((ok,fail)=>{ const s=document.createElement("script"); s.src=src; s.onload=ok; s.onerror=fail; document.head.appendChild(s); }); }
 async function LiveBackend(){
-  await loadScript("https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js");
+  await loadScript("vendor/supabase.js"); // supabase-js 2.45.4, hosted here so no CDN sees visitor IPs
   const sb = window.supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey);
   let { data:{ session } } = await sb.auth.getSession();
   if(!session){ const { data, error } = await sb.auth.signInAnonymously(); if(error) throw error; session = data.session; }
@@ -1022,6 +1033,11 @@ function header(){
     </select></div>
     ${backend && backend.mode==="demo" ? `<div class="banner">${t("demoBanner")}</div>` : ""}`;
 }
+const trustStrip = () => `<ul class="trust" aria-label="Zugpal">${[1,2,3,4].map(i=>`<li>${ICON.shield}${t("trust"+i)}</li>`).join("")}</ul>`;
+function legalFooter(){
+  const h = S.lang==="de" ? "" : "#" + S.lang;
+  return `<footer class="legal"><a href="impressum.html${h}" target="_blank" rel="noopener">${t("impressum")}</a><a href="datenschutz.html${h}" target="_blank" rel="noopener">${t("privacy")}</a><a href="regeln.html${h}" target="_blank" rel="noopener">${t("rulesLink")}</a></footer>`;
+}
 function endingBanner(){
   const n = minsLeft();
   if(!S.ride || n > 5 || !S.matches.length) return "";
@@ -1057,7 +1073,7 @@ const screens = {
     const langChips = LANGS.map(l=>`<button class="chip" data-act="lang2" data-arg="${esc(l)}" aria-pressed="${e.langs.includes(l)}">${esc(l)}</button>`).join("");
     const topicChips = Object.keys(TOPICS).map(id=>`<button class="chip" data-act="topic" data-arg="${id}" aria-pressed="${e.topics.includes(id)}">${esc(loc(TOPICS,id))}</button>`).join("");
     return `<div class="screen">
-      ${first ? `<div class="muted">${t("tagline")}</div><h1>${t("welcomeTitle")}</h1><p class="muted" style="margin:0">${t("welcomeBody")}</p>` : `<h1>${t("profileTitle")}</h1>`}
+      ${first ? `<div class="muted">${t("tagline")}</div><h1>${t("welcomeTitle")}</h1><p class="muted" style="margin:0">${t("welcomeBody")}</p>${trustStrip()}` : `<h1>${t("profileTitle")}</h1>`}
       <div class="field"><span class="flabel">${t("photo")}</span>
         <div class="photoedit">${photo("me", e.name, e.photo, 88, false)}
           <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start">
@@ -1102,6 +1118,7 @@ const screens = {
       <div class="small" style="margin-top:-10px">${t("numberHint")}</div>
       <div class="field"><label for="duration">${t("duration")}</label><select id="duration" data-bind="duration">${opts}</select></div>
       <div class="card" style="flex-direction:row;align-items:flex-start;color:var(--muted)">${ICON.shield}<div style="font-size:14px">${t("nobodySees")}</div></div>
+      ${trustStrip()}
       <div class="end"><button class="btn" data-act="checkin" data-arg="train">${t("checkin")}</button></div>
     </div>`;
   },
@@ -1346,6 +1363,7 @@ function render(){
   const active = document.activeElement && document.activeElement.id;
   const app = document.getElementById("app");
   app.innerHTML = header() + (screens[S.screen] || screens.welcome)()
+    + (S.screen==="chat" || S.screen==="loading" ? "" : legalFooter())
     + (S.viewer ? `<div class="viewer" role="dialog" aria-modal="true"><img src="${esc(S.viewer)}" alt=""><div class="note">${t("onceNote")}</div><button class="btn mint small" data-act="closeViewer">${t("close")}</button></div>` : "")
     + (S.toast ? `<div class="toast" role="status">${esc(S.toast)}</div>` : "");
   if(active){ const el = document.getElementById(active); if(el && el.tagName==="INPUT" && el.type==="text"){ el.focus(); try{ const l=el.value.length; el.setSelectionRange(l,l); }catch(e){} } }

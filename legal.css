@@ -1,0 +1,25 @@
+/* Shared style for the static pages (Impressum, Datenschutz, Regeln). Same colours as the app. */
+:root{--bg:#F2F4F3;--surface:#FFFFFF;--ink:#15211D;--muted:#4A5A54;--line:#C9D1CD;--accent:#1F6B50;--link:#1F6B50;--mark:#FFF4E0;--mark-ink:#5C3A0C;
+  --f-display:'Bricolage Grotesque','IBM Plex Sans Arabic',system-ui,sans-serif;--f-body:'DM Sans','IBM Plex Sans Arabic',system-ui,sans-serif}
+@media (prefers-color-scheme: dark){:root{--bg:#0F1714;--surface:#18231F;--ink:#E8EEEB;--muted:#A3B2AC;--line:#2E3D37;--link:#9FE0C3;--mark:#3A2C14;--mark-ink:#F2D7A6;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55}
+main{max-width:680px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px))}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-block:8px 16px}
+.logo{font-family:var(--f-display);font-weight:700;font-size:24px;color:var(--ink);text-decoration:none}
+nav.langs{display:flex;gap:6px}
+nav.langs a,.back{display:inline-flex;align-items:center;min-height:44px;padding:0 14px;border:1px solid var(--line);border-radius:999px;color:var(--ink);text-decoration:none;background:var(--surface)}
+section{background:var(--surface);border-radius:16px;padding:18px;margin-bottom:20px;overflow-wrap:anywhere}
+section[lang="ar"]{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
+h1{font-family:var(--f-display);font-size:28px;line-height:1.15;margin:0 0 6px}
+section[lang="ar"] h1,section[lang="ar"] h2{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif}
+h2{font-family:var(--f-display);font-size:19px;margin:24px 0 6px}
+p,ul{margin:0 0 10px}
+ul{padding-inline-start:22px}
+li{margin-bottom:4px}
+a{color:var(--link)}
+.muted{color:var(--muted);font-size:14px}
+mark.todo{background:var(--mark);color:var(--mark-ink);padding:0 4px;border-radius:4px}
+.trust{display:flex;flex-wrap:wrap;gap:6px 14px;font-weight:500;margin:6px 0 12px}
+footer{display:flex;flex-wrap:wrap;gap:8px 18px;justify-content:center;font-size:14px;color:var(--muted)}
+footer a{min-height:44px;display:inline-flex;align-items:center}
