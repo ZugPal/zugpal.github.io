@@ -259,6 +259,14 @@ button.mediacard{cursor:pointer;min-height:48px}
 .chip.opt.wrong{background:var(--warn-bg);color:var(--warn-ink)}
 .slletter{font-family:var(--f-display);font-weight:700;font-size:44px;line-height:1;color:var(--accent)}
 .sltable{width:100%;border-collapse:collapse}.sltable td,.sltable th{padding:6px 4px;border-bottom:1px solid var(--line-soft);text-align:start;vertical-align:top}
+.sponsor{display:flex;gap:10px;align-items:center;background:var(--hero-card);border-radius:12px;padding:10px 12px;color:var(--hero-ink)}
+.sponsor img{border-radius:10px;flex-shrink:0}.sponsor .small{color:var(--hero-muted)}.sponsor a{color:var(--mint)}
+.plans{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.plan .price{font-family:var(--f-display);font-size:26px}
+.plan.best{border:2px solid var(--accent)}
+.card.free{background:var(--soft);color:var(--soft-ink);border-color:transparent}
+.themes{display:flex;gap:8px}.themes .sw{flex:1;height:36px;border-radius:10px}
+.sw.t1{background:linear-gradient(135deg,#1F6B50,#9FE0C3)}.sw.t2{background:linear-gradient(135deg,#2D5B8A,#BFD8EE)}.sw.t3{background:linear-gradient(135deg,#7A4A12,#F2C46B)}.sw.t4{background:linear-gradient(135deg,#15211D,#4A5A54)}
 .photoedit{display:flex;gap:16px;align-items:center}
 .filebtn{position:relative;overflow:hidden}
 .filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}

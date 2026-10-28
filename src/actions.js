@@ -10,6 +10,7 @@ import { wordActions } from "./words.js";
 import { classicActions } from "./classic.js";
 import { libraryActions } from "./library.js";
 import { partyActions } from "./party.js";
+import { sponsorActions } from "./sponsor.js";
 
 /* ---------------- Actions ---------------- */
 function selectInvite(){ const el = document.getElementById("inviteText"); if(!el) return; const r = document.createRange(); r.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
@@ -304,6 +305,6 @@ async function finishRide(){
   save(); S.screen = "checkin"; toast(before && after && after > before ? t("moodUp") : t("endedToast"));
 }
 
-Object.assign(actions, wordActions, classicActions, libraryActions, partyActions);
+Object.assign(actions, wordActions, classicActions, libraryActions, partyActions, sponsorActions);
 
 export { actions, inviteLink, joinTest, openProfile, safe, startFeedback };

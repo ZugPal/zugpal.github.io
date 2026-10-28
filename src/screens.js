@@ -9,6 +9,7 @@ import { lettersScreen, wordCard, wordSheet, zugwortScreen } from "./words.js";
 import { cgCard, cgSheet, classicScreen } from "./classic.js";
 import { bookCard, bookScreen, creditsScreen, libraryScreen } from "./library.js";
 import { partyCard, quizScreen, slfScreen } from "./party.js";
+import { sponsorSlot, supporterScreen } from "./sponsor.js";
 
 /* ---------------- Screens ---------------- */
 function header(){
@@ -192,7 +193,7 @@ const screens = {
       <div class="hero"><div class="small">${t("talkTrain")}</div>
         <div style="font-size:19px;font-weight:700">${esc(CONFIG.talkTrain[S.lang] || CONFIG.talkTrain.en)}</div>
         <div class="small">${t("talkTrainBody")}</div>
-        <button class="btn mint" data-act="checkin" data-arg="talk">${t("joinTalk")}</button></div>
+        <button class="btn mint" data-act="checkin" data-arg="talk">${t("joinTalk")}</button>${sponsorSlot()}</div>
       <button class="btn ghost" data-act="openGames">${t("games")}</button>
       <button class="btn ghost" data-act="openLibrary">${ICON.book}${t("libTitle")}</button>
       ${S.installPrompt ? `<div class="card"><div class="pname">${t("installTitle")}</div><div class="small">${t("installBody")}</div><button class="btn ghost" data-act="install">${t("installBtn")}</button></div>` : ""}
@@ -207,6 +208,7 @@ const screens = {
       <div class="field"><label for="duration">${t("duration")}</label><select id="duration" data-bind="duration">${opts}</select></div>
       <div class="card" style="flex-direction:row;align-items:flex-start;color:var(--muted)">${ICON.shield}<div style="font-size:14px">${t("nobodySees")}</div></div>
       ${trustStrip()}
+      <button class="link quiet" data-act="openSupport">${t("supLink")}</button>
       ${backend && backend.mode === "live" ? `<button class="link quiet" data-act="hostOpen">${S.isHost ? t("hostActive") : t("hostLink")}</button>` : ""}
       <div class="end"><button class="btn" data-act="checkin" data-arg="train">${t("checkin")}</button></div>
     </div>`;
@@ -389,6 +391,7 @@ const screens = {
   classic(){ return classicScreen() || screens.games(); },
   library(){ return libraryScreen(); },
   quiz(){ return quizScreen() || screens.games(); },
+  support(){ return supporterScreen(); },
   slf(){ return slfScreen() || screens.chat(); },
   book(){ return bookScreen(); },
   credits(){ return creditsScreen(); },
