@@ -66,6 +66,7 @@ window.addEventListener("offline", () => render());
   loadNotices(true);
   // Email account: after a login link on a new phone, bring the saved profile back
   if(backend.account){ try{ S.account = await backend.account(); if(S.account && !S.account.anon && !S.profile){ const p = await backend.loadProfile(); if(p && p.name){ S.profile = p; S.agreed = true; save(); } } }catch(e){ console.error(e); } }
+  if(backend.amHost) backend.amHost().then(v => { S.isHost = v; render(); }).catch(() => {});
   if(!S.profile) openProfile();
   else if(S.autoRide && !(S.ride && S.ride.key === "TEST-" + S.autoRide.toUpperCase())){ const c = S.autoRide; S.autoRide = null; joinTest(c); return; }
   else if(S.ride){ S.screen = "nearby"; safe(async()=>{ await backend.checkIn(); await refresh(); startPolling(); }); }

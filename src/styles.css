@@ -236,6 +236,9 @@ button.mediacard{cursor:pointer;min-height:48px}
 @media (prefers-color-scheme: dark){.rview{background:#0D1412}}
 .player{position:fixed;left:0;right:0;bottom:0;z-index:45;background:var(--surface);border-top:1px solid var(--line);padding:8px 16px calc(8px + env(safe-area-inset-bottom,0px));max-width:480px;margin:0 auto}
 .player audio{width:100%}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.stats b{display:block;font-family:var(--f-display);font-size:28px}
+.announce{display:flex;flex-direction:column;gap:4px}
 .photoedit{display:flex;gap:16px;align-items:center}
 .filebtn{position:relative;overflow:hidden}
 .filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}

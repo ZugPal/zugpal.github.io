@@ -43,6 +43,7 @@ Features:
 - End of ride: feedback screen (comfort check, badges, ride buddy) and mood after.
 - Optional **Sprachpraxis** on the profile (`riders.practice`: `helper` = happy to speak slow German, `learner-A1..C1`): tag on rider cards, "Good for German practice" tag and sorting for helper/learner pairs. German word of the ride also as a chat card (`word:<index>`).
 - **Library** (`src/library.js`, catalogue `library/catalog.json`): 40 public-domain works (37 from gutenberg.org, 3 built from Arabic Wikisource by `tools/wikisource-epub.js`), 10 LibriVox audiobooks streamed from archive.org. Shelves: 15-minute stories, Easy German, audiobooks, all, mine; language filter; EPUB reader (epub.js in `vendor/`, outside `#app`); downloads in IndexedDB `zugpal-library` + `navigator.storage.persist()`; progress in localStorage `zugpal.read.<id>`; chat card `book:<id>` ("Story" in the chat toolbar); credits screen. **Rule: never use projekt-gutenberg.org; every author/translator/illustrator must have died before 1956** (checked from gutenberg.org pg_catalog.csv, record in `library/picks.json`). Rebuild: `node tools/build-catalog.js <dir with picks.json, librivox-picks.json, dl/>`.
+- **Host mode** (Talk Train only): host code -> `become_host()` (30 days), `host_ride_stats()` numbers only, `host_announce()` one per ride, riders get `ride_announcement()`. **Partner dashboard** `partner/dashboard.html` -> `partner_stats(code)`: Talk Train counts from `private.ride_counts` (triggers on check-in and returned waves, numbers only), moods + "would recommend" from `ride_moods`; groups under 20 hidden; print to PDF. Codes only as bcrypt hashes; plain codes in `.secrets/` (gitignored). See `docs/HOSTS-AND-PARTNERS.md`.
 - German word of the ride, demo mode with simulated riders when no Supabase URL is configured.
 
 ## 4. Architecture
@@ -86,7 +87,7 @@ Modules only reassign their own top-level variables (ES imports are read-only), 
 - Functions the app calls: `visible_riders()`, `my_matches()`, `send_media()`, `open_media()` (returns data once), `my_media_status()`, `report_media()`. Only the `authenticated` role may execute them (the app always signs in anonymously); they are revoked from `PUBLIC` and `anon`.
 - Helpers `private.can_see()`, `private.is_match()`, `private.had_match()` live in the **`private` schema**, which the API does not expose. They are security definer, so in `public` anyone could have asked "did X and Y match / block each other?". Keep new security definer helpers in `private`, and revoke every new function from `PUBLIC`.
 - Reports: `file_report()` (keeps the last 20 messages as evidence), `my_notices()`, `notices_seen()`; tables `notices`, `suspensions`. Moderators decide with `private.decide_report(id, action, reason)`; open cases in `private.open_reports`. See `docs/MODERATION.md`. Paused users can't check in or write (`private.is_suspended`).
-- Migrations live in `supabase/migrations/` (applied: `presence_and_wav_voice`, `private_helper_functions` on 2026-10-26; `reports_notices_suspensions`, `auto_cleanup`, `language_practice`, `realtime_messages`, `profiles` on 2026-10-28). `auto_cleanup` (2026-10-28): hourly pg_cron job `zugpal-cleanup` runs `private.cleanup()`; data from before 2026-10-28 is kept until Husam says to delete old test data. `schema.sql` is the full current state for a fresh project. Test a migration first with a dry run (`execute_sql` ending in `raise exception`, so everything rolls back), then apply it with `apply_migration`.
+- Migrations live in `supabase/migrations/` (applied: `presence_and_wav_voice`, `private_helper_functions` on 2026-10-26; `reports_notices_suspensions`, `auto_cleanup`, `language_practice`, `realtime_messages`, `profiles`, `host_and_partner` on 2026-10-28). `auto_cleanup` (2026-10-28): hourly pg_cron job `zugpal-cleanup` runs `private.cleanup()`; data from before 2026-10-28 is kept until Husam says to delete old test data. `schema.sql` is the full current state for a fresh project. Test a migration first with a dry run (`execute_sql` ending in `raise exception`, so everything rolls back), then apply it with `apply_migration`.
 - Never put the `service_role` key or the database password into code, commits or chat.
 
 ## 6. Known issues and gaps
@@ -108,7 +109,7 @@ Do these roughly in this order and confirm with Husam before big changes.
 4. ~~Supabase Realtime~~ (done 2026-10-28).
 5. **PWA**: manifest + service worker so the app installs on the home screen and Solitaire / chess vs computer work offline.
 6. **"My usual train"** with one-tap check-in, plus a "Hard" level for chess.
-7. Partner reporting: a small dashboard of anonymous mood-before/after and number of conversations per Talk Train.
+7. ~~Partner reporting~~ (done 2026-10-28: `partner/dashboard.html`).
 8. **Native app** (React Native / Expo) once the Talk Train pilot shows real usage: Bluetooth "someone in your coach", push "N Zugpal users are on your train" (only users who opted in), selfie verification, app stores.
 
 ## 8. How to work on this project

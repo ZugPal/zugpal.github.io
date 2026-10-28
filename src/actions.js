@@ -212,6 +212,20 @@ const actions = {
   },
   accMode(m){ S.accLogin = m === "login"; render(); },
   accSignOut(){ safe(async()=>{ await backend.signOut(); localStorage.removeItem("abteil.v1"); location.reload(); }); },
+  recommendSet(v){ S.recommend = v === "yes" ? true : v === "no" ? false : null; render(); },
+  hostOpen(){ S.hostSheet = true; render(); },
+  hostClose(){ S.hostSheet = false; render(); },
+  hostUnlock(){
+    const code = String(S.draft.hostCode||"").trim(); if(!code) return;
+    if(!backend.becomeHost) return toast(t("accDemo"));
+    safe(async()=>{ try{ await backend.becomeHost(code); S.isHost = true; S.hostSheet = false; S.draft.hostCode = ""; toast(t("hostOn")); render(); }
+      catch(e){ if(/wrong code/.test(String(e && e.message))) toast(t("hostWrong")); else throw e; } });
+  },
+  hostSend(){
+    const body = String(S.draft.hostMsg||"").trim(); if(!body) return;
+    if(!confirm(t("hostConfirm"))) return;
+    safe(async()=>{ await backend.hostAnnounce(body.slice(0,280)); S.draft.hostMsg = ""; S.hostStats = await backend.hostStats(); S.announcement = body.slice(0,280); toast(t("hostSent")); render(); });
+  },
   reloadApp(){ location.reload(); },
   install(){ const p = S.installPrompt; if(!p) return; S.installPrompt = null; p.prompt(); p.userChoice.finally(() => render()); },
   practice(v){ if(S.edit){ S.edit.practice = S.edit.practice === v ? "" : v; render(); } },
@@ -280,12 +294,12 @@ async function finishRide(){
     f.badges.forEach(k=>jobs.push(backend.compliment(id, k)));
     if(f.buddy){ S.buddies.add(id); jobs.push(backend.buddy(id, true)); } else if(S.buddies.has(id)){ S.buddies.delete(id); jobs.push(backend.buddy(id, false)); }
   }
-  const before = S.moodBefore, after = S.moodAfter;
-  if(before || after) jobs.push(backend.recordMood(before, after, S.fbList.length > 0));
+  const before = S.moodBefore, after = S.moodAfter, rec = typeof S.recommend === "boolean" ? S.recommend : null;
+  if(before || after || rec !== null) jobs.push(backend.recordMood(before, after, S.fbList.length > 0, rec));
   try{ await Promise.all(jobs); }catch(e){ console.error(e); }
   try{ if(backend && S.ride) await backend.checkOut(); }catch(e){ console.error(e); }
   S.ride = null; S.riders = []; S.matches = []; S.current = null; S.chatWith = null; S.messages = []; S.fb = {}; S.fbList = [];
-  S.moodBefore = null; S.moodAfter = null;
+  S.moodBefore = null; S.moodAfter = null; S.recommend = null; S.announcement = null; S.hostStats = null;
   save(); S.screen = "checkin"; toast(before && after && after > before ? t("moodUp") : t("endedToast"));
 }
 

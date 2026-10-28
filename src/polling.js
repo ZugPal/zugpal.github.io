@@ -17,6 +17,13 @@ async function refresh(){
   const act = currentActivity();
   if(backend.presence && (act !== S.presAct || Date.now() - S.presAt > 12000)){ S.presAct = act; S.presAt = Date.now(); backend.presence(act).catch(()=>{}); }
   const [riders, matches] = await Promise.all([backend.visible(), backend.matches()]);
+  // Talk Train: the host's announcement for everyone; numbers for the host
+  if(backend.announcement && S.ride.key.startsWith("TALK-")){
+    const a = await backend.announcement().catch(() => null);
+    if(a && a !== S.announcement && S.screen !== "nearby") toast(t("hostAnnTitle") + ": " + a);
+    S.announcement = a;
+    if(S.isHost) S.hostStats = await backend.hostStats().catch(() => S.hostStats);
+  }
   S.riders = riders || []; S.matches = matches || [];
   const buddy = S.riders.find(r=>r.buddy && !S.buddySeen.has(r.id) && !S.seen.has(r.id));
   if(buddy){ S.buddySeen.add(buddy.id); toast(t("buddyHere",{name:buddy.first_name})); }

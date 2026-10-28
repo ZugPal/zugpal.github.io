@@ -39,6 +39,21 @@ function accountCard(){
     <button class="btn ghost" data-act="accLink">${t("accSend")}</button>
     <button class="link" data-act="accMode" data-arg="${login ? "save" : "login"}" style="align-self:flex-start">${login ? t("accToSave") : t("accToLogin")}</button></div>`;
 }
+// Talk Train host: live numbers (never names) and one announcement per ride
+function hostCard(){
+  if(!S.isHost || !S.ride || !S.ride.key.startsWith("TALK-")) return "";
+  const s = S.hostStats;
+  return `<div class="card host"><div class="pname">${ICON.shield} ${t("hostTitle")}</div>
+    <div class="stats"><div><b>${s ? s.checked_in : "–"}</b><span class="small">${t("hostChecked")}</span></div><div><b>${s ? s.open_now : "–"}</b><span class="small">${t("hostOpenN")}</span></div><div><b>${s ? s.matches : "–"}</b><span class="small">${t("hostMatches")}</span></div></div>
+    ${s && s.announced ? `<div class="small">${t("hostDone")}</div>` : `<div class="field"><label for="hostMsg">${t("hostMsgLabel")}</label><input type="text" id="hostMsg" data-bind="hostMsg" maxlength="280" dir="auto" value="${esc(S.draft.hostMsg||"")}"><div class="small">${t("hostMsgHint")}</div></div>
+      <button class="btn ghost small" data-act="hostSend">${t("hostSend")}</button>`}</div>`;
+}
+function hostSheet(){
+  return `<div class="sheet" role="dialog" aria-modal="true"><div class="panel"><h2>${t("hostTitle")}</h2><p class="small">${t("hostIntro")}</p>
+    ${S.isHost ? `<div class="banner info">${t("hostActive")}</div>` : `<div class="field"><label for="hostCode">${t("hostCode")}</label><input type="text" id="hostCode" data-bind="hostCode" autocomplete="off" value="${esc(S.draft.hostCode||"")}"></div>
+    <button class="btn" data-act="hostUnlock">${t("hostUnlock")}</button>`}
+    <div class="row" style="justify-content:flex-end"><button class="link" data-act="hostClose">${t("close")}</button></div></div></div>`;
+}
 function safetyBar(id){
   return `<div class="safety"><div class="row" style="flex-wrap:wrap;gap:8px">
       <button class="btn small leave" data-act="leaveChat" data-arg="${esc(id)}">${t("leaveChat")}</button>
@@ -74,6 +89,7 @@ function overlays(){
   if(S.reportSheet) return reportSheet();
   if(S.wordSheet) return wordSheet();
   if(S.cgSheet) return cgSheet();
+  if(S.hostSheet) return hostSheet();
   if(S.reportDone) return `<div class="sheet" role="dialog" aria-modal="true"><div class="panel">
     <h2>${ICON.shield} ${t("reportThanksTitle")}</h2><p>${t("reportThanks",{n:Number(S.reportDone.n)||""})}</p>
     <div class="banner">${t("emergency")}</div>
@@ -190,6 +206,7 @@ const screens = {
       <div class="field"><label for="duration">${t("duration")}</label><select id="duration" data-bind="duration">${opts}</select></div>
       <div class="card" style="flex-direction:row;align-items:flex-start;color:var(--muted)">${ICON.shield}<div style="font-size:14px">${t("nobodySees")}</div></div>
       ${trustStrip()}
+      ${backend && backend.mode === "live" ? `<button class="link quiet" data-act="hostOpen">${S.isHost ? t("hostActive") : t("hostLink")}</button>` : ""}
       <div class="end"><button class="btn" data-act="checkin" data-arg="train">${t("checkin")}</button></div>
     </div>`;
   },
@@ -231,6 +248,8 @@ const screens = {
         <div class="small" style="user-select:all;overflow-wrap:anywhere;color:var(--ink)" id="inviteText">${esc(inviteLink())}</div>
         <button class="btn ghost small" data-act="copyInvite">${t("copyLink")}</button></div>` : ""}
       ${endingBanner()}
+      ${S.announcement ? `<div class="banner info announce"><b>${t("hostAnnTitle")}</b><span dir="auto">${esc(S.announcement)}</span></div>` : ""}
+      ${hostCard()}
       <h1>${title}</h1>
       ${S.open ? `<div class="banner info">${t("waveNote")}</div>` : `<div class="empty"><div class="muted">${t("invisibleNote")}</div></div>`}
       ${matchList}
@@ -450,7 +469,10 @@ const screens = {
         <label class="check" for="bud-${esc(m.id)}"><input type="checkbox" id="bud-${esc(m.id)}" data-fbbuddy="${esc(m.id)}"${f.buddy?" checked":""}> <span>${t("buddySave")}<br><span class="small">${t("buddyHint")}</span></span></label></div>`;
     }).join("");
     const moodQ = `<div class="fb"><div class="field"><span class="flabel">${t("moodAfter")}</span><div class="seg">${[1,2,3,4,5].map(n=>`<button class="chip" data-act="moodAfterSet" data-arg="${n}" aria-pressed="${S.moodAfter===n}">${t("m"+n)}</button>`).join("")}</div><div class="small">${t("moodPrivate")}</div></div></div>`;
-    return `<div class="screen"><h1>${t("fbTitle")}</h1>${items ? `<p class="muted" style="margin:-8px 0 0">${t("fbPrivate")}</p>` : ""}${moodQ}${items}
+    const recQ = `<div class="fb"><div class="field"><span class="flabel">${t("recommendQ")}</span><div class="seg">
+      <button class="chip" data-act="recommendSet" data-arg="yes" aria-pressed="${S.recommend===true}">${t("yes")}</button>
+      <button class="chip" data-act="recommendSet" data-arg="no" aria-pressed="${S.recommend===false}">${t("no")}</button></div><div class="small">${t("moodPrivate")}</div></div></div>`;
+    return `<div class="screen"><h1>${t("fbTitle")}</h1>${items ? `<p class="muted" style="margin:-8px 0 0">${t("fbPrivate")}</p>` : ""}${moodQ}${recQ}${items}
       <div class="end"><button class="btn" data-act="finish">${t("finish")}</button></div></div>`;
   }
 };

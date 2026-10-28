@@ -65,7 +65,13 @@ async function LiveBackend(){
     async mediaStatus(){ const rows = ok(await sb.rpc("my_media_status", {p_ride:S.ride.key})) || []; const o = {}; rows.forEach(r=>o[r.id] = r.opened); return o; },
     async reportMedia(mid){ ok(await sb.rpc("report_media", {p_id:mid})); },
     async presence(act){ ok(await sb.from("riders").update({seen_at:new Date().toISOString(), active_game:act || null}).eq("id", uid)); },
-    async recordMood(before, after, matched){ ok(await sb.from("ride_moods").insert({ride_key:S.ride ? S.ride.key.replace(/-\d{4}-\d{2}-\d{2}$/,"") : null, mood_before:before, mood_after:after, matched})); },
+    async recordMood(before, after, matched, recommend){ ok(await sb.from("ride_moods").insert({ride_key:S.ride ? S.ride.key.replace(/-\d{4}-\d{2}-\d{2}$/,"") : null, mood_before:before, mood_after:after, matched, recommend})); },
+    // Host mode (Talk Train): numbers only, one announcement per ride
+    async amHost(){ return !!ok(await sb.rpc("am_host")); },
+    async becomeHost(code){ return ok(await sb.rpc("become_host", { p_code: code })); },
+    async hostStats(){ const rows = ok(await sb.rpc("host_ride_stats", { p_ride: S.ride.key })) || []; return rows[0] || null; },
+    async hostAnnounce(body){ ok(await sb.rpc("host_announce", { p_ride: S.ride.key, p_body: body })); poke(); },
+    async announcement(){ return ok(await sb.rpc("ride_announcement")) || null; },
     async buddy(id, on){ on ? ok(await sb.from("buddies").upsert({from_id:uid, to_id:id})) : ok(await sb.from("buddies").delete().match({from_id:uid, to_id:id})); },
     async checkOut(){ await sb.from("messages").delete().eq("from_id",uid); await sb.from("riders").delete().eq("id",uid); poke(); }
   };
