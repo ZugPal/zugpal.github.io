@@ -1,10 +1,12 @@
 // UI smoke test: profile -> check-in -> match -> chat -> game, in German, English and Arabic, at phone size.
 // Runs in demo mode (?demo), so it never touches the live database.
-// Run: npx playwright test        Screenshots: test-results/screens/
+// Run: npx playwright test        Screenshots: review/screens/ (playwright wipes test-results/ on every run)
 const { test, expect } = require("@playwright/test");
 const path = require("path");
 
-const SHOTS = path.join(__dirname, "..", "test-results", "screens");
+const SCHEME = process.env.SCHEME === "dark" ? "dark" : "light";   // SCHEME=dark npx playwright test  -> dark-mode screenshots
+const SHOTS = path.join(__dirname, "..", "review", SCHEME === "dark" ? "screens-dark" : "screens");
+test.use({ colorScheme: SCHEME });
 const TEXT = {
   de: { checkin: "Talk Train", match: "gewunken", send: "Senden" },
   en: { checkin: "Talk Train", match: "both waved", send: "Send" },

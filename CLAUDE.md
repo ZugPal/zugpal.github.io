@@ -75,7 +75,7 @@ Modules only reassign their own top-level variables (ES imports are read-only), 
   - `ZChess`: own legal move generator (castling, en passant, promotion, check, mate, stalemate, 50-move, insufficient material) + alpha-beta. Verified with perft (start 4 plies = 197281, Kiwipete, positions 3–5).
   - `ZDama`: Turkish/Arabic rules: men move 1 forward or sideways, capture forward/sideways, captured pieces removed immediately, **mandatory maximum capture**, flying kings, no 180° turn during a capture, promotion at end of move.
   - `ZSol`: Klondike rules.
-- Run tests: `npm test` = engine tests (`npm run test:engines`) + Playwright UI smoke test (`npm run test:ui`: profile → check-in → match → chat → report sheet → online chess → chess vs computer → solitaire, in DE/EN/AR at 390×844, demo mode; screenshots in `test-results/screens/`).
+- Run tests: `npm test` = engine tests (`npm run test:engines`) + Playwright UI smoke test (`npm run test:ui`: profile → check-in → match → chat → report sheet → online chess → chess vs computer → solitaire, in DE/EN/AR at 390×844, demo mode; screenshots in `review/screens/`).
 
 ## 5. Backend: Supabase
 

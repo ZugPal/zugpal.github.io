@@ -14,7 +14,7 @@ function header(){
       <option value="en"${S.lang==="en"?" selected":""}>English</option>
       <option value="ar"${S.lang==="ar"?" selected":""}>العربية</option>
     </select></div>
-    ${backend && backend.mode==="demo" ? `<div class="banner">${t("demoBanner")}</div>` : ""}`;
+    ${backend && backend.mode==="demo" ? `<div class="banner info">${t("demoBanner")}</div>` : ""}`;
 }
 const trustStrip = () => `<ul class="trust" aria-label="Zugpal">${[1,2,3,4].map(i=>`<li>${ICON.shield}${t("trust"+i)}</li>`).join("")}</ul>`;
 function legalFooter(){
@@ -194,7 +194,7 @@ const screens = {
         <button class="btn ghost small" data-act="copyInvite">${t("copyLink")}</button></div>` : ""}
       ${endingBanner()}
       <h1>${title}</h1>
-      ${S.open ? `<div class="banner">${t("waveNote")}</div>` : `<div class="empty"><div class="muted">${t("invisibleNote")}</div></div>`}
+      ${S.open ? `<div class="banner info">${t("waveNote")}</div>` : `<div class="empty"><div class="muted">${t("invisibleNote")}</div></div>`}
       ${matchList}
       ${S.open ? (others.map(personCard).join("") || (S.matches.length ? "" : `<div class="empty"><div class="muted">${t("emptyBody")}</div></div>`)) : ""}
       <div class="word"><span class="lbl" style="color:var(--muted)">${t("wordTitle")}</span><span class="w" lang="de">${esc(w)}</span>
