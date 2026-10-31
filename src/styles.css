@@ -612,3 +612,81 @@ button.qopt{animation:qin .3s ease-out both}
 .end{margin-top:auto;display:flex;flex-direction:column;gap:10px}
 [dir="rtl"] .flip svg{transform:scaleX(-1)}
 @media (prefers-reduced-motion: no-preference){.match,.person,.gamecard{animation:rise .25s ease-out}@keyframes rise{from{transform:translateY(6px);opacity:.6}to{transform:none;opacity:1}}}
+
+/* ===== Chat like WhatsApp (src/chatui.js) ===== */
+.chatscreen{gap:10px}
+.chathead{display:flex;align-items:center;gap:10px}
+.chathead .status{color:var(--accent);min-height:1.2em}
+.safety.strip{flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px 14px;padding:6px 12px;border-radius:12px;font-size:14px}
+.safety.strip .shield{display:inline-flex;color:var(--muted)}.safety.strip .shield svg{width:16px;height:16px}
+.safety.strip .link{min-height:32px;padding:0}.safety.strip .small{flex-basis:100%;margin-top:-2px}
+.chatlog.wa{background:var(--soft);border-radius:16px;padding:10px 10px 12px;gap:6px;min-height:300px;max-height:58vh}
+.chatlog.wa .msg{position:relative;padding:7px 10px 6px 12px;border-radius:14px;border:0;box-shadow:0 1px 1px rgba(0,0,0,.08);display:flex;flex-wrap:wrap;align-items:flex-end;gap:2px 8px;max-width:84%}
+.chatlog.wa .msg:not(.mine){border-end-start-radius:4px}.chatlog.wa .msg.mine{border-end-end-radius:4px}
+.chatlog.wa .msg .txt{white-space:pre-wrap;overflow-wrap:anywhere}
+.msg .meta{margin-inline-start:auto;font-size:11px;opacity:.75;display:inline-flex;align-items:center;gap:3px;white-space:nowrap;line-height:1}
+.msg .meta .tick{margin:0;opacity:1}
+.daysep{display:flex;justify-content:center;margin:6px 0}.daysep span{background:var(--surface);color:var(--muted);font-size:12px;padding:3px 10px;border-radius:999px;box-shadow:0 1px 1px rgba(0,0,0,.06)}
+.chatempty{margin:auto;max-width:300px;text-align:center;color:var(--soft-ink);font-size:14px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:20px 8px}
+.callnote{align-self:center;display:inline-flex;align-items:center;gap:8px;background:var(--surface);border-radius:999px;padding:6px 12px;font-size:14px;color:var(--muted)}
+.callnote svg{width:16px;height:16px}
+.mediacard .meta{margin-inline-start:6px}
+.chatbar.wa{gap:6px;align-items:flex-end}
+.chatbar.wa textarea{border-radius:24px}
+.plusbtn{width:44px;height:48px;color:var(--accent)}
+.sendbtn{flex-shrink:0;width:48px;height:48px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.chatbar.wa #chatSend,.chatbar.wa.has-text .micbtn{display:none}
+.chatbar.wa.has-text #chatSend{display:inline-flex}
+html[dir="rtl"] .flip-rtl{transform:scaleX(-1)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.plussheet{gap:10px}
+.plusgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.plusitem{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px;border:1px solid var(--line-soft);border-radius:14px;background:var(--surface);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;text-align:center;min-height:84px}
+.plusitem .pi{width:40px;height:40px;border-radius:50%;background:var(--soft);color:var(--soft-ink);display:inline-flex;align-items:center;justify-content:center;font-size:18px;font-weight:700}
+.plusitem .pi .tile{width:22px;height:22px;font-size:12px}.plusitem .pi .dm{width:20px;height:20px}
+.plusitem.suggest{border-color:var(--accent)}
+/* chat while you play */
+.chatfab{position:fixed;inset-inline-end:max(16px,calc(50% - 224px));bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:25;width:56px;height:56px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);box-shadow:0 6px 18px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.chatfab svg{stroke:currentColor}
+.chatfab .badge{position:absolute;top:-4px;inset-inline-end:-4px;min-width:22px;height:22px;border-radius:11px;background:var(--danger);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 6px}
+.drawer{position:fixed;inset:0;z-index:38;background:rgba(10,16,14,.35);display:flex;align-items:flex-end;justify-content:center}
+.drawerpanel{background:var(--bg);width:100%;max-width:480px;height:68vh;border-radius:20px 20px 0 0;padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px}
+.drawerpanel .chatlog.wa{flex:1;min-height:0;max-height:none}
+/* word of the ride */
+button.word{font:inherit;color:inherit;background:var(--surface);text-align:start;cursor:pointer;align-items:flex-start}
+.word .wtap{color:var(--accent)}
+.wordlink{font:inherit;font-weight:700;font-size:18px;background:none;border:0;padding:0;color:inherit;text-decoration:underline dotted;cursor:pointer}
+.wordflip{background:none;border:0;color:inherit;font:inherit;font-size:22px;font-weight:700;cursor:pointer;text-decoration:underline dotted}
+.wordsheet{align-items:stretch}
+.wordsheet .bigword{font-family:var(--f-display);font-size:34px;font-weight:800}
+.wordsheet .btn.small{align-self:flex-start}
+.meanings{display:flex;flex-direction:column;gap:8px}
+.mrow{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line-soft)}
+.mrow.mine{border-color:var(--accent);background:var(--soft);color:var(--soft-ink)}
+.mlang{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;opacity:.75}
+/* video message recorder and player, call screen: outside #app */
+.medialayer,#callUi{position:fixed;inset:0;z-index:60;background:#000;color:#fff;display:flex;align-items:center;justify-content:center}
+.vrbox{width:100%;max-width:480px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px))}
+.vrbox video{width:100%;max-height:66vh;border-radius:16px;background:#111;object-fit:cover}
+#vrPreview{transform:scaleX(-1)}
+.vrtime{font-variant-numeric:tabular-nums;font-weight:700}
+.vrbtns{display:flex;align-items:center;justify-content:space-between;width:100%;gap:12px}
+.vrrec{width:72px;height:72px;border-radius:50%;border:5px solid #fff;background:#E5484D;cursor:pointer}
+.vrrec.on{border-radius:16px;width:60px;height:60px;animation:recpulse 1s ease-in-out infinite}
+@keyframes recpulse{50%{opacity:.6}}
+.vrhint,.vrbox .note{color:#B8C4BF;text-align:center}
+.callbox{position:relative;width:100%;max-width:480px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:calc(48px + env(safe-area-inset-top,0px)) 20px calc(28px + env(safe-area-inset-bottom,0px));background:linear-gradient(160deg,#17405A,#0E2A3A)}
+.callbox #callRemote{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+.callbox.withvideo #callRemote{display:block}
+.callbox #callLocal{position:absolute;top:calc(16px + env(safe-area-inset-top,0px));inset-inline-end:16px;width:96px;height:128px;object-fit:cover;border-radius:12px;display:none;transform:scaleX(-1);z-index:2}
+.callbox.withvideo #callLocal{display:block}
+.callinfo{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:10px}
+.callbox.withvideo .callinfo .ph{display:none}
+.callname{font-family:var(--f-display);font-size:28px;font-weight:700}
+.callstatus{color:#C9D8E4;font-variant-numeric:tabular-nums}
+.callbtns{position:relative;z-index:1;display:flex;gap:28px;justify-content:center}
+.callbtn{width:64px;height:64px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.callbtn.on{background:#fff;color:#17405A}
+.callbtn.red{background:#E5484D}.callbtn.green{background:#2FB872}
+.callsafe{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:13px;color:#C9D8E4;text-align:center}
+.callsafe .link{color:#fff;display:inline-flex;gap:6px;align-items:center}

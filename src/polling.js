@@ -8,6 +8,9 @@ import { S, backend } from "./state.js";
 import { parseMsg, t, toast } from "./util.js";
 import { flush, pending } from "./outbox.js";
 import { groupArrived, loadGroup } from "./trains.js";
+import { onSignal } from "./call.js";
+// an incoming call while Zugpal is in the background: a notice without a name
+function notifyCall(){ notify(t("callIncoming")); }
 
 /* ---------------- Polling ---------------- */
 let pollTimer = null, rtTimer = null, lastRefresh = 0;
@@ -95,7 +98,7 @@ function notify(body){
   (navigator.serviceWorker ? navigator.serviceWorker.getRegistration() : Promise.resolve(null))
     .then(reg => reg ? reg.showNotification(title, opts) : new Notification(title, opts)).catch(e => console.error(e));
 }
-function onRealtime(kind, row){ if(kind === "msg") messageAlert(row); if(kind === "group") groupArrived(row); clearTimeout(rtTimer); rtTimer = setTimeout(poll, 250); }
+function onRealtime(kind, row){ if(kind === "call") return onSignal(row); if(kind === "msg") messageAlert(row); if(kind === "group") groupArrived(row); clearTimeout(rtTimer); rtTimer = setTimeout(poll, 250); }
 function tick(){ if(backend.realtime && Date.now() - lastRefresh < 20000) return; poll(); }
 function startPolling(){
   stopPolling();
@@ -104,4 +107,4 @@ function startPolling(){
 }
 function stopPolling(){ clearInterval(pollTimer); pollTimer = null; clearTimeout(rtTimer); if(backend && backend.unlisten) backend.unlisten(); }
 
-export { messageAlert as messageAlertForTest, poll, refresh, restoreRide, startPolling, stopPolling, updateBadge };
+export { messageAlert as messageAlertForTest, notifyCall, poll, refresh, restoreRide, startPolling, stopPolling, updateBadge };

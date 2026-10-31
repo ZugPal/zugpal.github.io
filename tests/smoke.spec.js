@@ -62,7 +62,7 @@ for (const lang of ["de", "en", "ar"]) {
     await page.fill("#chatInput", "Hallo! 👋");
     await page.click(".chatbar button[type=submit]");
     await expect(page.locator(".msg.mine").last()).toContainText("Hallo!");
-    await page.click('[data-act="sendWord"]');
+    await page.click('[data-act="plusOpen"]'); await page.click('.plussheet [data-act="sendWord"]');
     await expect(page.locator(".gamecard .big[lang=de]").last()).toBeVisible();
     await shot("5-chat");
     await page.click('.safety [data-act="reportOpen"]');
@@ -71,31 +71,31 @@ for (const lang of ["de", "en", "ar"]) {
     await page.click('[data-act="reportCancel"]');
 
     // Word games with the match: Zugwort together, Letter Train with a picked word
-    await page.click('.games [data-act="wordSheet"][data-arg="zw"]');
+    await page.click('[data-act="plusOpen"]'); await page.click('.plussheet [data-act="wordSheet"][data-arg="zw"]');
     await page.click('[data-act="zwInvite"][data-arg="coop"]');
     await expect(page.locator(".tiles .tile")).toHaveCount(30);
     await page.click('[data-act="chessBack"][data-arg="chat"] >> nth=0');
     await expect(page.locator('.gamecard [data-act="zwOpen"]')).toBeVisible();
-    await page.click('.games [data-act="wordSheet"][data-arg="lt"]');
+    await page.click('[data-act="plusOpen"]'); await page.click('.plussheet [data-act="wordSheet"][data-arg="lt"]');
     await page.fill("#ltWord", lang === "ar" ? "قطار" : "ZUG");
     await page.click('[data-act="ltInvite"]');
     await expect(page.locator(".slots .slot")).toHaveCount(lang === "ar" ? 4 : 3);
     await page.click('[data-act="chessBack"][data-arg="chat"] >> nth=0');
 
     // Classic games with the match: Mau-Mau invite deals the same cards from the game id
-    await page.click('.games [data-act="cgSheet"]');
+    await page.click('[data-act="plusOpen"]'); await page.click('.plussheet [data-act="cgSheet"]');
     await page.click('[data-act="cgInvite"][data-arg="mau"]');
     await expect(page.locator(".mmhand .mmc")).toHaveCount(5);
     await page.click('[data-act="chessBack"][data-arg="chat"] >> nth=0');
     await expect(page.locator('.gamecard [data-act="cgOpen"]')).toBeVisible();
 
     // Quiz and Stadt-Land-Fluss with the match
-    await page.click('.games [data-act="cgSheet"]');
+    await page.click('[data-act="plusOpen"]'); await page.click('.plussheet [data-act="cgSheet"]');
     await page.click('.sheet [data-act="qzInvite"]');
     await page.click('[data-act="qzGo"]:not([disabled])', { timeout: 6000 });
     await expect(page.locator('.quizq [data-act="qzAnswer"]')).toHaveCount(4);
     await page.click('[data-act="chessBack"][data-arg="chat"] >> nth=0');
-    await page.click('.games [data-act="cgSheet"]');
+    await page.click('[data-act="plusOpen"]'); await page.click('.plussheet [data-act="cgSheet"]');
     await page.click('[data-act="slInvite"]');
     await expect(page.locator(".slletter")).toBeVisible();
     for (let k = 0; k < 6; k++) await page.fill("#sl" + k, "Test");
@@ -104,7 +104,7 @@ for (const lang of ["de", "en", "ar"]) {
     await page.click('[data-act="chessBack"][data-arg="chat"] >> nth=0');
 
     // Online chess with the match: invite card + board
-    await page.click('[data-act="chessInvite"]');
+    await page.click('[data-act="plusOpen"]'); await page.click('.plussheet [data-act="chessInvite"]');
     await expect(page.locator(".cboard .csq")).toHaveCount(64);
     await expect(page.locator(".cpiece")).toHaveCount(32);
     { // online: drag e2-e4, the (simulated) match answers
@@ -114,9 +114,16 @@ for (const lang of ["de", "en", "ar"]) {
       await expect(page.locator(".cmoves .mv")).toHaveCount(2, { timeout: 10000 });
     }
     await shot("7-chess-online");
+    // chat while playing: the chat opens as a drawer over the board
+    await page.click(".chatfab");
+    await page.fill("#chatInput", "Guter Zug!");
+    await page.keyboard.press("Enter");
+    await expect(page.locator(".drawer .msg.mine").last()).toContainText("Guter Zug");
+    await expect(page.locator(".cboard")).toBeAttached();
+    await page.click('[data-act="chatDrawerClose"]');
     { // online Dama with the match: drag a3-a4, the (simulated) match answers
       await page.click('[data-act="chessBack"][data-arg="chat"] >> nth=0');
-      await page.click('.games [data-act="damaInvite"]');
+      await page.click('[data-act="plusOpen"]'); await page.click('.plussheet [data-act="damaInvite"]');
       await expect(page.locator(".dboard .dpiece")).toHaveCount(32);
       const r = await page.locator(".dboard").boundingBox(), sq = r.width / 8;
       await page.mouse.move(r.x + .5 * sq, r.y + 5.5 * sq); await page.mouse.down();

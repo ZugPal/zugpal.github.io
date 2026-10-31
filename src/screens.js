@@ -4,7 +4,7 @@ import { CONFIG } from "./config.js";
 import { AGES, BADGES, DICE, ICE, LANGS, MOODS, TOPICS, WORDS } from "./data.js";
 import { COUNTED, GLYPH, boardHtml, chessState, damaBoard, damaState, onlineInfo } from "./games.js";
 import { S, backend } from "./state.js";
-import { ICON, MONEY_RE, esc, hasContact, loc, minsLeft, moodName, parseMsg, photo, t, todaysWord } from "./util.js";
+import { ICON, MONEY_RE, esc, hasContact, loc, minsLeft, moodName, parseMsg, photo, t, todaysWord, todaysWordIndex } from "./util.js";
 import { wordCard, wordSheet } from "./words.js";
 import { lettersScreen, ltOverlay } from "./letters.js";
 import { zugwortScreen, zwOverlay } from "./zugwort.js";
@@ -23,6 +23,7 @@ import { navSync } from "./nav.js";
 import { paintQrs } from "./qr.js";
 import { pending } from "./outbox.js";
 import { groupScreen, groupSheet, trainNewScreen, trainsSection } from "./trains.js";
+import { chatScreen, gameChat, plusSheet } from "./chatui.js";
 
 /* ---------------- Screens ---------------- */
 function header(){
@@ -119,9 +120,23 @@ function linkFor(what){
   if(/^train-[A-Z0-9]{4,8}$/.test(what || "")) return base + "#" + what;
   return base + "#talk";
 }
+// The German word of the ride: tap it to see what it means in every language, and hear it
+function wordMeaningSheet(){
+  const i = Math.abs(Number(S.wordFlip) || 0) % WORDS.length, w = WORDS[i];
+  const rows = [["de", "Deutsch", w[1]], ["en", "English", w[2]], ["ar", "العربية", w[3]]];
+  rows.sort((a, b) => (b[0] === S.lang) - (a[0] === S.lang));
+  return `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="wmT"><div class="panel wordsheet">
+    <div class="lbl">${t("wordTitle")}</div><div class="bigword" id="wmT" lang="de">${esc(w[0])}</div>
+    ${"speechSynthesis" in window ? `<button class="btn ghost small" data-act="wordSpeak" data-arg="${i}">${ICON.volume}${t("wordHear")}</button>` : ""}
+    <div class="meanings">${rows.map(([l, n, m]) => `<div class="mrow${l === S.lang ? " mine" : ""}"><span class="mlang">${n}</span><span lang="${l}" dir="${l === "ar" ? "rtl" : "ltr"}">${esc(m)}</span></div>`).join("")}</div>
+    <div class="small">${t("wordTask")}</div>
+    <div class="row" style="justify-content:flex-end"><button class="btn" data-act="wordClose">${t("close")}</button></div></div></div>`;
+}
 function overlays(){
   if(S.qrSheet) return qrSheet();
   if(S.groupSheet) return groupSheet();
+  if(S.wordFlip !== null && S.wordFlip !== undefined) return wordMeaningSheet();
+  if(S.plusSheet) return plusSheet();
   if(S.reportSheet) return reportSheet();
   if(S.wordSheet) return wordSheet();
   if(S.cgSheet) return cgSheet();
@@ -358,8 +373,8 @@ const screens = {
       ${matchList}
       ${profileNudge()}
       ${S.open ? (others.map(personCard).join("") || (S.matches.length ? "" : `<div class="empty"><div class="muted">${t("emptyBody")}</div></div>`)) : ""}
-      <div class="word"><span class="lbl" style="color:var(--muted)">${t("wordTitle")}</span><span class="w" lang="de">${esc(w)}</span>
-        <span class="muted">${esc(S.lang==="de"?de:S.lang==="ar"?ar:en)}</span></div>
+      <button class="word" data-act="wordMeaning" data-arg="${todaysWordIndex()}"><span class="lbl" style="color:var(--muted)">${t("wordTitle")}</span><span class="w" lang="de">${esc(w)}</span>
+        <span class="muted">${esc(S.lang==="de"?de:S.lang==="ar"?ar:en)}</span><span class="small wtap">${t("wordTapHint")}</span></button>
       <div class="end"><button class="btn ghost" data-act="openGames">${t("games")}</button><button class="btn ghost" data-act="openLibrary">${ICON.book}${t("libTitle")}</button><button class="btn ghost" data-act="go" data-arg="mood">${t("moodTitle")}</button><button class="link danger" data-act="endRide">${t("endRide")}</button></div>
     </div>`;
   },
@@ -375,7 +390,7 @@ const screens = {
     // German practice: if one of you practises (or helps), suggest starting with the German word of the ride
     const theirPr = m.practice || (S.riders.find(r=>r.id===m.id) || {}).practice, [w, wde, wen, war] = todaysWord();
     const wordStart = (S.profile.practice || theirPr) ? `<div class="meet wordmeet"><div class="grow"><div class="small">${t("matchWordTitle")}</div>
-        <div style="font-weight:700;font-size:18px" lang="de">${esc(w)}</div><div class="small">${esc(S.lang==="de"?wde:S.lang==="ar"?war:wen)}</div></div>
+        <button class="wordlink" data-act="wordMeaning" data-arg="${todaysWordIndex()}" lang="de">${esc(w)}</button><div class="small">${esc(S.lang==="de"?wde:S.lang==="ar"?war:wen)}</div></div>
         <button class="btn mint small" data-act="chatWord" data-arg="${esc(m.id)}">${t("matchWordBtn")}</button></div>` : "";
     return `<div class="screen"><div class="match">
       <div class="pair">${photo("me", S.profile.name, S.profile.photo, 84, false)}${photo(m.id, m.first_name, m.photo, 84, false)}</div>
@@ -392,80 +407,7 @@ const screens = {
     </div></div>`;
   },
 
-  chat(){
-    const m = S.matches.find(x=>x.id===S.chatWith) || S.current;
-    if(!m) return screens.nearby();
-    const name = esc(m.first_name);
-    const log = S.messages.map(x=>{
-      const p = parseMsg(x.body);
-      if(p.type==="text"){
-        if(!x.mine && hasContact(x.body)) return `<div class="banner">${t("noContact")}</div>`;
-        return `<div class="msg${x.mine?" mine":""}${x.pending?" pending":""}" dir="auto">${esc(x.body)}${x.mine ? `<span class="tick" aria-label="${x.pending ? t("waitingOne") : t("sentOne")}">${x.pending ? ICON.clock : "✓"}</span>` : ""}</div>` + (!x.mine && MONEY_RE.test(x.body) ? `<div class="banner">${t("moneyWarn")}</div>` : "");
-      }
-      if(p.type==="word"){ const wd = WORDS[Math.abs(parseInt(p.val,10)||0) % WORDS.length];
-        return `<div class="gamecard"><span class="lbl">${t("wordTitle")}</span><span class="big" lang="de">${esc(wd[0])}</span><span>${esc(S.lang==="de"?wd[1]:S.lang==="ar"?wd[3]:wd[2])}</span><span class="small" style="color:inherit">${t("wordTask")}</span></div>`; }
-      if(p.type==="dice"){ const i = Math.abs(parseInt(p.val,10)||0) % DICE.en.length; return `<div class="gamecard"><span class="lbl">${t("dice")}</span><span class="big">${esc(DICE[S.lang][i])}</span></div>`; }
-      if(p.type==="spin"){ const meAsks = (x.mine && p.val==="me") || (!x.mine && p.val==="you"); return `<div class="gamecard"><span class="lbl">${t("spin")}</span><span class="big">${meAsks ? t("spinYou") : t("spinThem",{name})}</span></div>`; }
-      if(p.type==="ttl") return `<div class="gamecard"><span class="lbl">${t("ttl")}</span><span>${x.mine ? t("ttlYou",{name}) : t("ttlThem",{name})}</span></div>`;
-      if(p.type==="bye") return `<div class="msg${x.mine?" mine":""}">${t("bye")}</div>`;
-      if(["cm","cx","dm","dx","zg","lg","cgm","cgx","qa","slsub","slstop","slrej"].includes(p.type)) return "";
-      if(p.type==="qz" || p.type==="sl") return partyCard(p, x, name);
-      if(p.type==="cg") return cgCard(p, x, name);
-      if(p.type==="book") return bookCard(p, x, name);
-      if(p.type==="zw" || p.type==="lt") return wordCard(p, x, name);
-      if(p.type==="dama"){
-        const gid = String(p.val||""); if(!/^[A-Za-z0-9]{4,12}$/.test(gid)) return "";
-        return `<div class="gamecard"><span class="lbl">${t("damaT")}</span><span>${x.mine ? t("damaStartMe") : t("damaStartThem",{name})}</span><button class="btn small" style="align-self:center" data-act="damaOpen" data-arg="${gid}">${t("openBoard")}</button></div>`;
-      }
-      if(p.type==="chess"){
-        const gid = String(p.val||""); if(!/^[A-Za-z0-9]{4,12}$/.test(gid)) return "";
-        return `<div class="gamecard"><span class="lbl">${t("chess")}</span><span>${x.mine ? t("chessStartMe") : t("chessStartThem",{name})}</span><button class="btn small" style="align-self:center" data-act="chessOpen" data-arg="${gid}">${t("openBoard")}</button></div>`;
-      }
-      if(p.type==="media"){
-        const id = String(p.val||""), kind = p.extra==="voice" ? "voice" : "photo";
-        if(!/^[A-Za-z0-9-]{3,40}$/.test(id)) return "";
-        const ic = kind==="photo" ? ICON.camera : ICON.mic;
-        if(x.mine){ const st = S.mediaStatus[id]; return `<div class="mediacard mine">${ic}<span>${kind==="photo"?t("photoOut"):t("voiceOut")}${st===true?`<span class="small">· ${t("openedTag")}</span>`:st===false?`<span class="small">· ${t("notOpened")}</span>`:""}</span></div>`; }
-        if(S.playing===id) return `<div class="mediacard">${ic}<span>${t("playing")}</span></div>`;
-        if(S.mediaDone.has(id)) return `<div class="mediacard">${ic}<span>${kind==="photo"?t("photoSeen"):t("voiceHeard")}</span>${Date.now()-x.at < 86400000 ? `<button class="link" data-act="reportMedia" data-arg="${id}">${t("report")}</button>` : ""}</div>`;
-        return `<button class="mediacard" data-act="openMedia" data-arg="${id}|${kind}">${kind==="photo"?ICON.eye:ic}<span>${S.mediaCache[id] ? t("tryAgain") : (kind==="photo"?t("photoIn"):t("voiceIn"))}</span></button>`;
-      }
-      return "";
-    }).join("");
-    const isB = S.buddies.has(m.id);
-    S.readCount[m.id] = S.messages.filter(x=>!x.mine && COUNTED(x)).length; S.lastUnread = 0;
-    const active = m.seen_at && Date.now() - Date.parse(m.seen_at) < 25000;
-    return `<div class="screen">
-      <div class="row"><button class="iconbtn flip" data-act="go" data-arg="nearby" aria-label="${t("back")}">${ICON.back}</button>
-        ${photo(m.id, m.first_name, m.photo, 40, false)}<div class="grow" id="chatHead" data-soft><div class="pname">${name}</div>${active ? `<div class="small" style="color:var(--accent)">● ${t("activeNow")}</div>` : ""}</div>
-        <button class="iconbtn" data-act="buddyToggle" data-arg="${esc(m.id)}" aria-pressed="${isB}" aria-label="${t("buddySave")}">${isB ? ICON.starFull : ICON.star}</button></div>
-      ${safetyBar(m.id)}
-      <div id="chatEnding" data-soft>${endingBanner()}</div>
-      <div class="games" role="toolbar">
-        <button class="chip" data-act="libPick">${ICON.book}${t("libStory")}</button>
-        <button class="chip" data-act="sendWord">${ICON.bubble}${t("wordTitle")}</button>
-        <button class="chip suggest" data-act="qzInvite" title="${t("suggested")}"><b aria-hidden="true">?</b>${t("qzName")}</button>
-        <button class="chip" data-act="game" data-arg="dice">${ICON.dice}${t("dice")}</button>
-        <button class="chip" data-act="game" data-arg="spin">${ICON.spin}${t("spin")}</button>
-        <button class="chip" data-act="game" data-arg="ttl">${ICON.cards}${t("ttl")}</button>
-        <button class="chip" data-act="chessInvite"><span class="pc b" style="font-size:18px">${GLYPH.N}\uFE0E</span>${t("chess")}</button>
-        <button class="chip" data-act="wordSheet" data-arg="zw"><span class="tile g" style="width:18px;height:18px;font-size:11px">Z</span>${t("zwName")}</button>
-        <button class="chip" data-act="wordSheet" data-arg="lt">${ICON.cards}${t("ltName")}</button>
-        <button class="chip" data-act="cgSheet">${ICON.dice}${t("moreGames")}</button>
-        <button class="chip" data-act="damaInvite"><span class="dm b" style="width:16px;height:16px"></span>${t("damaT")}</button></div>
-      ${notifyCard()}
-      <div id="chatLog" class="chatlog" data-soft>${log}</div>
-      <form class="chatbar" id="chatForm">${S.recording
-        ? `<div class="recbar"><span class="dot"></span><span id="recTime">0:00</span><span class="small">${t("recording")}</span></div>
-           <button type="button" class="link" data-act="recCancel">${t("cancel")}</button><button type="button" class="btn small" data-act="recSend">${t("send")}</button>`
-        : `<button type="button" class="iconbtn" data-act="pickPhoto" aria-label="${t("photoBtn")}">${ICON.camera}</button>
-           <button type="button" class="iconbtn" data-act="recStart" aria-label="${t("voiceBtn")}">${ICON.mic}</button>
-           <textarea id="chatInput" data-bind="chat" rows="1" maxlength="500" enterkeyhint="send" dir="auto" autocomplete="off" placeholder="${t("chatPh")}" aria-label="${t("chatPh")}">${esc(S.draft.chat||"")}</textarea>
-           <button class="btn small" type="submit" id="chatSend">${t("send")}</button>`}</form>
-      ${S.photoSheet && !S.recording ? `<div class="row" style="flex-wrap:wrap"><button class="btn ghost small" data-act="photoCam">${ICON.camera}${t("takePhoto")}</button><button class="btn ghost small" data-act="photoGal">${t("fromGallery")}</button><button class="link" data-act="photoSheetClose">${t("cancel")}</button></div>` : ""}
-
-    </div>`;
-  },
+  chat(){ return chatScreen(endingBanner, notifyCard) || screens.nearby(); },
 
   games(){
     // three quick favourites for a short ride, the rest as a compact list
@@ -541,7 +483,7 @@ function typing(){
 // the screen (that lost letters and broke Android autocorrect); it only updates the parts marked data-soft (chat log, header).
 function render(opts){
   if(opts && opts.soft && typing() && S.screen === S.rendered){
-    const tpl = document.createElement("template"); tpl.innerHTML = header() + (screens[S.screen] || screens.welcome)();
+    const tpl = document.createElement("template"); tpl.innerHTML = header() + (screens[S.screen] || screens.welcome)() + overlays() + gameChat();
     const log = document.getElementById("chatLog"), atEnd = log && log.scrollHeight - log.scrollTop - log.clientHeight < 80;
     document.querySelectorAll("#app [data-soft][id]").forEach(el => { const n = tpl.content.getElementById(el.id); if(n && n.innerHTML !== el.innerHTML) el.innerHTML = n.innerHTML; });
     if(log && atEnd) log.scrollTop = log.scrollHeight;
@@ -555,7 +497,7 @@ function render(opts){
   app.innerHTML = header() + (screens[S.screen] || screens.welcome)()
     + (S.screen==="chat" || S.screen==="loading" ? "" : legalFooter())
     + (S.viewer ? `<div class="viewer" role="dialog" aria-modal="true"><img src="${esc(S.viewer)}" alt=""><div class="note">${t("onceNote")}</div><button class="btn mint small" data-act="closeViewer">${t("close")}</button></div>` : "")
-    + overlays();
+    + overlays() + gameChat();
   if(active){ const el = document.getElementById(active); if(el && (el.tagName==="TEXTAREA" || (el.tagName==="INPUT" && el.type==="text"))){ el.focus(); try{ const l=el.value.length; el.setSelectionRange(l,l); }catch(e){} } }
   const log = document.getElementById("chatLog"); if(log) log.scrollTop = log.scrollHeight;
   if(S.screen==="solitaire") mountSolitaire();

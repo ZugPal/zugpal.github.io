@@ -1,4 +1,7 @@
 // Actions: what happens when someone taps a [data-act] button.
+import { SAFE_VIDEO } from "./chat.js";
+import { playVideo, startVideo } from "./media.js";
+import { callActions } from "./call.js";
 import { SAFE_AUDIO, SAFE_PHOTO, SILENT_WAV, loadMessages, sendBody, startRecording, stopRecording, textCount } from "./chat.js";
 import { AGES, DICE, LANGS, TOPICS, WORDS } from "./data.js";
 import { chessState, cpuTurn, damaCpu, damaState } from "./games.js";
@@ -31,6 +34,13 @@ function joinTest(code){
   S.ride = {key:"TEST-" + code, label:t("testRide",{c:code}), expiresAt: Date.now() + 120*60000};
   S.seen = new Set(); S.buddySeen = new Set(); S.riders = []; S.matches = []; S.warnedEnd = false; S.declined = new Set(); S.wavedMe = new Set(); S.group = []; S.groupUnread = 0;
   save(); S.screen = "mood"; render();
+}
+// photos and videos: only if the other person accepts them and after both wrote 2+ messages
+function mediaOk(){
+  const m = S.matches.find(x=>x.id===S.chatWith);
+  if(m && m.accept_photos === false){ toast(t("photosOff",{name:m.first_name})); return false; }
+  if(textCount(true) < 2 || textCount(false) < 2){ toast(t("photoLocked")); return false; }
+  return true;
 }
 function openProfile(){
   const p = S.profile || {};
@@ -182,6 +192,19 @@ const actions = {
   photoCam(){ S.photoSheet = false; const inp = document.getElementById("mediaCam"); if(inp){ inp.value = ""; inp.click(); } render(); },
   photoGal(){ S.photoSheet = false; const inp = document.getElementById("mediaPhoto"); if(inp){ inp.value = ""; inp.click(); } render(); },
   photoSheetClose(){ S.photoSheet = false; render(); },
+  // the "+" sheet in the chat
+  plusOpen(){ S.plusSheet = true; render(); },
+  plusClose(){ S.plusSheet = false; render(); },
+  plusCam(){ if(mediaOk()) actions.photoCam(); },
+  plusGal(){ if(mediaOk()) actions.photoGal(); },
+  plusVideo(){ if(mediaOk()) startVideo(); },
+  chatDrawer(){ S.chatDrawer = true; render(); },
+  chatDrawerClose(){ S.chatDrawer = false; render(); },
+  // the German word of the ride: meaning in every language, and how it sounds
+  wordMeaning(i){ S.wordFlip = Math.abs(parseInt(i, 10) || 0) % WORDS.length; render(); },
+  wordClose(){ S.wordFlip = null; render(); },
+  wordSpeak(i){ try{ const u = new SpeechSynthesisUtterance(WORDS[Math.abs(parseInt(i, 10) || 0) % WORDS.length][0]); u.lang = "de-DE"; u.rate = 0.85;
+    const v = speechSynthesis.getVoices().find(x => /^de/i.test(x.lang)); if(v) u.voice = v; speechSynthesis.cancel(); speechSynthesis.speak(u); }catch(e){} },
   recStart(){ startRecording(); },
   recCancel(){ stopRecording(false); },
   recSend(){ stopRecording(true); },
@@ -196,6 +219,10 @@ const actions = {
       const demo = String(id).startsWith("d-");
       if(!r){ toast(t("mediaGone")); return render(); }
       const src = r.media_data;
+      if(kind==="video"){
+        if(!(SAFE_VIDEO.test(src) || (demo && /^data:video\//.test(String(src))))) return render();
+        render(); playVideo(src, () => render()); return;
+      }
       if(kind==="photo"){
         if(!(SAFE_PHOTO.test(src) || (demo && String(src).startsWith("data:image/svg+xml")))) return render();
         S.viewer = src; render();
@@ -325,6 +352,6 @@ async function finishRide(){
   save(); S.screen = "checkin"; toast(before && after && after > before ? t("moodUp") : t("endedToast"));
 }
 
-Object.assign(actions, trainActions, wordActions, classicActions, libraryActions, slActions, sponsorActions, solitaireActions, chessActions, damaActions, tableActions, zugwortActions, lettersActions, quizActions);
+Object.assign(actions, callActions, trainActions, wordActions, classicActions, libraryActions, slActions, sponsorActions, solitaireActions, chessActions, damaActions, tableActions, zugwortActions, lettersActions, quizActions);
 
 export { actions, inviteLink, joinTest, openProfile, safe, startFeedback };

@@ -19,6 +19,8 @@ function bind(el){
 }
 document.addEventListener("click", e => {
   const b = e.target.closest("[data-act]"); if(!b) return;
+  // a choice in the "+" sheet closes the sheet first
+  if(b.closest(".plussheet") && b.dataset.act !== "plusClose") S.plusSheet = false;
   const fn = actions[b.dataset.act]; if(fn) fn(b.dataset.arg, b);
 });
 document.addEventListener("input", e => { const el = e.target; if(el.dataset && el.dataset.bind) bind(el); });
@@ -47,7 +49,11 @@ document.addEventListener("keydown", e => {
   if(e.target.id === "chatInput"){ e.preventDefault(); sendChat(); }
   if(e.target.id === "groupInput"){ e.preventDefault(); sendGroup(); }
 });
-document.addEventListener("input", e => { if(e.target.id === "chatInput" || e.target.id === "groupInput") growBox(e.target); });
+document.addEventListener("input", e => {
+  if(e.target.id !== "chatInput" && e.target.id !== "groupInput") return;
+  growBox(e.target);
+  const f = e.target.closest("form"); if(f) f.classList.toggle("has-text", !!e.target.value.trim());   // microphone becomes Send
+});
 document.addEventListener("submit", e => { if(e.target.id === "groupForm"){ e.preventDefault(); sendGroup(); } });
 document.addEventListener("submit", e => { if(e.target.id==="chatForm"){ e.preventDefault(); sendChat(); } });
 // Offline + install (PWA). The service worker caches the app; see sw.js.

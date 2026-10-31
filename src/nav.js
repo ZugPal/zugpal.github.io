@@ -22,7 +22,7 @@ const SHEETS = [
   [() => S.solDialog, () => { S.solDialog = null; }],
   [() => S.tkNew, () => { S.tkNew = false; }],
   [() => S.trainSheet, () => { S.trainSheet = null; }],
-  [() => S.wordFlip, () => { S.wordFlip = null; }],
+  [() => S.wordFlip !== null && S.wordFlip !== undefined, () => { S.wordFlip = null; }],
   [() => S.chatDrawer, () => { S.chatDrawer = false; }]
 ];
 let stack = [], last = null, trapped = false, ignore = 0, popping = false, rerender = () => {};

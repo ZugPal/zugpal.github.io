@@ -44,11 +44,13 @@ async function LiveBackend(){
       return rows.map(m => ({ id: m.id, from: m.from_id, name: m.first_name, body: m.body, at: Date.parse(m.created_at), cid: m.client_id, mine: m.from_id === uid, removed: m.removed })); },
     async groupSend(body, ride, cid){ ok(await sb.from("group_messages").upsert({ ride_key: ride || S.ride.key, from_id: uid, body, client_id: cid || null },
         { onConflict: "from_id,client_id", ignoreDuplicates: true })); },
+    async callSignal(to, callId, kind, payload){ ok(await sb.from("call_signals").insert({ ride_key: S.ride.key, from_id: uid, to_id: to, call_id: callId, kind, payload })); },
     async groupRemove(id){ ok(await sb.rpc("group_remove", { p_id: Number(id) })); },
     listen(fn){
       onChange = fn;
       if(!msgCh) msgCh = sb.channel("me-" + uid)
         .on("postgres_changes", { event:"INSERT", schema:"public", table:"messages", filter:"to_id=eq." + uid }, p => onChange("msg", p && p.new))
+        .on("postgres_changes", { event:"INSERT", schema:"public", table:"call_signals", filter:"to_id=eq." + uid }, p => onChange("call", p && p.new))
         .subscribe(st => { api.realtime = st === "SUBSCRIBED"; });
       joinRide();
     },

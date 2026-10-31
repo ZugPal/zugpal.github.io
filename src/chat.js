@@ -29,6 +29,7 @@ function resizeMax(file, max, quality){
     img.src = url;
   });
 }
+const SAFE_VIDEO = /^data:video\/(mp4|webm)(;[a-z0-9=._,-]+)*;base64,[A-Za-z0-9+/=]+$/i;
 const blobToDataUrl = b => new Promise((ok, fail)=>{ const r = new FileReader(); r.onload = () => ok(r.result); r.onerror = fail; r.readAsDataURL(b); });
 const textCount = mine => S.messages.filter(m=>!!m.mine===mine && parseMsg(m.body).type==="text").length;
 async function sendMedia(kind, data){
@@ -106,7 +107,7 @@ function growBox(el){ el.style.height = "auto"; el.style.height = Math.min(el.sc
 function sendChat(){
   const box = document.getElementById("chatInput"); if(box) S.draft.chat = box.value;
   const body = String(S.draft.chat||"").trim(); if(!body) return; if(hasContact(body)) return toast(t("noContact"));
-  S.draft.chat = ""; if(box){ box.value = ""; growBox(box); }
+  S.draft.chat = ""; if(box){ box.value = ""; growBox(box); const f = box.closest("form"); if(f) f.classList.remove("has-text"); }
   sendBody(body.slice(0,500));
 }
 async function loadMessages(){
@@ -128,4 +129,4 @@ async function loadMessages(){
   if((S.screen==="chat" || S.screen==="chess" || S.screen==="dama") && !S.viewer) render({ soft: true });
 }
 
-export { SAFE_AUDIO, SAFE_PHOTO, SILENT_WAV, growBox, loadMessages, resizeImage, resizeMax, sendBody, sendChat, sendMedia, startRecording, stopRecording, textCount };
+export { SAFE_AUDIO, SAFE_PHOTO, SAFE_VIDEO, SILENT_WAV, blobToDataUrl, growBox, loadMessages, resizeImage, resizeMax, sendBody, sendChat, sendMedia, startRecording, stopRecording, textCount };
