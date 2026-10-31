@@ -10,6 +10,7 @@ const PASS = new Set(["match", "mood", "loading"]);
 const SHEETS = [
   [() => S.viewer, () => { S.viewer = null; }],
   [() => S.qrSheet, () => { S.qrSheet = null; }],
+  [() => S.groupSheet, () => { S.groupSheet = null; }],
   [() => S.reportSheet, () => { S.reportSheet = null; }],
   [() => S.reportDone, () => { S.reportDone = null; }],
   [() => S.wordSheet, () => { S.wordSheet = null; }],

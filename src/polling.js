@@ -7,6 +7,7 @@ import { loadNotices, render } from "./screens.js";
 import { S, backend } from "./state.js";
 import { parseMsg, t, toast } from "./util.js";
 import { flush, pending } from "./outbox.js";
+import { groupArrived, loadGroup } from "./trains.js";
 
 /* ---------------- Polling ---------------- */
 let pollTimer = null, rtTimer = null, lastRefresh = 0;
@@ -43,7 +44,8 @@ async function refresh(){
     || (S.screen==="zugwort" && S.zw && S.zw.mode==="online") || (S.screen==="letters" && S.lt && S.lt.mode==="online") || (S.screen==="table" && S.tk && S.tk.mode==="online")
     || (S.screen==="quiz" && S.qz && S.qz.mode==="online") || S.screen==="slf";
   if(S.screen==="chat" || onlineChessOpen) await loadMessages();
-  if(["nearby","match","chat"].includes(S.screen) || onlineChessOpen) render({ soft: true });
+  if(S.screen==="group") await loadGroup();
+  if(["nearby","match","chat","group"].includes(S.screen) || onlineChessOpen) render({ soft: true });
 }
 // Background refresh: in a tunnel it fails quietly and shows "Reconnecting…" instead of an error every few seconds
 async function poll(){
@@ -93,7 +95,7 @@ function notify(body){
   (navigator.serviceWorker ? navigator.serviceWorker.getRegistration() : Promise.resolve(null))
     .then(reg => reg ? reg.showNotification(title, opts) : new Notification(title, opts)).catch(e => console.error(e));
 }
-function onRealtime(kind, row){ if(kind === "msg") messageAlert(row); clearTimeout(rtTimer); rtTimer = setTimeout(poll, 250); }
+function onRealtime(kind, row){ if(kind === "msg") messageAlert(row); if(kind === "group") groupArrived(row); clearTimeout(rtTimer); rtTimer = setTimeout(poll, 250); }
 function tick(){ if(backend.realtime && Date.now() - lastRefresh < 20000) return; poll(); }
 function startPolling(){
   stopPolling();

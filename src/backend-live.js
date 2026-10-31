@@ -27,10 +27,24 @@ async function LiveBackend(){
     const k = S.ride ? S.ride.key : null; if(k === rideKey) return;
     if(rideCh){ sb.removeChannel(rideCh); rideCh = null; }
     rideKey = k;
-    if(k) rideCh = sb.channel("ride-" + k, { config:{ broadcast:{ self:false } } }).on("broadcast", { event:"poke" }, () => onChange("ride")).subscribe();
+    if(k) rideCh = sb.channel("ride-" + k, { config:{ broadcast:{ self:false } } }).on("broadcast", { event:"poke" }, () => onChange("ride"))
+      .on("postgres_changes", { event:"INSERT", schema:"public", table:"group_messages", filter:"ride_key=eq." + k }, p => onChange("group", p && p.new)).subscribe();
   }
   const api = {
-    mode:"live", realtime:false,
+    mode:"live", realtime:false, uid,
+    // Trains people create, "I'll be there", and the group chat of a ride
+    async trains(){ return ok(await sb.rpc("train_list")) || []; },
+    async trainGet(code){ const rows = ok(await sb.rpc("train_get", { p_code: code })) || []; return rows[0] || null; },
+    async createTrain(row){ ok(await sb.from("trains").insert(row)); },
+    async cancelTrain(code){ ok(await sb.rpc("train_cancel", { p_code: code })); },
+    async trainJoin(code, on){ on ? ok(await sb.from("train_members").upsert({ train_code: code, user_id: uid }, { onConflict: "train_code,user_id", ignoreDuplicates: true }))
+      : ok(await sb.from("train_members").delete().match({ train_code: code, user_id: uid })); },
+    async groupMessages(){ const rows = ok(await sb.from("group_messages").select("id,from_id,first_name,body,created_at,client_id,removed")
+        .eq("ride_key", S.ride.key).order("created_at").limit(300)) || [];
+      return rows.map(m => ({ id: m.id, from: m.from_id, name: m.first_name, body: m.body, at: Date.parse(m.created_at), cid: m.client_id, mine: m.from_id === uid, removed: m.removed })); },
+    async groupSend(body, ride, cid){ ok(await sb.from("group_messages").upsert({ ride_key: ride || S.ride.key, from_id: uid, body, client_id: cid || null },
+        { onConflict: "from_id,client_id", ignoreDuplicates: true })); },
+    async groupRemove(id){ ok(await sb.rpc("group_remove", { p_id: Number(id) })); },
     listen(fn){
       onChange = fn;
       if(!msgCh) msgCh = sb.channel("me-" + uid)

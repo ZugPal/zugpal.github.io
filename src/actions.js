@@ -20,6 +20,7 @@ import { damaActions } from "./damaui.js";
 import { tableActions } from "./tablekit.js";
 import { calendarFile } from "./talktrain.js";
 import { queue } from "./outbox.js";
+import { openTrainLink, trainActions } from "./trains.js";
 
 /* ---------------- Actions ---------------- */
 function selectInvite(){ const el = document.getElementById("inviteText"); if(!el) return; const r = document.createRange(); r.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
@@ -28,7 +29,7 @@ const inviteLink = () => location.href.split("#")[0] + "#ride-" + S.ride.key.sli
 function joinTest(code){
   code = String(code).toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,8);
   S.ride = {key:"TEST-" + code, label:t("testRide",{c:code}), expiresAt: Date.now() + 120*60000};
-  S.seen = new Set(); S.buddySeen = new Set(); S.riders = []; S.matches = []; S.warnedEnd = false; S.declined = new Set(); S.wavedMe = new Set();
+  S.seen = new Set(); S.buddySeen = new Set(); S.riders = []; S.matches = []; S.warnedEnd = false; S.declined = new Set(); S.wavedMe = new Set(); S.group = []; S.groupUnread = 0;
   save(); S.screen = "mood"; render();
 }
 function openProfile(){
@@ -59,6 +60,7 @@ const actions = {
     else if(S.autoTalk){ S.autoTalk = false; return actions.checkin("talk"); }
     else S.screen = "checkin";
     render();
+    if(S.autoTrain){ const c = S.autoTrain; S.autoTrain = null; openTrainLink(c); }
   },
   editProfile(){ openProfile(); render(); },
   go(where){ S.screen = where; if(where==="nearby") S.current = null; render(); },
@@ -72,7 +74,7 @@ const actions = {
       key = norm(line) + "-" + norm(num) + "-" + berlinDate(); label = line.toUpperCase() + " · " + num;
     }
     S.ride = {key, label, expiresAt: Date.now() + minutes*60000};
-    S.seen = new Set(); S.buddySeen = new Set(); S.riders = []; S.matches = []; S.warnedEnd = false; S.declined = new Set(); S.wavedMe = new Set();
+    S.seen = new Set(); S.buddySeen = new Set(); S.riders = []; S.matches = []; S.warnedEnd = false; S.declined = new Set(); S.wavedMe = new Set(); S.group = []; S.groupUnread = 0;
     save(); S.screen = "mood"; render();
   },
   mood(id){ S.moods.has(id) ? S.moods.delete(id) : S.moods.add(id); if(!S.moods.size) S.moods.add(id); save(); render(); },
@@ -319,10 +321,10 @@ async function finishRide(){
   try{ await Promise.all(jobs); }catch(e){ console.error(e); }
   try{ if(backend && S.ride) await backend.checkOut(); }catch(e){ console.error(e); }
   S.ride = null; S.riders = []; S.matches = []; S.current = null; S.chatWith = null; S.messages = []; S.fb = {}; S.fbList = [];
-  S.moodBefore = null; S.moodAfter = null; S.recommend = null; S.announcement = null; S.hostStats = null;
+  S.moodBefore = null; S.moodAfter = null; S.recommend = null; S.announcement = null; S.hostStats = null; S.group = []; S.groupUnread = 0;
   save(); S.screen = "checkin"; toast(before && after && after > before ? t("moodUp") : t("endedToast"));
 }
 
-Object.assign(actions, wordActions, classicActions, libraryActions, slActions, sponsorActions, solitaireActions, chessActions, damaActions, tableActions, zugwortActions, lettersActions, quizActions);
+Object.assign(actions, trainActions, wordActions, classicActions, libraryActions, slActions, sponsorActions, solitaireActions, chessActions, damaActions, tableActions, zugwortActions, lettersActions, quizActions);
 
 export { actions, inviteLink, joinTest, openProfile, safe, startFeedback };

@@ -23,14 +23,34 @@ function DemoBackend(){
   ];
   let present=[], mine=new Set(), theirs=new Set(), blocked=new Set(), msgs={}, timers=[], reacted={}, media={};
   let demoReports = 0; const demoNotices = [];
+  // a demo train people created, and the group chat of the ride
+  const trains = [{ code: "DEMO42", label: "RE 1 · 07:42 · Düren → Köln Hbf", line: "RE 1", from_station: "Düren", to_station: "Köln Hbf", weekdays: [1,2,3,4,5], one_date: null,
+    dep_time: "07:42", minutes: 45, coach: "5", theme: "german", women_only: false, featured: true, members: 4, mine: false, by_me: false }];
+  let group = [], gid = 1;
+  const GROUP = [[4000, "d-lena", {de:"Guten Morgen zusammen! ☕", en:"Good morning everyone! ☕", ar:"صباح الخير للجميع! ☕"}],
+    [9000, "d-karim", {de:"Morgen! Weiß jemand, ob wir pünktlich in Köln sind?", en:"Morning! Does anyone know if we'll be on time in Cologne?", ar:"صباح الخير! هل يعرف أحد إن كنا سنصل كولونيا في الموعد؟"}],
+    [14000, "d-aylin", {de:"Laut App 3 Minuten später. Wie immer 😄", en:"The app says 3 minutes late. As always 😄", ar:"التطبيق يقول 3 دقائق تأخير. كالعادة 😄"}]];
   let savedBuddies = new Set(); try{ savedBuddies = new Set(JSON.parse(localStorage.getItem("zugpal.demoBuddies")||"[]")); }catch(e){}
   const visibleTo = p => !blocked.has(p.id) && (!S.womenOnly || p.gender==="woman") && (!p.womenOnly || S.profile.gender==="woman");
   const isBuddy = p => savedBuddies.has(p.id) && S.buddies.has(p.id);
   const after = (ms, fn) => timers.push(setTimeout(fn, ms));
   return {
-    mode:"demo",
+    mode:"demo", uid:"me",
+    async trains(){ return trains.map(x => ({ ...x })); },
+    async trainGet(code){ const x = trains.find(r => r.code === code); return x ? { ...x } : null; },
+    async createTrain(row){ if(trains.filter(r => r.by_me).length >= 3) throw Object.assign(new Error("new row violates row-level security policy"), { code: "42501" });
+      trains.push({ ...row, featured: false, members: 0, mine: false, by_me: true }); },
+    async cancelTrain(code){ const i = trains.findIndex(r => r.code === code && r.by_me); if(i >= 0) trains.splice(i, 1); },
+    async trainJoin(code, on){ const r = trains.find(x => x.code === code); if(r && r.mine !== on){ r.mine = on; r.members += on ? 1 : -1; } },
+    async groupMessages(){ if(window.__demoOffline) throw new TypeError("Failed to fetch"); return group.filter(m => !blocked.has(m.from)).map(m => ({ ...m })); },
+    async groupSend(body, ride, cid){ if(window.__demoOffline) throw new TypeError("Failed to fetch"); if(cid && group.some(m => m.cid === cid)) return;
+      group.push({ id: gid++, from: "me", name: S.profile.name, body, at: Date.now(), cid, mine: true });
+      if(group.filter(m => m.mine).length === 1) after(2500, () => group.push({ id: gid++, from: "d-lena", name: "Lena", body: {de:"Hallo! Schön, dass du dabei bist 🙂", en:"Hi! Nice to have you here 🙂", ar:"أهلاً! سعيدة بوجودك 🙂"}[S.lang] || "Hi!", at: Date.now(), mine: false })); },
+    async groupRemove(id){ const m = group.find(x => x.id === Number(id)); if(m) m.removed = true; },
     async checkIn(){ timers.forEach(clearTimeout); timers=[]; present=[]; mine.clear(); theirs.clear(); msgs={}; reacted={};
       people.forEach((p,i)=>after(700 + i*1500, ()=>present.push(p)));
+      group = [];
+      GROUP.forEach(([ms, id, text]) => after(ms, () => { const p = people.find(x => x.id === id); group.push({ id: gid++, from: id, name: p.name, body: text[S.lang] || text.en, at: Date.now(), mine: false }); }));
       // Karim waves first, so you can try "Waved at you"
       after(6000, ()=>{ if(present.some(p=>p.id==="d-karim")) theirs.add("d-karim"); }); },
     async update(){},

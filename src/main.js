@@ -7,6 +7,7 @@ import { CONFIG } from "./config.js";
 import { navInit } from "./nav.js";
 import { refresh, restoreRide, startPolling } from "./polling.js";
 import { flush } from "./outbox.js";
+import { openTrainLink, sendGroup } from "./trains.js";
 import { loadNotices, render } from "./screens.js";
 import { S, backend, load, save, setBackend } from "./state.js";
 import { t, toast } from "./util.js";
@@ -40,11 +41,14 @@ document.addEventListener("change", async e => {
 // remember folded sections ("More about you") across re-renders; toggle does not bubble, so listen while capturing
 document.addEventListener("toggle", e => { if(e.target && e.target.classList && e.target.classList.contains("more")) S.moreOpen = e.target.open; }, true);
 // Chat box: tapping Send must not take the focus away (the keyboard stays open, like WhatsApp)
-document.addEventListener("pointerdown", e => { if(e.target.closest && e.target.closest("#chatSend")) e.preventDefault(); });
+document.addEventListener("pointerdown", e => { if(e.target.closest && e.target.closest("#chatSend, #groupSend")) e.preventDefault(); });
 document.addEventListener("keydown", e => {
-  if(e.target.id === "chatInput" && e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); sendChat(); }
+  if(e.key !== "Enter" || e.shiftKey || e.isComposing) return;
+  if(e.target.id === "chatInput"){ e.preventDefault(); sendChat(); }
+  if(e.target.id === "groupInput"){ e.preventDefault(); sendGroup(); }
 });
-document.addEventListener("input", e => { if(e.target.id === "chatInput") growBox(e.target); });
+document.addEventListener("input", e => { if(e.target.id === "chatInput" || e.target.id === "groupInput") growBox(e.target); });
+document.addEventListener("submit", e => { if(e.target.id === "groupForm"){ e.preventDefault(); sendGroup(); } });
 document.addEventListener("submit", e => { if(e.target.id==="chatForm"){ e.preventDefault(); sendChat(); } });
 // Offline + install (PWA). The service worker caches the app; see sw.js.
 // On localhost only with ?sw (so local testing always shows the newest files). A new version shows an "update" bar.
@@ -69,6 +73,7 @@ window.addEventListener("offline", () => render());
   load();
   S.autoTalk = location.hash === "#talk";
   const m = location.hash.match(/^#ride-([A-Za-z0-9]{4,8})$/); S.autoRide = m ? m[1] : null;
+  const tm = location.hash.match(/^#train-([A-Za-z0-9]{6})$/); S.autoTrain = tm ? tm[1].toUpperCase() : null;
   navInit(render);
   S.screen = "loading"; render();
   // ?demo forces the simulated riders (for testing without touching the live database)
@@ -84,4 +89,5 @@ window.addEventListener("offline", () => render());
   else if(S.autoTalk){ S.autoTalk = false; actions.checkin("talk"); return; }
   else S.screen = "checkin";
   render();
+  if(S.autoTrain && S.profile){ const c = S.autoTrain; S.autoTrain = null; openTrainLink(c); }
 })();

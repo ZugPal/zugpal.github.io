@@ -22,6 +22,7 @@ import { googleLink, talkInfo } from "./talktrain.js";
 import { navSync } from "./nav.js";
 import { paintQrs } from "./qr.js";
 import { pending } from "./outbox.js";
+import { groupScreen, groupSheet, trainNewScreen, trainsSection } from "./trains.js";
 
 /* ---------------- Screens ---------------- */
 function header(){
@@ -120,6 +121,7 @@ function linkFor(what){
 }
 function overlays(){
   if(S.qrSheet) return qrSheet();
+  if(S.groupSheet) return groupSheet();
   if(S.reportSheet) return reportSheet();
   if(S.wordSheet) return wordSheet();
   if(S.cgSheet) return cgSheet();
@@ -282,6 +284,7 @@ const screens = {
       <h1>${t("checkinTitle")}</h1>
       ${S.ride ? `<div class="banner info action"><span>${t("stillOn",{r:esc(S.ride.label)})}</span><button class="btn small" data-act="go" data-arg="nearby">${t("toPeople")}</button></div>` : ""}
       ${talkHero()}
+      ${trainsSection()}
       <div class="card mytrain"><div class="pname">${ICON.train}${t("orOther")}</div>
         <div class="row">
           <div class="field" style="flex:1"><label for="line">${t("line")}</label><input type="text" id="line" data-bind="line" placeholder="RE 1" autocomplete="off" value="${esc(d.line||"")}"></div>
@@ -341,6 +344,8 @@ const screens = {
         <span class="pill${S.open?"":" off"}"><span class="dot"></span>${S.open?t("youAreOpen"):t("invisible")}</span>
         <button class="btn ghost small" data-act="toggleOpen">${S.open?t("goInvisible"):t("beVisible")}</button></div>
       <div class="ridebar">${ICON.train}<span class="grow"><b>${esc(S.ride.label)}</b> · ${t("minLeft",{n:minsLeft()})}</span><button class="link" data-act="endRide">${t("changeTrain")}</button></div>
+      <div class="tabs" role="tablist" id="nearTabs" data-soft><button class="tab" role="tab" aria-selected="true">${t("peopleTab")}</button>
+        <button class="tab" role="tab" aria-selected="false" data-act="openGroup">${t("groupTab")}${S.groupUnread ? ` <span class="tag new">${t("unreadTag",{n:S.groupUnread})}</span>` : ""}</button></div>
       ${S.ride.key.startsWith("TEST-") ? `<div class="card"><span class="flabel">${t("inviteLabel")}</span>
         <div class="small" style="user-select:all;overflow-wrap:anywhere;color:var(--ink)" id="inviteText">${esc(inviteLink())}</div>
         <div class="row" style="flex-wrap:wrap;gap:8px"><button class="btn ghost small" data-act="shareLink" data-arg="test">${t("shareLink")}</button><button class="btn ghost small" data-act="showQr" data-arg="test">${ICON.qr}${t("showQr")}</button></div></div>` : ""}
@@ -490,6 +495,8 @@ const screens = {
     </div>`;
   },
 
+  trainNew(){ return trainNewScreen(); },
+  group(){ return groupScreen() || screens.nearby(); },
   zugwort(){ return zugwortScreen() || screens.games(); },
   table(){ return tableScreen() || screens.games(); },
   library(){ return libraryScreen(); },
