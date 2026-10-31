@@ -164,9 +164,9 @@ for (const lang of ["de", "en", "ar"]) {
     // Mühle: place a piece, the computer places one
     await page.click('[data-act="chessBack"][data-arg="games"]');
     await page.click('[data-act="cgCpu"][data-arg="muehle"]');
-    await page.click('.mpt[data-arg="0"]');
-    await expect(page.locator(".mpt.me")).toHaveCount(1);
-    await expect(page.locator(".mpt.op")).toHaveCount(1);
+    { const r = await page.locator(".mlboard").boundingBox(); await page.mouse.click(r.x + r.width * .05, r.y + r.height * .05); }
+    await expect(page.locator(".mllayer .mlp.w")).toHaveCount(1);
+    await expect(page.locator(".mllayer .mlp.b")).toHaveCount(1, { timeout: 8000 });
     await shot("13-muehle");
 
     // Mau-Mau: play a fitting card or draw; either way the turn comes back

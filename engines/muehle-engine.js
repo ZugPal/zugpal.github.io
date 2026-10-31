@@ -43,8 +43,8 @@ const ZMuehle = (function(){
     }
     return out;
   }
-  function apply(st, m){
-    if(!moves(st).includes(m)) return null;
+  function apply(st, m){ return moves(st).includes(m) ? applyRaw(st, m) : null; }
+  function applyRaw(st, m){
     const mm = /^(?:p(\d+)|m(\d+)-(\d+))(?:x(\d+))?$/.exec(m);
     const p = st.turn, b = st.b.slice(), hand = { ...st.hand };
     let to;
@@ -98,6 +98,45 @@ const ZMuehle = (function(){
     }
     return best;
   }
-  return { ADJ, MILLS, newGame, moves, apply, status, bestMove, inMill, count };
+  /* Stronger opponent for the new board: negamax + alpha-beta, captures first, iterative deepening with a time limit.
+     Levels: easy (1 ply, noisy), medium (2 plies), hard (4 plies), expert (up to 2 s). */
+  const posKey = st => st.b.map(x => x || "-").join("") + st.turn + st.hand.w + st.hand.b;
+  class Timeout {}
+  function think(st, level, rnd){
+    rnd = rnd || Math.random;
+    const ms = moves(st); if(!ms.length) return null; if(ms.length === 1) return ms[0];
+    const lim = { easy: [1, 0], medium: [2, 0], hard: [4, 1200], expert: [10, 2000] }[level] || [2, 0];
+    const noise = level === "easy" ? 90 : level === "medium" ? 10 : 0, deadline = lim[1] ? Date.now() + lim[1] : Infinity;
+    let nodes = 0;
+    const order = list => list.filter(m => m.includes("x")).concat(list.filter(m => !m.includes("x")));
+    function nega(s, depth, alpha, beta, ply){
+      if((++nodes & 255) === 0 && Date.now() > deadline) throw new Timeout();
+      const stt = status(s);
+      if(stt.over) return stt.winner ? -100000 + ply : 0;
+      if(depth <= 0) return evalFor(s, s.turn);
+      let best = -Infinity;
+      for(const m of order(moves(s))){
+        const v = -nega(applyRaw(s, m), depth - 1, -beta, -alpha, ply + 1);
+        if(v > best) best = v; if(v > alpha) alpha = v; if(alpha >= beta) break;
+      }
+      return best;
+    }
+    let bestMv = ms[Math.floor(rnd() * ms.length)], prev = null;
+    for(let d = 1; d <= lim[0]; d++){
+      try{
+        let bv = -Infinity, bm = null, alpha = -Infinity;
+        const list = order(ms.slice()); if(prev){ list.splice(list.indexOf(prev), 1); list.unshift(prev); }
+        for(const m of list){
+          let v = -nega(applyRaw(st, m), d - 1, -Infinity, noise ? Infinity : -alpha, 1);
+          if(noise) v += (rnd() - .5) * noise * 2;
+          if(v > bv){ bv = v; bm = m; } if(v > alpha) alpha = v;
+        }
+        bestMv = prev = bm;
+        if(Math.abs(bv) > 90000) break;
+      }catch(e){ if(e instanceof Timeout) break; throw e; }
+    }
+    return bestMv;
+  }
+  return { ADJ, MILLS, newGame, moves, apply, status, bestMove, inMill, count, think, posKey };
 })();
 if(typeof module !== "undefined") module.exports = ZMuehle;

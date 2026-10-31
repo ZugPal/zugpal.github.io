@@ -333,6 +333,37 @@ canvas.confetti{position:fixed;inset:0;z-index:70;pointer-events:none}
 .tkmount{display:flex;justify-content:center;width:100%}
 .tkrules summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;align-items:center}
 .tkfinal{display:flex;justify-content:center;align-items:center;gap:10px}.tkfinal b{font-family:var(--f-display);font-size:28px}
+/* Mühle */
+.mlwrap{width:100%;max-width:440px;display:flex;flex-direction:column;gap:6px;touch-action:none;user-select:none;-webkit-user-select:none}
+.mlhand{display:flex;flex-wrap:wrap;justify-content:center;gap:4px;min-height:30px;padding:3px 8px;border-radius:16px;transition:background .2s}
+.mlhand.active{background:var(--soft);cursor:grab}
+.mlboard{position:relative;width:100%;aspect-ratio:1;border-radius:12px;background:linear-gradient(135deg,#E8C48D,#D9A962);box-shadow:0 0 0 6px #8A5A2B,0 4px 14px rgba(0,0,0,.35);margin:6px 0}
+.mllines{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.mllines .ln{fill:none;stroke:#5A3714;stroke-width:1.3}
+.mllines .mills polyline{fill:none;stroke:#F2C46B;stroke-width:3.2;stroke-linecap:round;filter:drop-shadow(0 0 1.5px #fff);animation:mlglow .8s ease-in-out infinite alternate}
+@keyframes mlglow{from{opacity:.55}to{opacity:1}}
+.mllines .hint .ar{stroke:#E0A526;stroke-width:2.2;stroke-linecap:round;stroke-dasharray:3 2}
+.mllines .hint .rg{fill:none;stroke:#E0A526;stroke-width:1.6}
+.mllines .hint .cx{stroke:#A3321F;stroke-width:1.8;stroke-linecap:round}
+.mlpt{position:absolute;width:12%;height:12%;transform:translate(-50%,-50%);border-radius:50%}
+.mlpt::before{content:"";position:absolute;left:38%;top:38%;width:24%;height:24%;border-radius:50%;background:#5A3714}
+.mlpt.can::after{content:"";position:absolute;left:30%;top:30%;width:40%;height:40%;border-radius:50%;background:rgba(31,107,80,.65)}
+.mlpt.last{box-shadow:inset 0 0 0 3px rgba(255,236,120,.7)}
+.mlpt.sel{box-shadow:inset 0 0 0 4px rgba(31,107,80,.75)}
+.mllayer{position:absolute;inset:0;pointer-events:none}
+.mlp{position:absolute;width:11%;height:11%;transform:translate(-50%,-50%);z-index:2}
+.mlp.slide{transition:left .35s ease-out,top .35s ease-out,opacity .35s}
+.mlp i{display:block;position:relative;width:100%;height:100%;border-radius:50%;box-shadow:0 2px 3px rgba(0,0,0,.45),inset 0 -3px 0 rgba(0,0,0,.18)}
+.mlp.w i{background:radial-gradient(circle at 35% 30%,#fff,#E7E1D3 60%,#C9BFA8)}
+.mlp.b i{background:radial-gradient(circle at 35% 30%,#5A4A3E,#2A211B 60%,#120E0B)}
+.mlp i::after{content:"";position:absolute;inset:22%;border-radius:50%;box-shadow:inset 0 0 0 2px rgba(0,0,0,.12)}
+.mlp.dragging{z-index:20;transform:translate(-50%,-50%) scale(1.15);filter:drop-shadow(0 6px 6px rgba(0,0,0,.35))}
+.mlp.sel i{box-shadow:0 0 0 3px #1F6B50,0 2px 3px rgba(0,0,0,.45)}
+.mlp.takeable i{animation:mlwobble .5s ease-in-out infinite alternate;box-shadow:0 0 0 3px #D7263D,0 2px 3px rgba(0,0,0,.45)}
+@keyframes mlwobble{from{transform:rotate(-8deg) scale(1)}to{transform:rotate(8deg) scale(1.06)}}
+.mlp.taken{transition:transform .4s ease-in,opacity .4s;transform:translate(-50%,-50%) scale(.2) rotate(90deg);opacity:0}
+.mlp.mini{position:relative;display:inline-block;width:22px;height:22px;transform:none;vertical-align:middle}
+@media (prefers-reduced-motion: reduce){.mlp.takeable i,.mllines .mills polyline{animation:none}}
 /* Vier in einer Reihe */
 .f4board{position:relative;width:100%;max-width:440px;aspect-ratio:1;touch-action:none;user-select:none;-webkit-user-select:none;overflow:hidden}
 .f4back{position:absolute;left:3%;right:3%;top:16%;bottom:2%;background:rgba(40,80,140,.14);border-radius:8px}

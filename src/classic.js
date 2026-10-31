@@ -9,6 +9,7 @@ import { S } from "./state.js";
 import { isTable, tableActions } from "./tablekit.js";
 import { CARD, ICON, esc, parseMsg, t } from "./util.js";
 import "./fourui.js";
+import "./muehleui.js";
 
 const GAMES = ["four", "muehle", "mau"];
 const ENG = () => ({ four: ZFour, muehle: ZMuehle, mau: ZMau });
