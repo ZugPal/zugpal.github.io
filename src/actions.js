@@ -1,7 +1,7 @@
 // Actions: what happens when someone taps a [data-act] button.
 import { SAFE_AUDIO, SAFE_PHOTO, SILENT_WAV, loadMessages, sendBody, startRecording, stopRecording, textCount } from "./chat.js";
 import { AGES, DICE, LANGS, TOPICS, WORDS } from "./data.js";
-import { chessState, cpuTurn, damaCpu, damaState, sameSrc, solSrcFromArg } from "./games.js";
+import { chessState, cpuTurn, damaCpu, damaState } from "./games.js";
 import { refresh, startPolling, stopPolling } from "./polling.js";
 import { REPORT_REASONS, loadNotices, render } from "./screens.js";
 import { S, backend, save } from "./state.js";
@@ -11,6 +11,7 @@ import { classicActions } from "./classic.js";
 import { libraryActions } from "./library.js";
 import { partyActions } from "./party.js";
 import { sponsorActions } from "./sponsor.js";
+import { solitaireActions } from "./solitaire.js";
 
 /* ---------------- Actions ---------------- */
 function selectInvite(){ const el = document.getElementById("inviteText"); if(!el) return; const r = document.createRange(); r.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
@@ -121,25 +122,6 @@ const actions = {
       if(moves.some(mv=>mv.path[0]===i)) d.sel = i;
       else { d.sel = null; if(moves.length && moves[0].taken.length) toast(t("mustCapture")); }
     } else d.sel = null;
-    render();
-  },
-  solNew(){ S.sol = {g:ZSol.deal(), history:[], sel:null}; S.screen = "solitaire"; render(); },
-  solUndo(){ const so = S.sol; if(so && so.history.length){ so.g = so.history.pop(); so.sel = null; render(); } },
-  solFinish(){ const so = S.sol; if(!so) return; so.history.push(so.g); so.g = ZSol.autoFinish(so.g); so.sel = null; render(); },
-  solTap(arg){
-    const so = S.sol; if(!so) return;
-    const commit = n => { so.history.push(so.g); if(so.history.length > 60) so.history.shift(); so.g = n; so.sel = null; render(); };
-    if(arg==="stock"){ const n = ZSol.draw(so.g); if(n) commit(n); else { so.sel = null; render(); } return; }
-    const src = solSrcFromArg(arg);
-    const selectable = src && src.kind!=="found" || (src && src.kind==="found" && so.g.found[src.i].length);
-    if(so.sel){
-      if(sameSrc(so.sel, src)){ const n = ZSol.autoFound(so.g, so.sel); if(n) return commit(n); so.sel = null; return render(); }
-      let dst = null;
-      if(src && src.kind==="tab") dst = {kind:"tab", i:src.i};
-      if(src && src.kind==="found") dst = {kind:"found", i:src.i};
-      if(dst){ const n = ZSol.move(so.g, so.sel, dst); if(n) return commit(n); }
-    }
-    so.sel = (src && selectable && ZSol.cardsFrom(so.g, src).length) ? src : null;
     render();
   },
   sq(arg){
@@ -305,6 +287,6 @@ async function finishRide(){
   save(); S.screen = "checkin"; toast(before && after && after > before ? t("moodUp") : t("endedToast"));
 }
 
-Object.assign(actions, wordActions, classicActions, libraryActions, partyActions, sponsorActions);
+Object.assign(actions, wordActions, classicActions, libraryActions, partyActions, sponsorActions, solitaireActions);
 
 export { actions, inviteLink, joinTest, openProfile, safe, startFeedback };

@@ -117,7 +117,7 @@ for (const lang of ["de", "en", "ar"]) {
     await page.goto("/?demo");
     await page.click('[data-act="openGames"] >> nth=0');
     await page.click('[data-act="solNew"]');
-    await expect(page.locator(".soltable")).toBeVisible();
+    await expect(page.locator(".solboard .pcard").first()).toBeVisible();
     await shot("9-solitaire");
 
     // Zugwort vs computer: type a word, the computer answers with a row

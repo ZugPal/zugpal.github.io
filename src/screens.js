@@ -2,7 +2,7 @@
 import { inviteLink } from "./actions.js";
 import { CONFIG } from "./config.js";
 import { AGES, BADGES, DICE, ICE, LANGS, MOODS, TOPICS, WORDS } from "./data.js";
-import { COUNTED, GLYPH, boardHtml, cardHtml, chessState, damaBoard, damaState, onlineInfo, sameSrc } from "./games.js";
+import { COUNTED, GLYPH, boardHtml, chessState, damaBoard, damaState, onlineInfo } from "./games.js";
 import { S, backend } from "./state.js";
 import { ICON, MONEY_RE, esc, hasContact, loc, minsLeft, moodName, parseMsg, photo, t, todaysWord } from "./util.js";
 import { lettersScreen, wordCard, wordSheet, zugwortScreen } from "./words.js";
@@ -10,6 +10,7 @@ import { cgCard, cgSheet, classicScreen } from "./classic.js";
 import { bookCard, bookScreen, creditsScreen, libraryScreen } from "./library.js";
 import { partyCard, quizScreen, slfScreen } from "./party.js";
 import { sponsorSlot, supporterScreen } from "./sponsor.js";
+import { mountSolitaire, solDialogHtml, solitaireScreen } from "./solitaire.js";
 
 /* ---------------- Screens ---------------- */
 function header(){
@@ -92,6 +93,7 @@ function overlays(){
   if(S.wordSheet) return wordSheet();
   if(S.cgSheet) return cgSheet();
   if(S.hostSheet) return hostSheet();
+  if(S.screen==="solitaire" && (S.solSheet || S.solDialog)) return solDialogHtml();
   if(S.reportDone) return `<div class="sheet" role="dialog" aria-modal="true"><div class="panel">
     <h2>${ICON.shield} ${t("reportThanksTitle")}</h2><p>${t("reportThanks",{n:Number(S.reportDone.n)||""})}</p>
     <div class="banner">${t("emergency")}</div>
@@ -367,7 +369,7 @@ const screens = {
       <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">${GLYPH.K}\uFE0E</span><div class="grow"><div class="pname">${t("withMatch")}</div><div class="small">${t("withMatchBody")}</div></div></div></div>
       <div class="card"><div class="gamecard2"><span class="dm b" style="width:34px;height:34px;flex-shrink:0"></span><div class="grow"><div class="pname">${t("damaVs")}</div><div class="small">${t("vsComputerBody")}</div><div class="small">${t("damaWith")}</div></div></div>
         <button class="btn" data-act="damaCpuNew">${t("play")}</button></div>
-      <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">♠\uFE0E</span><div class="grow"><div class="pname">${t("solVs")}</div><div class="small">${t("solBody")}</div></div></div>
+      <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">♠\uFE0E</span><div class="grow"><div class="pname">${t("solVs")}</div><div class="small">${t("solBody2")}</div></div></div>
         <button class="btn" data-act="solNew">${t("play")}</button></div>
       <div class="card"><div class="gamecard2"><span class="tile g" style="width:34px;height:34px;font-size:18px;flex-shrink:0">Z</span><div class="grow"><div class="pname">${t("zwName")}</div><div class="small">${t("zwBody")}</div></div></div>
         <button class="btn" data-act="zwCpu">${t("play")}</button></div>
@@ -444,30 +446,7 @@ const screens = {
     </div>`;
   },
 
-  solitaire(){
-    const so = S.sol; if(!so) return screens.games();
-    const g = so.g, sel = so.sel;
-    const isSel = src => sameSrc(sel, src);
-    const stock = g.stock.length ? `<button class="card2 down" data-act="solTap" data-arg="stock" aria-label="stock"></button>` : `<button class="card2 slot" data-act="solTap" data-arg="stock" aria-label="stock">↻</button>`;
-    const wtop = g.waste[g.waste.length-1];
-    const waste = wtop ? cardHtml(wtop, "waste", isSel({kind:"waste"})) : `<div class="card2 slot"></div>`;
-    const founds = g.found.map((f,i)=>{ const tp = f[f.length-1]; return tp ? cardHtml(tp, "found:"+i, isSel({kind:"found", i})) : `<button class="card2 slot" data-act="solTap" data-arg="found:${i}">A</button>`; }).join("");
-    const cols = g.tab.map((pile,i)=>`<div class="solcol">${pile.length ? pile.map((c,idx)=>cardHtml(c, `tab:${i}:${idx}`, sel && sel.kind==="tab" && sel.i===i && idx>=sel.idx)).join("") : cardHtml(null, `tab:${i}:-1`)}</div>`).join("");
-    const won = ZSol.won(g);
-    return `<div class="screen">
-      <div class="row"><button class="iconbtn flip" data-act="go" data-arg="games" aria-label="${t("back")}">${ICON.back}</button>
-        <div class="grow"><div class="pname">${t("solVs")}</div><div class="small">${t("movesN",{n:g.moves})}</div></div>
-        <button class="btn ghost small" data-act="solUndo"${so.history.length?"":" disabled"}>${t("undo")}</button></div>
-      ${won ? `<div class="solwin">${t("solWon")}</div>` : ""}
-      <div class="soltable">
-        <div class="solrow"><div>${stock}</div><div>${waste}</div><div></div>${founds}</div>
-        <div class="solrow">${cols}</div>
-      </div>
-      ${ZSol.canAutoFinish(g) ? `<button class="btn" data-act="solFinish">${t("finish")}</button>` : ""}
-      <div class="small">${t("solHint")}</div>
-      <button class="btn ghost small" data-act="solNew" style="align-self:flex-start">${t("newGame")}</button>
-    </div>`;
-  },
+  solitaire(){ return solitaireScreen(); },
 
   feedback(){
     const items = S.fbList.map(m=>{
@@ -500,6 +479,7 @@ function render(){
     + (S.toast ? `<div class="toast" role="status">${esc(S.toast)}</div>` : "");
   if(active){ const el = document.getElementById(active); if(el && el.tagName==="INPUT" && el.type==="text"){ el.focus(); try{ const l=el.value.length; el.setSelectionRange(l,l); }catch(e){} } }
   const log = document.getElementById("chatLog"); if(log) log.scrollTop = log.scrollHeight;
+  if(S.screen==="solitaire") mountSolitaire();
 }
 
 export { REPORT_REASONS, loadNotices, render };

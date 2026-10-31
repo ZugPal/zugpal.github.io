@@ -144,18 +144,6 @@ button.mediacard{cursor:pointer;min-height:48px}
 .dm.k{outline:3px solid #E0A526;outline-offset:-7px}
 .dm.k::after{content:"\265B\FE0E";font-family:"Segoe UI Symbol","Noto Sans Symbols 2","DejaVu Sans",serif;color:#E0A526}
 .sq.path{box-shadow:inset 0 0 0 100px rgba(247,214,120,.45)}
-.soltable{direction:ltr;display:flex;flex-direction:column;gap:12px;width:100%;max-width:448px;margin:0 auto}
-.solrow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
-.solcol{display:flex;flex-direction:column;min-width:0}
-.card2{position:relative;aspect-ratio:5/7;width:100%;border-radius:6px;border:1px solid #9AA8A2;background:#FFFFFF;color:#15211D;font-family:var(--f-body);font-weight:700;font-size:clamp(11px,3.4vw,16px);line-height:1;padding:3px 4px;display:flex;flex-direction:column;justify-content:space-between;cursor:pointer;text-align:start}
-.card2.red{color:#B3261E}
-.card2 .big{align-self:center;font-size:170%;margin-bottom:12%}
-.card2.down{background:repeating-linear-gradient(45deg,#1F6B50 0 4px,#2A7D5D 4px 8px);border-color:#134634}
-.card2.slot{background:transparent;border:1.5px dashed var(--line);color:var(--muted);align-items:center;justify-content:center}
-.card2.sel{outline:3px solid #E0A526;outline-offset:-1px;z-index:2}
-.solcol .card2 + .card2{margin-top:-108%}
-.solcol .card2.up + .card2{margin-top:-96%}
-.solwin{background:var(--soft);color:var(--soft-ink);border-radius:14px;padding:14px;text-align:center;font-weight:700}
 .word{border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
 .word .w{font-family:var(--f-display);font-size:22px;font-weight:700}
 .zwboard{display:flex;gap:12px;align-items:flex-start;justify-content:center}
@@ -267,6 +255,33 @@ button.mediacard{cursor:pointer;min-height:48px}
 .card.free{background:var(--soft);color:var(--soft-ink);border-color:transparent}
 .themes{display:flex;gap:8px}.themes .sw{flex:1;height:36px;border-radius:10px}
 .sw.t1{background:linear-gradient(135deg,#1F6B50,#9FE0C3)}.sw.t2{background:linear-gradient(135deg,#2D5B8A,#BFD8EE)}.sw.t3{background:linear-gradient(135deg,#7A4A12,#F2C46B)}.sw.t4{background:linear-gradient(135deg,#15211D,#4A5A54)}
+.solscreen{gap:10px}
+.solmount{position:relative;isolation:isolate;background:radial-gradient(ellipse at 50% 30%,#2E7A5C,#17513C);border-radius:16px;padding:8px;margin-inline:-8px;min-height:300px;display:flex;justify-content:center}
+.solboard{position:relative;touch-action:none;user-select:none;-webkit-user-select:none}
+.pslot{position:absolute;left:0;top:0;width:var(--cw);height:var(--ch);border:2px solid rgba(255,255,255,.28);border-radius:calc(var(--cw)*.12);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.4);font-weight:700;font-size:calc(var(--cw)*.4)}
+.pslot.mini{width:calc(var(--cw)*.42);border-style:dashed}
+.pslot.stock{cursor:pointer}
+.pcard{position:absolute;left:0;top:0;width:var(--cw);height:var(--ch);border-radius:calc(var(--cw)*.12);transition:transform .22s cubic-bezier(.2,.8,.3,1);will-change:transform;cursor:grab;touch-action:none}
+.pcard .face,.pcard .back{position:absolute;inset:0;border-radius:inherit;backface-visibility:hidden}
+.pcard .face{background:#FFFDF8;border:1px solid #B9C3BE;color:#15211D;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+.pcard.red .face{color:#B3261E}
+.pcard .cr{position:absolute;left:8%;top:3%;font-weight:700;font-size:calc(var(--cw)*.34);line-height:1;font-family:var(--f-body)}
+.pcard .cs{position:absolute;right:8%;top:5%;font-size:calc(var(--cw)*.3);line-height:1}
+.pcard .cbig{position:absolute;left:0;right:0;bottom:10%;text-align:center;font-size:calc(var(--cw)*.62);line-height:1;font-weight:700}
+.pcard .back{display:none;background:repeating-linear-gradient(45deg,#1F6B50 0 5px,#2A7D5D 5px 10px);border:2px solid #F3F5F4;box-shadow:0 1px 2px rgba(0,0,0,.3)}
+.pcard.down .back{display:block}.pcard.down .face{display:none}.pcard.down{cursor:default}
+.pcard.dragging{transition:none;cursor:grabbing}.pcard.dragging .face{box-shadow:0 10px 22px rgba(0,0,0,.4)}
+.pcard.hint .face,.pcard.hint .back,.pslot.hint{animation:solglow .8s ease-in-out 2}
+@keyframes solglow{50%{box-shadow:0 0 0 4px #F2C46B,0 0 18px #F2C46B}}
+.pcard.shake .face{animation:solshake .4s;border-color:#B3261E}
+@keyframes solshake{20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+.solmsg{min-height:22px;font-size:14px;color:var(--warn-ink);background:var(--warn-bg);border-radius:10px;padding:0 12px;opacity:0;transition:opacity .2s}
+.solmsg.on{opacity:1;padding:6px 12px}
+.soltools{display:flex;gap:8px;flex-wrap:wrap}
+.solvar{align-items:flex-start;gap:8px;padding:10px 14px}.solvar.cur{border-color:var(--accent);border-width:2px}
+.sheet.center{align-items:center}.sheet.center .panel{border-radius:20px;margin:16px;text-align:center}
+canvas.cascade{position:fixed;inset:0;width:100vw;height:100vh;z-index:60;cursor:pointer}
+@media (prefers-reduced-motion: reduce){.pcard{transition:none}}
 .photoedit{display:flex;gap:16px;align-items:center}
 .filebtn{position:relative;overflow:hidden}
 .filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}

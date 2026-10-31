@@ -1,4 +1,4 @@
-// Game boards and online-game helpers (chess, dama, solitaire). Rules are in engines/*.js.
+// Game boards and online-game helpers (chess, dama). Rules are in engines/*.js. Solitaire lives in solitaire.js.
 import { render } from "./screens.js";
 import { S } from "./state.js";
 import { esc, parseMsg, t } from "./util.js";
@@ -79,21 +79,6 @@ function damaCpu(){
     d.thinking = false; render();
   }, 60);
 }
-const RANKS = ["","A","2","3","4","5","6","7","8","9","10","J","Q","K"], SUITS = {S:"\u2660",H:"\u2665",D:"\u2666",C:"\u2663"};
-function cardHtml(c, arg, sel){
-  if(!c) return `<button class="card2 slot" data-act="solTap" data-arg="${arg}"></button>`;
-  if(!c.up) return `<button class="card2 down" data-act="solTap" data-arg="${arg}" aria-label="card"></button>`;
-  const lab = RANKS[c.r] + SUITS[c.s] + "\uFE0E";
-  return `<button class="card2 up${ZSol.red(c)?" red":""}${sel?" sel":""}" data-act="solTap" data-arg="${arg}" aria-label="${lab}"><span>${lab}</span><span class="big">${SUITS[c.s]}\uFE0E</span></button>`;
-}
-function solSrcFromArg(arg){
-  const [k, a, b] = arg.split(":");
-  if(k==="waste") return {kind:"waste"};
-  if(k==="found") return {kind:"found", i:+a};
-  if(k==="tab") return {kind:"tab", i:+a, idx:+b};
-  return null;
-}
-const sameSrc = (x, y) => x && y && x.kind===y.kind && x.i===y.i && x.idx===y.idx;
 const peerOf = id => S.matches.find(x=>x.id===id);
 const COUNTED = m => !["cm","dm","chess","dama","zw","zg","lt","lg","cg","cgm","qz","qa","sl","slsub","slstop","slrej"].includes(parseMsg(m.body).type);
 function presenceOf(m, gid){
@@ -131,4 +116,4 @@ function currentActivity(){
   return "";
 }
 
-export { COUNTED, GLYPH, boardHtml, cardHtml, chessState, cpuTurn, currentActivity, damaBoard, damaCpu, damaState, onlineInfo, peerOf, sameSrc, solSrcFromArg, unreadFrom };
+export { COUNTED, GLYPH, boardHtml, chessState, cpuTurn, currentActivity, damaBoard, damaCpu, damaState, onlineInfo, peerOf, unreadFrom };
