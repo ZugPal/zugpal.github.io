@@ -12,6 +12,7 @@ import { lettersActions } from "./letters.js";
 import { classicActions } from "./classic.js";
 import { libraryActions } from "./library.js";
 import { partyActions } from "./party.js";
+import { quizActions } from "./quiz.js";
 import { sponsorActions } from "./sponsor.js";
 import { solitaireActions } from "./solitaire.js";
 import { chessActions } from "./chessui.js";
@@ -292,6 +293,6 @@ async function finishRide(){
   save(); S.screen = "checkin"; toast(before && after && after > before ? t("moodUp") : t("endedToast"));
 }
 
-Object.assign(actions, wordActions, classicActions, libraryActions, partyActions, sponsorActions, solitaireActions, chessActions, damaActions, tableActions, zugwortActions, lettersActions);
+Object.assign(actions, wordActions, classicActions, libraryActions, partyActions, sponsorActions, solitaireActions, chessActions, damaActions, tableActions, zugwortActions, lettersActions, quizActions);
 
 export { actions, inviteLink, joinTest, openProfile, safe, startFeedback };

@@ -91,6 +91,7 @@ for (const lang of ["de", "en", "ar"]) {
     // Quiz and Stadt-Land-Fluss with the match
     await page.click('.games [data-act="cgSheet"]');
     await page.click('[data-act="qzInvite"]');
+    await page.click('[data-act="qzGo"]:not([disabled])', { timeout: 6000 });
     await expect(page.locator('.quizq [data-act="qzAnswer"]')).toHaveCount(4);
     await page.click('[data-act="chessBack"][data-arg="chat"] >> nth=0');
     await page.click('.games [data-act="cgSheet"]');
@@ -183,8 +184,11 @@ for (const lang of ["de", "en", "ar"]) {
     // The quiz played to the end
     await page.click('[data-act="chessBack"][data-arg="games"]');
     await page.click('[data-act="qzCpu"]');
-    for (let q = 0; q < 6; q++) { await page.locator('[data-act="qzAnswer"]').first().click(); await page.click('[data-act="qzNext"]'); }
-    await expect(page.locator(".pill")).toContainText(":");
+    for (let q = 0; q < 9; q++) {
+      if (q % 3 === 0) await page.click('[data-act="qzGo"]:not([disabled])', { timeout: 6000 });
+      await page.locator('[data-act="qzAnswer"]').first().click(); await page.click('[data-act="qzNext"]');
+    }
+    await expect(page.locator(".qfinal")).toBeVisible();
     await shot("14c-quiz");
 
     // Library: 15-minute shelf, download a book, read it (epub.js), turn a page, Arabic book opens right-to-left

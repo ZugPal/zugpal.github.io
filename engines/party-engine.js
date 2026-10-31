@@ -20,8 +20,15 @@ const ZQuiz = (function(){
   }
   // choice = position on screen (0..3); correct if it shows bank option 0
   const correct = (q, choice) => q.order[choice] === 0;
+  /* The duel (new games): 3 rounds, each round one category picked by the wheel from the seed, 3 questions per round. */
+  function newDuel(bank, seed){
+    const r = ZSeed.rng(seed), cats = ZSeed.shuffle(CATS, r).slice(0, 3), qs = [];
+    cats.forEach(c => ZSeed.shuffle(bank.map((q, i) => q.cat === c ? i : -1).filter(i => i >= 0), r).slice(0, 3).forEach(i => qs.push({ i, order: ZSeed.shuffle([0, 1, 2, 3], r) })));
+    return { qs, rounds: cats, per: 3, answers: { w: [], b: [] } };
+  }
+  // choice 4 = time ran out (counts as wrong)
   function answer(st, p, choice){
-    const a = st.answers[p]; if(a.length >= st.qs.length || !(choice >= 0 && choice <= 3)) return st;
+    const a = st.answers[p]; if(a.length >= st.qs.length || !(choice >= 0 && choice <= 4)) return st;
     return { ...st, answers: { ...st.answers, [p]: a.concat([choice]) } };
   }
   const score = (st, p) => st.answers[p].filter((c, i) => correct(st.qs[i], c)).length;
@@ -32,8 +39,10 @@ const ZQuiz = (function(){
     return { over: true, winner: w > b ? "w" : b > w ? "b" : null };
   }
   // computer: right with a chance depending on the level
-  const cpuChoice = (q, level, rnd) => (rnd || Math.random)() < (level === "easy" ? 0.45 : 0.75) ? q.order.indexOf(0) : Math.floor((rnd || Math.random)() * 4);
-  return { CATS, newGame, correct, answer, score, status, cpuChoice };
+  const cpuChoice = (q, level, rnd) => (rnd || Math.random)() < ({ easy: 0.45, medium: 0.65, normal: 0.75, hard: 0.88 }[level] || 0.65) ? q.order.indexOf(0) : Math.floor((rnd || Math.random)() * 4);
+  // 50:50 joker: two wrong positions to hide
+  const fifty = (q, rnd) => ZSeed.shuffle([0, 1, 2, 3].filter(p => q.order[p] !== 0), () => (rnd || Math.random)()).slice(0, 2);
+  return { CATS, newGame, newDuel, correct, answer, score, status, cpuChoice, fifty };
 })();
 
 const ZSlf = (function(){

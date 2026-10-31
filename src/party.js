@@ -1,7 +1,5 @@
-// Party games: "Quizfahrt" (our quiz duel, own questions incl. "Leben in Deutschland") and Stadt-Land-Fluss for two.
-// Quiz vs computer or online; Stadt-Land-Fluss online with a match. Same chat-card system as chess:
-//   qz:<gid>                       quiz invite (sender = "w"); both phones pick the same 6 questions from <gid>
-//   qa:<gid>:<question>:<choice>   an answer (choice = position on screen, same order on both phones)
+// Party games: Stadt-Land-Fluss for two (online with a match), plus the chat cards for it and for Quizfahrt (quiz.js).
+// Same chat-card system as chess:
 //   sl:<gid>:<lang>                Stadt-Land-Fluss invite; letters and categories in <lang>
 //   slsub:<gid>:<round>:<data>     a player's answers for a round (base64 of a JSON list of 6 words)
 //   slstop:<gid>:<round>           "Stopp!": the other phone hands in what it has
@@ -17,57 +15,6 @@ const newGid = () => Math.random().toString(36).slice(2, 10);
 const ROUNDS = 3;
 const enc = list => btoa(unescape(encodeURIComponent(JSON.stringify(list))));
 function dec(s){ try{ const a = JSON.parse(decodeURIComponent(escape(atob(s)))); return Array.isArray(a) ? a.slice(0, 6).map(x => String(x || "").slice(0, 30)) : null; }catch(e){ return null; } }
-const qText = q => q[S.lang] || q.de;
-
-/* ---------------- Quizfahrt ---------------- */
-function onlineQuiz(gid){
-  let inv = null, st = null;
-  for(const x of S.messages){
-    const p = parseMsg(x.body);
-    if(p.type === "qz" && p.val === gid && !inv){ inv = { starter: x.mine }; st = ZQuiz.newGame(ZQuestions, ZSeed.hash(gid)); }
-    if(p.type === "qa" && p.val === gid && inv){
-      const [i, choice] = String(p.extra || "").split("-").map(Number), who = x.mine === inv.starter ? "w" : "b";
-      if(i === st.answers[who].length) st = ZQuiz.answer(st, who, choice);
-    }
-  }
-  return inv ? { st, me: inv.starter ? "w" : "b" } : null;
-}
-function quizState(){ const q = S.qz; if(!q) return null; return q.mode === "cpu" ? { st: q.st, me: "w" } : onlineQuiz(q.gid); }
-function quizScreen(){
-  const q = S.qz, qs = quizState(); if(!q || !qs) return null;
-  const { st, me } = qs, op = me === "w" ? "b" : "w", mine = st.answers[me], theirs = st.answers[op];
-  const name = q.mode === "cpu" ? t("computer") : esc((peerOf(q.peerId) || { first_name: q.peerName || "" }).first_name);
-  const status = ZQuiz.status(st), score = `${t("you")} ${ZQuiz.score(st, me)} : ${ZQuiz.score(st, op)} ${name}`;
-  let body;
-  const showing = q.reveal !== null && q.reveal !== undefined ? q.reveal : null;
-  if(showing !== null){
-    const item = st.qs[showing], bank = ZQuestions[item.i], txt = qText(bank), myC = mine[showing], thC = theirs[showing];
-    body = `<div class="card quizq"><span class="lbl">${t("qzCat_" + bank.cat)} · ${showing + 1}/${st.qs.length}</span><div class="pname" dir="auto">${esc(txt[0])}</div>
-      <div class="opts">${item.order.map((o, pos) => `<div class="chip opt${o === 0 ? " right" : pos === myC ? " wrong" : ""}" dir="auto">${esc(txt[o + 1])}${pos === myC ? ` · ${t("you")}` : ""}${pos === thC ? ` · ${name}` : ""}</div>`).join("")}</div>
-      <div class="small">${ZQuiz.correct(item, myC) ? t("qzRight") : t("qzWrong")}${thC === undefined ? " · " + t("qzTheyPending", { name }) : ""}</div>
-      <button class="btn" data-act="qzNext">${showing + 1 < st.qs.length ? t("qzNextQ") : t("qzResult")}</button></div>`;
-  } else if(mine.length < st.qs.length){
-    const item = st.qs[mine.length], bank = ZQuestions[item.i], txt = qText(bank);
-    body = `<div class="card quizq"><span class="lbl">${t("qzCat_" + bank.cat)} · ${mine.length + 1}/${st.qs.length}</span><div class="pname" dir="auto">${esc(txt[0])}</div>
-      <div class="opts">${item.order.map((o, pos) => `<button class="chip opt" data-act="qzAnswer" data-arg="${pos}" dir="auto">${esc(txt[o + 1])}</button>`).join("")}</div></div>`;
-  } else if(!status.over){
-    body = `<div class="card"><div class="pname">${t("qzWaiting", { name })}</div><div class="small">${t("qzTheyAt", { name, n: theirs.length, m: st.qs.length })}</div></div>`;
-  } else {
-    body = `<div class="card"><div class="pname" style="font-size:22px">${!status.winner ? t("drawT") : status.winner === me ? t("cgYouWin") : q.mode === "cpu" ? t("cgCpuWins") : t("cgTheyWin", { name })}</div>
-      <div class="small">${t("qzTalk")}</div></div>`;
-  }
-  const back = q.mode === "online" ? "chat" : "games";
-  return `<div class="screen">
-    <div class="row"><button class="iconbtn flip" data-act="chessBack" data-arg="${back}" aria-label="${t("back")}">${ICON.back}</button>
-      <div class="grow"><div class="pname">${t("qzName")}</div><div class="small">${q.mode === "cpu" ? t("againstCpu") : name}</div></div></div>
-    <span class="pill${status.over ? "" : " off"}" style="align-self:flex-start">${score}</span>
-    ${q.mode === "online" ? onlineInfo("qz", q) : ""}
-    ${body}
-    ${q.mode === "cpu" ? `<div class="row" style="flex-wrap:wrap"><div class="seg"><button class="chip" data-act="qzLevel" data-arg="easy" aria-pressed="${q.level === "easy"}">${t("easy")}</button><button class="chip" data-act="qzLevel" data-arg="normal" aria-pressed="${q.level !== "easy"}">${t("normal")}</button></div>
-      <button class="btn ghost small" data-act="qzCpu">${t("newGame")}</button></div>`
-    : `<div class="row" style="flex-wrap:wrap"><button class="btn ghost small" data-act="qzInvite">${t("newGame")}</button><button class="btn ghost small" data-act="chessBack" data-arg="chat">${t("backChat")}</button></div>`}
-  </div>`;
-}
 
 /* ---------------- Stadt-Land-Fluss ---------------- */
 function onlineSlf(gid){
@@ -128,21 +75,6 @@ function slfScreen(){
 
 /* ---------------- Actions ---------------- */
 const slActions = {
-  // quiz
-  qzCpu(){ const level = S.qz && S.qz.mode === "cpu" ? S.qz.level : "normal"; S.qz = { mode: "cpu", st: ZQuiz.newGame(ZQuestions, Math.floor(Math.random() * 1e9)), level, reveal: null }; S.screen = "quiz"; render(); },
-  qzLevel(v){ if(S.qz) S.qz.level = v === "easy" ? "easy" : "normal"; render(); },
-  qzAnswer(pos){
-    const q = S.qz, qs = quizState(); if(!q || !qs) return; pos = Number(pos);
-    const i = qs.st.answers[qs.me].length; if(i >= qs.st.qs.length) return;
-    if(q.mode === "cpu"){
-      q.st = ZQuiz.answer(q.st, "w", pos);
-      q.st = ZQuiz.answer(q.st, "b", ZQuiz.cpuChoice(q.st.qs[i], q.level));
-    } else sendBody(CARD + "qa:" + q.gid + ":" + i + "-" + pos);
-    q.reveal = i; render();
-  },
-  qzNext(){ if(S.qz){ S.qz.reveal = null; render(); } },
-  qzInvite(){ const gid = newGid(), m = peerOf(S.chatWith); S.cgSheet = false; sendBody(CARD + "qz:" + gid); S.qz = { mode: "online", gid, peerId: S.chatWith, peerName: m && m.first_name, reveal: null }; S.screen = "quiz"; render(); },
-  qzOpen(gid){ if(!GID.test(gid)) return; const m = peerOf(S.chatWith); S.qz = { mode: "online", gid, peerId: S.chatWith, peerName: m && m.first_name, reveal: null }; S.screen = "quiz"; render(); },
   // Stadt-Land-Fluss
   slInvite(){
     const gid = newGid(), m = peerOf(S.chatWith), lang = ["de", "en", "ar"].includes(S.lang) ? S.lang : "de";
@@ -174,4 +106,4 @@ function partyCard(p, x, name){
   return "";
 }
 
-export { partyCard, quizScreen, slActions as partyActions, slfScreen };
+export { partyCard, slActions as partyActions, slfScreen };
