@@ -88,6 +88,34 @@ const ZMau = (function(){
     }
     return best || ms[0];
   }
-  return { SUITS, RANKS, deck, newGame, moves, apply, status, bestMove, top, fits };
+  /* Levels for the new card table: easy (any fitting card), medium (bestMove "normal"), hard (plans the next turn:
+     keeps cards that can follow, wishes its strongest suit, saves jacks, uses 7s and 8s when they hurt most).
+     It never looks at the other player's cards. */
+  const POINTS = { "7": 7, "8": 8, "9": 9, T: 10, J: 20, Q: 3, K: 4, A: 11 };
+  const points = cards => cards.reduce((s, c) => s + POINTS[c[1]], 0);
+  function think(st, level, rnd){
+    rnd = rnd || Math.random;
+    if(level === "easy") return bestMove(st, "easy", rnd);
+    if(level !== "hard") return bestMove(st, "normal", rnd);
+    const ms = moves(st); if(ms.length === 1) return ms[0];
+    const me = st.turn, hand = st.hands[me], opp = st.hands[other(me)].length;
+    const plays = ms.filter(m => m[0] === "p"); if(!plays.length) return ms[0];
+    const suitCount = (cards, s) => cards.filter(c => c[0] === s && c[1] !== "J").length;
+    let best = null, bv = -Infinity;
+    for(const m of plays){
+      const [card, wish] = m.slice(1).split(">"), rest = hand.filter(c => c !== card);
+      if(!rest.length) return m;                                            // last card: Mau-Mau
+      const after = apply(st, m), follow = rest.filter(c => { const t2 = { ...after, drew: false }; return fits(t2, c); }).length;
+      let v = follow * 6 + suitCount(rest, wish || card[0]) * 2 + POINTS[card[1]] * .3;
+      if(card[1] === "J") v += rest.length <= 1 ? 40 : -18 + suitCount(rest, wish) * 4;
+      if(card[1] === "7") v += st.sevens > 0 ? 60 : opp <= 2 ? 30 : 4 + (rest.some(c => c[1] === "7") ? 6 : 0);
+      if(card[1] === "8") v += 12 + follow * 4;
+      if(opp === 1 && card[1] === "7") v += 20;
+      v += rnd() * .5;
+      if(v > bv){ bv = v; best = m; }
+    }
+    return best;
+  }
+  return { SUITS, RANKS, deck, newGame, moves, apply, status, bestMove, top, fits, think, points };
 })();
 if(typeof module !== "undefined") module.exports = ZMau;

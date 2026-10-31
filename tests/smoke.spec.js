@@ -84,7 +84,7 @@ for (const lang of ["de", "en", "ar"]) {
     // Classic games with the match: Mau-Mau invite deals the same cards from the game id
     await page.click('.games [data-act="cgSheet"]');
     await page.click('[data-act="cgInvite"][data-arg="mau"]');
-    await expect(page.locator(".mhand .mcard")).toHaveCount(5);
+    await expect(page.locator(".mmhand .mmc")).toHaveCount(5);
     await page.click('[data-act="chessBack"][data-arg="chat"] >> nth=0');
     await expect(page.locator('.gamecard [data-act="cgOpen"]')).toBeVisible();
 
@@ -172,10 +172,11 @@ for (const lang of ["de", "en", "ar"]) {
     // Mau-Mau: play a fitting card or draw; either way the turn comes back
     await page.click('[data-act="chessBack"][data-arg="games"]');
     await page.click('[data-act="cgCpu"][data-arg="mau"]');
-    await expect(page.locator(".mhand .mcard")).toHaveCount(5);
-    const fitting = page.locator('.mhand .mcard[data-act="cgCard"]');
-    if (await fitting.count()) { await fitting.first().click(); const suit = page.locator('.chip.suit'); if (await suit.count()) await suit.first().click(); }
-    else await page.click('[data-act="cgMove"][data-arg="d"]');
+    await expect(page.locator(".mmhand .mmc")).toHaveCount(5);
+    const fitting = page.locator(".mmhand .mmc.can");
+    if (await fitting.count()) { await fitting.first().click(); const suit = page.locator(".mmsuit"); if (await suit.count()) await suit.first().click(); }
+    else await page.click(".mmstock");
+    await expect(page.locator(".mmhand .mmc")).not.toHaveCount(5);
     await shot("14-maumau");
 
     // The quiz played to the end

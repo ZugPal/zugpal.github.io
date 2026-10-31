@@ -6,7 +6,7 @@ import { COUNTED, GLYPH, boardHtml, chessState, damaBoard, damaState, onlineInfo
 import { S, backend } from "./state.js";
 import { ICON, MONEY_RE, esc, hasContact, loc, minsLeft, moodName, parseMsg, photo, t, todaysWord } from "./util.js";
 import { lettersScreen, wordCard, wordSheet, zugwortScreen } from "./words.js";
-import { cgCard, cgSheet, classicScreen } from "./classic.js";
+import { cgCard, cgSheet } from "./classic.js";
 import { bookCard, bookScreen, creditsScreen, libraryScreen } from "./library.js";
 import { partyCard, quizScreen, slfScreen } from "./party.js";
 import { sponsorSlot, supporterScreen } from "./sponsor.js";
@@ -394,7 +394,6 @@ const screens = {
   },
 
   zugwort(){ return zugwortScreen() || screens.games(); },
-  classic(){ return classicScreen() || screens.games(); },
   table(){ return tableScreen() || screens.games(); },
   library(){ return libraryScreen(); },
   quiz(){ return quizScreen() || screens.games(); },

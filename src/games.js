@@ -110,7 +110,6 @@ function currentActivity(){
   if(S.screen==="dama" && S.dama && S.dama.mode==="online") return "g:" + S.dama.gid;
   if(S.screen==="zugwort" && S.zw && S.zw.mode==="online") return "g:" + S.zw.gid;
   if(S.screen==="letters" && S.lt && S.lt.mode==="online") return "g:" + S.lt.gid;
-  if(S.screen==="classic" && S.cg && S.cg.mode==="online") return "g:" + S.cg.gid;
   if(S.screen==="table" && S.tk && S.tk.mode==="online") return "g:" + S.tk.gid;
   if(S.screen==="quiz" && S.qz && S.qz.mode==="online") return "g:" + S.qz.gid;
   if(S.screen==="slf" && S.sl) return "g:" + S.sl.gid;

@@ -229,7 +229,7 @@ function tableOverlay(){
     const sc = G.mode === "online" ? null : store.get(G.game + ".score." + G.mode, { a: 0, b: 0, d: 0 });
     const scoreLine = sc ? `<p class="tkfinal"><span>${G.mode === "local" ? def.colorName("w") : t("you")}</span> <b>${sc.a} : ${sc.b}</b> <span>${G.mode === "local" ? def.colorName("b") : t("computer")}</span></p>` : "";
     return `<div class="sheet center" role="dialog" aria-modal="true"><div class="panel"><h2>${endTitle(rec)}</h2>
-      <p>${t("tkReason_" + rec.end.reason)} · ${t("solMovesN", { n: Math.ceil(rec.keys.length / 2) })}</p>${scoreLine}
+      <p>${t("tkReason_" + rec.end.reason)} · ${t("solMovesN", { n: Math.ceil(rec.keys.length / 2) })}</p>${def.endNote ? def.endNote(rec) : ""}${scoreLine}
       ${G.mode === "online" ? `<button class="btn" data-act="cgInvite" data-arg="${def.id}">${t("chRematch")}</button>` : `<button class="btn" data-act="tkRematch">${t("chRematch")}</button><button class="btn ghost" data-act="tkNewSheet">${t("chNewGame")}</button>`}
       <button class="link" data-act="tkEndClose">${t("chSeeBoard")}</button></div></div>`;
   }
