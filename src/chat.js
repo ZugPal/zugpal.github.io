@@ -90,10 +90,16 @@ function stopRecording(send){
 }
 function sendBody(body){
   if(!S.chatWith) return;
-  S.messages.push({mine:true, body, at:Date.now()}); render();
+  S.messages.push({mine:true, body, at:Date.now()}); render({ soft: true });
   safe(async()=>{ await backend.send(S.chatWith, body); await loadMessages(); });
 }
-function sendChat(){ const body = String(S.draft.chat||"").trim(); if(!body) return; if(hasContact(body)) return toast(t("noContact")); S.draft.chat = ""; sendBody(body.slice(0,500)); }
+function growBox(el){ el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight + 2, 132) + "px"; }
+function sendChat(){
+  const box = document.getElementById("chatInput"); if(box) S.draft.chat = box.value;
+  const body = String(S.draft.chat||"").trim(); if(!body) return; if(hasContact(body)) return toast(t("noContact"));
+  S.draft.chat = ""; if(box){ box.value = ""; growBox(box); }
+  sendBody(body.slice(0,500));
+}
 async function loadMessages(){
   if(!S.chatWith) return;
   S.messages = await backend.messages(S.chatWith);
@@ -103,7 +109,7 @@ async function loadMessages(){
     if(un > S.lastUnread){ const m = peerOf(S.chatWith); toast(t("newMsgFrom",{name:m ? m.first_name : ""})); try{ navigator.vibrate && navigator.vibrate(60); }catch(e){} }
     S.lastUnread = Math.max(0, un);
   }
-  if((S.screen==="chat" || S.screen==="chess" || S.screen==="dama") && !S.viewer) render();
+  if((S.screen==="chat" || S.screen==="chess" || S.screen==="dama") && !S.viewer) render({ soft: true });
 }
 
-export { SAFE_AUDIO, SAFE_PHOTO, SILENT_WAV, loadMessages, resizeImage, resizeMax, sendBody, sendChat, sendMedia, startRecording, stopRecording, textCount };
+export { SAFE_AUDIO, SAFE_PHOTO, SILENT_WAV, growBox, loadMessages, resizeImage, resizeMax, sendBody, sendChat, sendMedia, startRecording, stopRecording, textCount };

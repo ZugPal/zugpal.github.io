@@ -2,7 +2,7 @@
 // The app files are cached as one versioned set, so a phone never mixes old and new files.
 // Supabase (chat, waves, check-in) always goes to the network. Downloaded books live in IndexedDB, not here.
 // VERSION and FILES are written by tools/update-sw.js; do not edit them by hand.
-const VERSION = "8410c57b86bf";
+const VERSION = "e8c59bd2ae6d";
 const FILES = [
   "./",
   "index.html",
@@ -29,6 +29,7 @@ const FILES = [
   "src/main.js",
   "src/mauui.js",
   "src/muehleui.js",
+  "src/nav.js",
   "src/party.js",
   "src/polling.js",
   "src/quiz.js",
@@ -90,6 +91,7 @@ const FILES = [
   "vendor/pieces/wQ.svg",
   "vendor/pieces/wR.svg",
   "icons/apple-touch-icon.png",
+  "icons/badge-96.png",
   "icons/icon-192.png",
   "icons/icon-512.png",
   "icons/icon.svg",

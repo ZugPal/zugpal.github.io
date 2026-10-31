@@ -2,7 +2,7 @@
 import { SAFE_AUDIO, SAFE_PHOTO, SILENT_WAV, loadMessages, sendBody, startRecording, stopRecording, textCount } from "./chat.js";
 import { AGES, DICE, LANGS, TOPICS, WORDS } from "./data.js";
 import { chessState, cpuTurn, damaCpu, damaState } from "./games.js";
-import { refresh, startPolling, stopPolling } from "./polling.js";
+import { refresh, startPolling, stopPolling, updateBadge } from "./polling.js";
 import { REPORT_REASONS, loadNotices, render } from "./screens.js";
 import { S, backend, save } from "./state.js";
 import { CARD, MAX_WAVES, berlinDate, hasContact, norm, t, toast } from "./util.js";
@@ -94,6 +94,8 @@ const actions = {
   nextIce(){ S.iceIndex++; render(); },
   // Talk Train in your calendar: a weekly .ics made on the phone (opens the calendar app), nothing is sent anywhere
   calAdd(){
+    // iPhone: opening the file directly shows "Add to calendar"; elsewhere it is saved and opened from the downloads
+    if(/iPhone|iPad|iPod/i.test(navigator.userAgent)){ location.href = "data:text/calendar;charset=utf-8," + encodeURIComponent(calendarFile()); return; }
     const url = URL.createObjectURL(new Blob([calendarFile()], { type: "text/calendar" }));
     const a = document.createElement("a"); a.href = url; a.download = "zugpal-talk-train.ics"; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 5000); toast(t("calDone"));
@@ -204,7 +206,7 @@ const actions = {
   },
   moodBefore(n){ n = +n; S.moodBefore = S.moodBefore===n ? null : n; render(); },
   moodAfterSet(n){ n = +n; S.moodAfter = S.moodAfter===n ? null : n; render(); },
-  chat(id){ delete S.unread[id]; S.chatWith = id; S.current = S.matches.find(m=>m.id===id) || S.current; S.messages = []; S.screen = "chat"; render(); safe(loadMessages); },
+  chat(id){ delete S.unread[id]; updateBadge(); S.chatWith = id; S.current = S.matches.find(m=>m.id===id) || S.current; S.messages = []; S.screen = "chat"; render(); safe(loadMessages); },
   accLink(){
     const email = String(S.draft.accEmail||"").trim();
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return toast(t("accBad"));

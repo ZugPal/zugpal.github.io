@@ -37,12 +37,12 @@ async function refresh(){
     || (S.screen==="zugwort" && S.zw && S.zw.mode==="online") || (S.screen==="letters" && S.lt && S.lt.mode==="online") || (S.screen==="table" && S.tk && S.tk.mode==="online")
     || (S.screen==="quiz" && S.qz && S.qz.mode==="online") || S.screen==="slf";
   if(S.screen==="chat" || onlineChessOpen) await loadMessages();
-  if(["nearby","match","chat"].includes(S.screen) || onlineChessOpen) render();
+  if(["nearby","match","chat"].includes(S.screen) || onlineChessOpen) render({ soft: true });
 }
 // Background refresh: in a tunnel it fails quietly and shows "Reconnecting…" instead of an error every few seconds
 async function poll(){
-  try{ await refresh(); if(S.netDown){ S.netDown = false; render(); } }
-  catch(e){ console.error(e); if(!S.netDown){ S.netDown = true; render(); } }
+  try{ await refresh(); if(S.netDown){ S.netDown = false; render({ soft: true }); } }
+  catch(e){ console.error(e); if(!S.netDown){ S.netDown = true; render({ soft: true }); } }
 }
 // A new message from a match (via Realtime): a vibration, "new" on the match list, and a phone notice while Zugpal is in the background
 const MOVES = ["cm","cx","dm","dx","zg","lg","cgm","cgx","qa","slsub","slstop","slrej"];
@@ -53,14 +53,22 @@ function messageAlert(row){
   S.unread[from] = (S.unread[from] || 0) + 1;
   const m = S.matches.find(x => x.id === from), name = m ? m.first_name : "";
   try{ navigator.vibrate && navigator.vibrate([60, 40, 60]); }catch(e){}
-  if(document.hidden) return notify(name);
+  updateBadge();
+  if(document.hidden) return notify();
   // games already show their own notice for the person you are playing with
   if(!(S.chatWith === from && ["chess","dama","table"].includes(S.screen))) toast(t("newMsgFrom",{name}));
 }
-function notify(name){
+// The number of unread messages on the app icon (installed app), like other messengers
+const unreadTotal = () => Object.values(S.unread).reduce((a, b) => a + b, 0);
+function updateBadge(){
+  try{ const n = unreadTotal(); if(navigator.setAppBadge) n ? navigator.setAppBadge(n) : navigator.clearAppBadge(); }catch(e){}
+}
+// The phone notice never shows a name or the message: just "Zugpal" and how many new messages there are
+function notify(){
   if(S.notifyOff || !("Notification" in window) || Notification.permission !== "granted") return;
-  const opts = { body: t("notifyText"), icon: "icons/icon-192.png", badge: "icons/icon-192.png", tag: "zugpal-msg", renotify: true };
-  const title = t("newMsgFrom",{name});
+  const n = unreadTotal();
+  const opts = { body: n > 1 ? t("newMsgsN", { n }) : t("newMsg1"), icon: "icons/icon-192.png", badge: "icons/badge-96.png", tag: "zugpal-msg", renotify: true, data: { n } };
+  const title = "Zugpal";
   (navigator.serviceWorker ? navigator.serviceWorker.getRegistration() : Promise.resolve(null))
     .then(reg => reg ? reg.showNotification(title, opts) : new Notification(title, opts)).catch(e => console.error(e));
 }
@@ -73,4 +81,4 @@ function startPolling(){
 }
 function stopPolling(){ clearInterval(pollTimer); pollTimer = null; clearTimeout(rtTimer); if(backend && backend.unlisten) backend.unlisten(); }
 
-export { refresh, startPolling, stopPolling };
+export { messageAlert as messageAlertForTest, refresh, startPolling, stopPolling, updateBadge };

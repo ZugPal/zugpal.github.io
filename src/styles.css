@@ -29,9 +29,9 @@ html[lang="ar"] body{line-height:1.65;--f-display:'IBM Plex Sans Arabic',system-
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:10;background:var(--bg);
   margin-inline:-16px;padding:8px 16px;border-bottom:1px solid var(--line-soft)}
 .logo{font-family:var(--f-display);font-weight:700;font-size:24px;letter-spacing:-.4px}
-select,input[type=text]{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;min-height:48px;padding:0 14px;width:100%}
+select,input[type=text],textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:12px;min-height:48px;padding:0 14px;width:100%}
 .top select{width:auto;min-height:44px}
-input:focus-visible,select:focus-visible,button:focus-visible,label:focus-within{outline:3px solid var(--focus);outline-offset:2px}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,label:focus-within{outline:3px solid var(--focus);outline-offset:2px}
 .screen{display:flex;flex-direction:column;gap:16px;flex:1}
 h1{margin:0;font-family:var(--f-display);font-weight:700;font-size:28px;line-height:1.15;letter-spacing:-.5px;text-wrap:balance}
 html[lang="ar"] h1{letter-spacing:0;line-height:1.35}
@@ -151,7 +151,13 @@ footer.legal a{color:var(--muted);min-height:44px;display:inline-flex;align-item
 .chip.opt{justify-content:flex-start;text-align:start;width:100%;min-height:48px}
 .notice{background:var(--surface);border-radius:12px;padding:12px 14px}
 .chatbar{display:flex;gap:8px}
-.chatbar input{flex:1;min-width:0}
+.chatbar input,.chatbar textarea{flex:1;min-width:0}
+.chatbar{align-items:flex-end}
+.mytrain .pname{display:flex;align-items:center;gap:8px}
+.twobtn{gap:10px}.twobtn .btn{flex:1}
+.ridebar{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line-soft);border-radius:12px;padding:8px 12px;font-size:14px;color:var(--muted)}
+.ridebar b{color:var(--ink)}.ridebar .link{white-space:nowrap}
+.chatbar textarea{resize:none;min-height:48px;max-height:132px;line-height:1.35;padding:12px 16px;overflow-y:auto;border-radius:24px;display:block}
 .chatbar .iconbtn{color:var(--muted)}
 .mediacard{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:16px;background:var(--surface);border:1px dashed var(--line);font:inherit;color:inherit;text-align:start;align-self:flex-start;max-width:85%}
 button.mediacard{cursor:pointer;min-height:48px}

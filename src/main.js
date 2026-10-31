@@ -2,8 +2,9 @@
 import { actions, joinTest, openProfile, safe } from "./actions.js";
 import { DemoBackend } from "./backend-demo.js";
 import { LiveBackend } from "./backend-live.js";
-import { resizeImage, resizeMax, sendChat, sendMedia } from "./chat.js";
+import { growBox, resizeImage, resizeMax, sendChat, sendMedia } from "./chat.js";
 import { CONFIG } from "./config.js";
+import { navInit } from "./nav.js";
 import { refresh, startPolling } from "./polling.js";
 import { loadNotices, render } from "./screens.js";
 import { S, backend, load, save, setBackend } from "./state.js";
@@ -37,6 +38,12 @@ document.addEventListener("change", async e => {
 });
 // remember folded sections ("More about you") across re-renders; toggle does not bubble, so listen while capturing
 document.addEventListener("toggle", e => { if(e.target && e.target.classList && e.target.classList.contains("more")) S.moreOpen = e.target.open; }, true);
+// Chat box: tapping Send must not take the focus away (the keyboard stays open, like WhatsApp)
+document.addEventListener("pointerdown", e => { if(e.target.closest && e.target.closest("#chatSend")) e.preventDefault(); });
+document.addEventListener("keydown", e => {
+  if(e.target.id === "chatInput" && e.key === "Enter" && !e.shiftKey && !e.isComposing){ e.preventDefault(); sendChat(); }
+});
+document.addEventListener("input", e => { if(e.target.id === "chatInput") growBox(e.target); });
 document.addEventListener("submit", e => { if(e.target.id==="chatForm"){ e.preventDefault(); sendChat(); } });
 // Offline + install (PWA). The service worker caches the app; see sw.js.
 // On localhost only with ?sw (so local testing always shows the newest files). A new version shows an "update" bar.
@@ -61,6 +68,7 @@ window.addEventListener("offline", () => render());
   load();
   S.autoTalk = location.hash === "#talk";
   const m = location.hash.match(/^#ride-([A-Za-z0-9]{4,8})$/); S.autoRide = m ? m[1] : null;
+  navInit(render);
   S.screen = "loading"; render();
   // ?demo forces the simulated riders (for testing without touching the live database)
   try{ setBackend(CONFIG.supabaseUrl && !/[?&]demo\b/.test(location.search) ? await LiveBackend() : DemoBackend()); }

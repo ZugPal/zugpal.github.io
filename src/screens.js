@@ -19,6 +19,7 @@ import { chessOverlay, chessScreen, mountChess } from "./chessui.js";
 import { damaOverlay, damaScreen, mountDama } from "./damaui.js";
 import { mountTable, tableOverlay, tableScreen } from "./tablekit.js";
 import { googleLink, talkInfo } from "./talktrain.js";
+import { navSync } from "./nav.js";
 
 /* ---------------- Screens ---------------- */
 function header(){
@@ -175,6 +176,15 @@ function notifyCard(){
     <div class="row"><button class="btn small" data-act="notifyOn">${t("notifyBtn")}</button><button class="link" data-act="notifyLater">${t("nudgeLater")}</button></div></div>`;
 }
 // The weekly Talk Train: on its day you check in; on other days you see the next date and can put it in your calendar
+// Android has no app that opens a downloaded calendar file by itself, so there Google Calendar is the main button;
+// iPhones open the calendar file directly ("Add to calendar").
+const isAndroid = () => /Android/i.test(navigator.userAgent);
+function calButtons(){
+  const g = esc(googleLink());
+  return isAndroid()
+    ? `<a class="btn mint small" href="${g}" target="_blank" rel="noopener">${ICON.calendar}${t("calAdd")}</a><button class="link onhero-link" data-act="calAdd">${t("calOther")}</button>`
+    : `<button class="btn mint small" data-act="calAdd">${ICON.calendar}${t("calAdd")}</button><a class="btn onhero small" href="${g}" target="_blank" rel="noopener">${t("calGoogle")}</a>`;
+}
 function talkHero(){
   const i = talkInfo();
   return `<div class="hero talkhero"><div class="small">${t("talkTrain")}</div>
@@ -182,7 +192,7 @@ function talkHero(){
     <div style="font-weight:700">${esc(i.route)}</div>
     <div class="small">${i.onTrainDay ? t("talkTrainBody") : t("talkNotToday")}</div>
     ${i.onTrainDay ? `<button class="btn mint" data-act="checkin" data-arg="talk">${t("joinTalk")}</button>`
-      : `<div class="row calrow"><button class="btn mint small" data-act="calAdd">${ICON.calendar}${t("calAdd")}</button><a class="btn onhero small" href="${esc(googleLink())}" target="_blank" rel="noopener">${t("calGoogle")}</a></div>
+      : `<div class="row calrow">${calButtons()}</div>
         <button class="link onhero-link" data-act="checkin" data-arg="talk">${t("joinAnyway")}</button>`}${sponsorSlot()}</div>`;
 }
 // Waving in three steps, until you have waved once; then one line
@@ -246,24 +256,25 @@ const screens = {
     return `<div class="screen">
       <div class="row">${photo("me", S.profile.name, S.profile.photo, 40, false)}<div class="grow muted">${esc(S.profile.name)}</div><button class="link" data-act="editProfile">${t("editProfile")}</button></div>
       <h1>${t("checkinTitle")}</h1>
+      ${S.ride ? `<div class="banner info action"><span>${t("stillOn",{r:esc(S.ride.label)})}</span><button class="btn small" data-act="go" data-arg="nearby">${t("toPeople")}</button></div>` : ""}
       ${talkHero()}
-      <button class="btn ghost" data-act="openGames">${t("games")}</button>
-      <button class="btn ghost" data-act="openLibrary">${ICON.book}${t("libTitle")}</button>
+      <div class="card mytrain"><div class="pname">${ICON.train}${t("orOther")}</div>
+        <div class="row">
+          <div class="field" style="flex:1"><label for="line">${t("line")}</label><input type="text" id="line" data-bind="line" placeholder="RE 1" autocomplete="off" value="${esc(d.line||"")}"></div>
+          <div class="field" style="flex:1.4"><label for="num">${t("number")}</label><input type="text" id="num" data-bind="num" inputmode="numeric" placeholder="10115" autocomplete="off" value="${esc(d.num||"")}"></div>
+        </div>
+        <div class="small" style="margin-top:-6px">${t("numberHint")}</div>
+        <div class="field"><label for="duration">${t("duration")}</label><select id="duration" data-bind="duration">${opts}</select></div>
+        <button class="btn" data-act="checkin" data-arg="train">${t("checkin")}</button></div>
+      <div class="row twobtn"><button class="btn ghost" data-act="openGames">${t("games")}</button>
+        <button class="btn ghost" data-act="openLibrary">${ICON.book}${t("libTitle")}</button></div>
       ${S.installPrompt ? `<div class="card"><div class="pname">${t("installTitle")}</div><div class="small">${t("installBody")}</div><button class="btn ghost" data-act="install">${t("installBtn")}</button></div>` : ""}
       <div class="card"><div class="pname">${t("testTitle")}</div><div class="small">${t("testBody")}</div>
         <button class="btn ghost" data-act="startTest">${t("testBtn")}</button></div>
-      <div class="pname">${t("orOther")}</div>
-      <div class="row">
-        <div class="field" style="flex:1"><label for="line">${t("line")}</label><input type="text" id="line" data-bind="line" placeholder="RE 1" value="${esc(d.line||"")}"></div>
-        <div class="field" style="flex:1.4"><label for="num">${t("number")}</label><input type="text" id="num" data-bind="num" inputmode="numeric" placeholder="10115" value="${esc(d.num||"")}"></div>
-      </div>
-      <div class="small" style="margin-top:-10px">${t("numberHint")}</div>
-      <div class="field"><label for="duration">${t("duration")}</label><select id="duration" data-bind="duration">${opts}</select></div>
       <div class="card" style="flex-direction:row;align-items:flex-start;color:var(--muted)">${ICON.shield}<div style="font-size:14px">${t("nobodySees")}</div></div>
       ${trustStrip()}
       <button class="link quiet" data-act="openSupport">${t("supLink")}</button>
       ${backend && backend.mode === "live" ? `<button class="link quiet" data-act="hostOpen">${S.isHost ? t("hostActive") : t("hostLink")}</button>` : ""}
-      <div class="end"><button class="btn" data-act="checkin" data-arg="train">${t("checkin")}</button></div>
     </div>`;
   },
 
@@ -300,7 +311,7 @@ const screens = {
       <div class="row" style="justify-content:space-between;flex-wrap:wrap">
         <span class="pill${S.open?"":" off"}"><span class="dot"></span>${S.open?t("youAreOpen"):t("invisible")}</span>
         <button class="btn ghost small" data-act="toggleOpen">${S.open?t("goInvisible"):t("beVisible")}</button></div>
-      <div class="small">${esc(S.ride.label)} · ${t("minLeft",{n:minsLeft()})}</div>
+      <div class="ridebar">${ICON.train}<span class="grow"><b>${esc(S.ride.label)}</b> · ${t("minLeft",{n:minsLeft()})}</span><button class="link" data-act="endRide">${t("changeTrain")}</button></div>
       ${S.ride.key.startsWith("TEST-") ? `<div class="card"><span class="flabel">${t("inviteLabel")}</span>
         <div class="small" style="user-select:all;overflow-wrap:anywhere;color:var(--ink)" id="inviteText">${esc(inviteLink())}</div>
         <button class="btn ghost small" data-act="copyInvite">${t("copyLink")}</button></div>` : ""}
@@ -391,10 +402,10 @@ const screens = {
     const active = m.seen_at && Date.now() - Date.parse(m.seen_at) < 25000;
     return `<div class="screen">
       <div class="row"><button class="iconbtn flip" data-act="go" data-arg="nearby" aria-label="${t("back")}">${ICON.back}</button>
-        ${photo(m.id, m.first_name, m.photo, 40, false)}<div class="grow"><div class="pname">${name}</div>${active ? `<div class="small" style="color:var(--accent)">● ${t("activeNow")}</div>` : ""}</div>
+        ${photo(m.id, m.first_name, m.photo, 40, false)}<div class="grow" id="chatHead" data-soft><div class="pname">${name}</div>${active ? `<div class="small" style="color:var(--accent)">● ${t("activeNow")}</div>` : ""}</div>
         <button class="iconbtn" data-act="buddyToggle" data-arg="${esc(m.id)}" aria-pressed="${isB}" aria-label="${t("buddySave")}">${isB ? ICON.starFull : ICON.star}</button></div>
       ${safetyBar(m.id)}
-      ${endingBanner()}
+      <div id="chatEnding" data-soft>${endingBanner()}</div>
       <div class="games" role="toolbar">
         <button class="chip" data-act="libPick">${ICON.book}${t("libStory")}</button>
         <button class="chip" data-act="sendWord">${ICON.bubble}${t("wordTitle")}</button>
@@ -408,14 +419,14 @@ const screens = {
         <button class="chip" data-act="cgSheet">${ICON.dice}${t("moreGames")}</button>
         <button class="chip" data-act="damaInvite"><span class="dm b" style="width:16px;height:16px"></span>${t("damaT")}</button></div>
       ${notifyCard()}
-      <div id="chatLog" class="chatlog">${log}</div>
+      <div id="chatLog" class="chatlog" data-soft>${log}</div>
       <form class="chatbar" id="chatForm">${S.recording
         ? `<div class="recbar"><span class="dot"></span><span id="recTime">0:00</span><span class="small">${t("recording")}</span></div>
            <button type="button" class="link" data-act="recCancel">${t("cancel")}</button><button type="button" class="btn small" data-act="recSend">${t("send")}</button>`
         : `<button type="button" class="iconbtn" data-act="pickPhoto" aria-label="${t("photoBtn")}">${ICON.camera}</button>
            <button type="button" class="iconbtn" data-act="recStart" aria-label="${t("voiceBtn")}">${ICON.mic}</button>
-           <input type="text" id="chatInput" data-bind="chat" maxlength="500" placeholder="${t("chatPh")}" value="${esc(S.draft.chat||"")}" aria-label="${t("chatPh")}">
-           <button class="btn small" type="submit">${t("send")}</button>`}</form>
+           <textarea id="chatInput" data-bind="chat" rows="1" maxlength="500" enterkeyhint="send" dir="auto" autocomplete="off" placeholder="${t("chatPh")}" aria-label="${t("chatPh")}">${esc(S.draft.chat||"")}</textarea>
+           <button class="btn small" type="submit" id="chatSend">${t("send")}</button>`}</form>
       ${S.photoSheet && !S.recording ? `<div class="row" style="flex-wrap:wrap"><button class="btn ghost small" data-act="photoCam">${ICON.camera}${t("takePhoto")}</button><button class="btn ghost small" data-act="photoGal">${t("fromGallery")}</button><button class="link" data-act="photoSheetClose">${t("cancel")}</button></div>` : ""}
 
     </div>`;
@@ -484,7 +495,22 @@ const screens = {
       <div class="end"><button class="btn" data-act="finish">${t("finish")}</button></div></div>`;
   }
 };
-function render(){
+// Is someone typing in a text field of the app right now?
+function typing(){
+  const a = document.activeElement; if(!a || !a.closest || !a.closest("#app")) return false;
+  return a.tagName === "TEXTAREA" || (a.tagName === "INPUT" && /^(text|search|email|tel|url|number|password)$/.test(a.type));
+}
+// render({ soft: true }) is used by background refreshes (polling, Realtime, toasts). While someone types it never rebuilds
+// the screen (that lost letters and broke Android autocorrect); it only updates the parts marked data-soft (chat log, header).
+function render(opts){
+  if(opts && opts.soft && typing() && S.screen === S.rendered){
+    const tpl = document.createElement("template"); tpl.innerHTML = (screens[S.screen] || screens.welcome)();
+    const log = document.getElementById("chatLog"), atEnd = log && log.scrollHeight - log.scrollTop - log.clientHeight < 80;
+    document.querySelectorAll("#app [data-soft][id]").forEach(el => { const n = tpl.content.getElementById(el.id); if(n && n.innerHTML !== el.innerHTML) el.innerHTML = n.innerHTML; });
+    if(log && atEnd) log.scrollTop = log.scrollHeight;
+    return;
+  }
+  S.rendered = S.screen;
   document.documentElement.lang = S.lang;
   document.documentElement.dir = S.lang==="ar" ? "rtl" : "ltr";
   const active = document.activeElement && document.activeElement.id;
@@ -492,14 +518,14 @@ function render(){
   app.innerHTML = header() + (screens[S.screen] || screens.welcome)()
     + (S.screen==="chat" || S.screen==="loading" ? "" : legalFooter())
     + (S.viewer ? `<div class="viewer" role="dialog" aria-modal="true"><img src="${esc(S.viewer)}" alt=""><div class="note">${t("onceNote")}</div><button class="btn mint small" data-act="closeViewer">${t("close")}</button></div>` : "")
-    + overlays()
-    + (S.toast ? `<div class="toast" role="status">${esc(S.toast)}</div>` : "");
-  if(active){ const el = document.getElementById(active); if(el && el.tagName==="INPUT" && el.type==="text"){ el.focus(); try{ const l=el.value.length; el.setSelectionRange(l,l); }catch(e){} } }
+    + overlays();
+  if(active){ const el = document.getElementById(active); if(el && (el.tagName==="TEXTAREA" || (el.tagName==="INPUT" && el.type==="text"))){ el.focus(); try{ const l=el.value.length; el.setSelectionRange(l,l); }catch(e){} } }
   const log = document.getElementById("chatLog"); if(log) log.scrollTop = log.scrollHeight;
   if(S.screen==="solitaire") mountSolitaire();
   if(S.screen==="chess") mountChess();
   if(S.screen==="dama") mountDama();
   if(S.screen==="table") mountTable();
+  navSync();
 }
 
 export { REPORT_REASONS, loadNotices, render };
