@@ -13,6 +13,7 @@ import { sponsorSlot, supporterScreen } from "./sponsor.js";
 import { mountSolitaire, solDialogHtml, solitaireScreen } from "./solitaire.js";
 import { chessOverlay, chessScreen, mountChess } from "./chessui.js";
 import { damaOverlay, damaScreen, mountDama } from "./damaui.js";
+import { mountTable, tableOverlay, tableScreen } from "./tablekit.js";
 
 /* ---------------- Screens ---------------- */
 function header(){
@@ -98,6 +99,7 @@ function overlays(){
   if(S.screen==="solitaire" && (S.solSheet || S.solDialog)) return solDialogHtml();
   if(S.screen==="chess"){ const o = chessOverlay(); if(o) return o; }
   if(S.screen==="dama"){ const o = damaOverlay(); if(o) return o; }
+  if(S.screen==="table"){ const o = tableOverlay(); if(o) return o; }
   if(S.reportDone) return `<div class="sheet" role="dialog" aria-modal="true"><div class="panel">
     <h2>${ICON.shield} ${t("reportThanksTitle")}</h2><p>${t("reportThanks",{n:Number(S.reportDone.n)||""})}</p>
     <div class="banner">${t("emergency")}</div>
@@ -307,7 +309,7 @@ const screens = {
       if(p.type==="spin"){ const meAsks = (x.mine && p.val==="me") || (!x.mine && p.val==="you"); return `<div class="gamecard"><span class="lbl">${t("spin")}</span><span class="big">${meAsks ? t("spinYou") : t("spinThem",{name})}</span></div>`; }
       if(p.type==="ttl") return `<div class="gamecard"><span class="lbl">${t("ttl")}</span><span>${x.mine ? t("ttlYou",{name}) : t("ttlThem",{name})}</span></div>`;
       if(p.type==="bye") return `<div class="msg${x.mine?" mine":""}">${t("bye")}</div>`;
-      if(["cm","cx","dm","dx","zg","lg","cgm","qa","slsub","slstop","slrej"].includes(p.type)) return "";
+      if(["cm","cx","dm","dx","zg","lg","cgm","cgx","qa","slsub","slstop","slrej"].includes(p.type)) return "";
       if(p.type==="qz" || p.type==="sl") return partyCard(p, x, name);
       if(p.type==="cg") return cgCard(p, x, name);
       if(p.type==="book") return bookCard(p, x, name);
@@ -393,6 +395,7 @@ const screens = {
 
   zugwort(){ return zugwortScreen() || screens.games(); },
   classic(){ return classicScreen() || screens.games(); },
+  table(){ return tableScreen() || screens.games(); },
   library(){ return libraryScreen(); },
   quiz(){ return quizScreen() || screens.games(); },
   support(){ return supporterScreen(); },
@@ -441,6 +444,7 @@ function render(){
   if(S.screen==="solitaire") mountSolitaire();
   if(S.screen==="chess") mountChess();
   if(S.screen==="dama") mountDama();
+  if(S.screen==="table") mountTable();
 }
 
 export { REPORT_REASONS, loadNotices, render };

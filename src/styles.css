@@ -326,6 +326,46 @@ canvas.confetti{position:fixed;inset:0;z-index:70;pointer-events:none}
 .dpiece.gone{opacity:0}
 .dmini{display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
 .dmini.w{background:#EDE7DA;border:1px solid #B9AE95}.dmini.b{background:#2A211B}
+/* table games (tablekit.js) */
+.tkbar{padding:4px 10px;border-radius:12px;border:2px solid transparent;transition:border-color .2s,background .2s}
+.tkbar.turn{border-color:var(--accent);background:var(--soft);color:var(--soft-ink)}
+.tkwins{min-width:28px;height:28px;border-radius:14px;background:var(--surface);border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;font-family:var(--f-display);font-size:16px;color:var(--ink)}
+.tkmount{display:flex;justify-content:center;width:100%}
+.tkrules summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;align-items:center}
+.tkfinal{display:flex;justify-content:center;align-items:center;gap:10px}.tkfinal b{font-family:var(--f-display);font-size:28px}
+/* Vier in einer Reihe */
+.f4board{position:relative;width:100%;max-width:440px;aspect-ratio:1;touch-action:none;user-select:none;-webkit-user-select:none;overflow:hidden}
+.f4back{position:absolute;left:3%;right:3%;top:16%;bottom:2%;background:rgba(40,80,140,.14);border-radius:8px}
+.f4layer{position:absolute;inset:0;pointer-events:none}
+.f4frame,.f4line{position:absolute;left:0;top:14.2857%;width:100%;height:85.7143%;pointer-events:none;overflow:visible}
+.f4frame{filter:drop-shadow(0 4px 6px rgba(0,0,0,.3))}
+.f4line line{stroke:rgba(255,255,255,.92);stroke-width:.14;stroke-linecap:round;stroke-dasharray:1;stroke-dashoffset:1;animation:f4draw .5s ease-out forwards;filter:drop-shadow(0 0 .06px rgba(0,0,0,.6))}
+@keyframes f4draw{to{stroke-dashoffset:0}}
+.f4cols{position:absolute;inset:0;display:grid;grid-template-columns:repeat(7,1fr)}
+.f4col{border:none;background:transparent;padding:0;border-radius:8px;cursor:pointer}
+.f4col:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+.f4col.hint{background:linear-gradient(rgba(245,197,24,.0),rgba(245,197,24,.28))}
+.f4col.shake{animation:f4shake .35s}
+@keyframes f4shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.f4d{position:absolute;left:0;top:0;width:14.2857%;height:14.2857%;will-change:transform}
+.f4d i{display:block;margin:7%;width:86%;height:86%;border-radius:50%;box-shadow:inset 0 0 0 4px rgba(0,0,0,.13),inset 0 -3px 0 4px rgba(0,0,0,.08)}
+.f4d.w i{background:radial-gradient(circle at 35% 30%,#FF8A7A,#D7263D 55%,#9E1328)}
+.f4d.b i{background:radial-gradient(circle at 35% 30%,#FFF4B0,#F5C518 55%,#B98B00)}
+.f4d.land i{animation:f4land .28s ease-out}
+@keyframes f4land{0%{transform:scale(1.06,.9)}45%{transform:translateY(-10%)}100%{transform:none}}
+.f4d.last i{box-shadow:inset 0 0 0 4px rgba(0,0,0,.13),0 0 0 3px rgba(255,255,255,.75)}
+.f4d.win i{animation:f4pulse .9s ease-in-out infinite alternate}
+@keyframes f4pulse{from{transform:scale(1);filter:brightness(1)}to{transform:scale(.88);filter:brightness(1.35)}}
+.f4d.lift{opacity:0}
+.f4d.ghost{opacity:0;transition:transform .12s ease-out,opacity .2s;z-index:3}
+.f4d.ghost.on{opacity:1}
+.f4d.ghost.idle i{animation:f4bob 1.4s ease-in-out infinite}
+@keyframes f4bob{50%{transform:translateY(-8%)}}
+.f4arrow{position:absolute;left:0;top:0;width:14.2857%;height:14.2857%;display:none;align-items:center;justify-content:center;font-size:30px;color:#E0A526;animation:f4bob 1s ease-in-out infinite}
+.f4arrow.on{display:flex}
+.f4mini{display:inline-block;width:16px;height:16px;border-radius:50%;vertical-align:-3px}
+.f4mini.w{background:#D7263D}.f4mini.b{background:#F5C518}
+@media (prefers-reduced-motion: reduce){.f4d.ghost.idle i,.f4arrow,.f4d.win i{animation:none}}
 .photoedit{display:flex;gap:16px;align-items:center}
 .filebtn{position:relative;overflow:hidden}
 .filebtn input{position:absolute;inset:0;opacity:0;cursor:pointer}

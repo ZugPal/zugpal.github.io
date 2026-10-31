@@ -34,7 +34,7 @@ async function refresh(){
     else toast(t("newMatch",{name:fresh.first_name}));
   }
   const onlineChessOpen = (S.screen==="chess" && S.chess && S.chess.mode==="online") || (S.screen==="dama" && S.dama && S.dama.mode==="online")
-    || (S.screen==="zugwort" && S.zw && S.zw.mode==="online") || (S.screen==="letters" && S.lt && S.lt.mode==="online") || (S.screen==="classic" && S.cg && S.cg.mode==="online")
+    || (S.screen==="zugwort" && S.zw && S.zw.mode==="online") || (S.screen==="letters" && S.lt && S.lt.mode==="online") || (S.screen==="classic" && S.cg && S.cg.mode==="online") || (S.screen==="table" && S.tk && S.tk.mode==="online")
     || (S.screen==="quiz" && S.qz && S.qz.mode==="online") || S.screen==="slf";
   if(S.screen==="chat" || onlineChessOpen) await loadMessages();
   if(["nearby","match","chat"].includes(S.screen) || onlineChessOpen) render();

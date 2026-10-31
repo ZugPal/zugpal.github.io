@@ -6,7 +6,9 @@ import { sendBody } from "./chat.js";
 import { onlineInfo, peerOf } from "./games.js";
 import { render } from "./screens.js";
 import { S } from "./state.js";
+import { isTable, tableActions } from "./tablekit.js";
 import { CARD, ICON, esc, parseMsg, t } from "./util.js";
+import "./fourui.js";
 
 const GAMES = ["four", "muehle", "mau"];
 const ENG = () => ({ four: ZFour, muehle: ZMuehle, mau: ZMau });
@@ -138,6 +140,7 @@ function play(move){
 }
 const classicActions = {
   cgCpu(game){
+    if(isTable(game)) return tableActions.tkCpu(game);
     if(!GAMES.includes(game)) return;
     const level = S.cg && S.cg.mode === "cpu" ? S.cg.level : "normal";
     S.cg = {game, mode:"cpu", st:fresh(game, Math.floor(Math.random() * 1e9)), level, sel:null, thinking:false}; S.screen = "classic"; render();
@@ -159,12 +162,17 @@ const classicActions = {
     else { c.sel = null; render(); return; }
     if(ms.includes(base)) play(base); else { c.sel = {base}; render(); }
   },
-  cgOpen(gid){ if(!GID.test(gid)) return; const m = peerOf(S.chatWith); S.cg = {mode:"online", gid, peerId:S.chatWith, peerName:m && m.first_name, sel:null}; S.screen = "classic"; render(); },
+  cgOpen(gid){
+    if(!GID.test(gid)) return;
+    const inv = S.messages.map(x => parseMsg(x.body)).find(p => p.type === "cg" && p.val === gid);
+    if(inv && isTable(inv.extra)) return tableActions.tkOpenOnline(inv.extra, gid);
+    const m = peerOf(S.chatWith); S.cg = {mode:"online", gid, peerId:S.chatWith, peerName:m && m.first_name, sel:null}; S.screen = "classic"; render(); },
   cgInvite(game){
     if(!GAMES.includes(game)) return;
     const gid = newGid(), m = peerOf(S.chatWith);
     S.cgSheet = false;
     sendBody(CARD + "cg:" + gid + ":" + game);
+    if(isTable(game)) return tableActions.tkOpenOnline(game, gid);
     S.cg = {mode:"online", gid, peerId:S.chatWith, peerName:m && m.first_name, sel:null}; S.screen = "classic"; render();
   },
   cgSheet(){ S.cgSheet = true; render(); },

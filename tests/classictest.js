@@ -23,6 +23,15 @@ check("four: blocks a win", ZFour.bestMove(play(ZFour, ZFour.newGame(), ["0","6"
 { let st = ZFour.newGame(), n = 0; while(!ZFour.status(st).over && n++ < 50) st = ZFour.apply(st, ZFour.bestMove(st, "easy", rnd));
   check("four: easy vs easy finishes", ZFour.status(st).over); }
 { const t = Date.now(); ZFour.bestMove(ZFour.newGame(), "normal"); check("four: normal move under 3 s", Date.now() - t < 3000, (Date.now() - t) + "ms"); }
+for(const lv of ["medium", "hard", "expert"]){
+  check("four think " + lv + ": takes a win", ZFour.think(play(ZFour, ZFour.newGame(), ["0","6","1","6","2","5"]), lv) === "3");
+  check("four think " + lv + ": blocks", ZFour.think(play(ZFour, ZFour.newGame(), ["6","0","5","1","6","2"]), lv) === "3");
+}
+{ const st = play(ZFour, ZFour.newGame(), ["3","3","3","3","3","3"]); check("four think: never a full column", ["easy","medium","hard","expert"].every(lv => ZFour.think(st, lv) !== "3")); }
+{ const t = Date.now(); ZFour.think(ZFour.newGame(), "expert"); check("four think expert: within 2 s", Date.now() - t < 2000, (Date.now() - t) + "ms"); }
+{ let w = 0; for(let g = 0; g < 4; g++){ let st = ZFour.newGame(); const lv = g % 2 ? { w: "easy", b: "hard" } : { w: "hard", b: "easy" };
+    while(!ZFour.status(st).over) st = ZFour.apply(st, ZFour.think(st, lv[st.turn], rnd)); if(ZFour.status(st).winner && lv[ZFour.status(st).winner] === "hard") w++; }
+  check("four think: hard beats easy", w >= 3, w + "/4"); }
 
 /* ---------- Mühle ---------- */
 check("muehle: 24 points, 16 mills", ZMuehle.ADJ.length === 24 && ZMuehle.MILLS.length === 16);

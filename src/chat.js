@@ -98,7 +98,7 @@ async function loadMessages(){
   if(!S.chatWith) return;
   S.messages = await backend.messages(S.chatWith);
   try{ S.mediaStatus = await backend.mediaStatus(); }catch(e){}
-  if(S.screen==="chess" || S.screen==="dama"){
+  if(S.screen==="chess" || S.screen==="dama" || S.screen==="table"){
     const un = unreadFrom(S.chatWith);
     if(un > S.lastUnread){ const m = peerOf(S.chatWith); toast(t("newMsgFrom",{name:m ? m.first_name : ""})); try{ navigator.vibrate && navigator.vibrate(60); }catch(e){} }
     S.lastUnread = Math.max(0, un);

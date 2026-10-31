@@ -157,9 +157,8 @@ for (const lang of ["de", "en", "ar"]) {
     // Vier in einer Reihe: my disc lands, the computer answers
     await page.click('[data-act="chessBack"][data-arg="games"]');
     await page.click('[data-act="cgCpu"][data-arg="four"]');
-    await page.click('.fcol[data-arg="3"]');
-    await expect(page.locator(".disc.me")).toHaveCount(1);
-    await expect(page.locator(".disc.op")).toHaveCount(1);
+    { const r = await page.locator(".f4board").boundingBox(); await page.mouse.click(r.x + r.width / 2, r.y + r.height * .6); }
+    await expect(page.locator(".f4layer .f4d:not(.ghost)")).toHaveCount(2, { timeout: 8000 });
     await shot("12-four");
 
     // Mühle: place a piece, the computer places one

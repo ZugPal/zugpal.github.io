@@ -26,7 +26,7 @@ test("works offline after the first visit", async ({ page, context }) => {
   await page.goto("/?demo&sw");
   await page.click('[data-act="openGames"] >> nth=0');
   await page.click('[data-act="cgCpu"][data-arg="four"]');
-  await page.click('.fcol[data-arg="3"]');
-  await expect(page.locator(".disc.op")).toHaveCount(1);
+  { const r = await page.locator(".f4board").boundingBox(); await page.mouse.click(r.x + r.width / 2, r.y + r.height * .6); }
+  await expect(page.locator(".f4layer .f4d:not(.ghost)")).toHaveCount(2, { timeout: 8000 });   // the computer (Web Worker) answered offline
   await context.setOffline(false);
 });
