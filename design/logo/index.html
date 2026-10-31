@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zugpal Logo-Varianten</title>
+<link rel="stylesheet" href="../../vendor/fonts.css">
+<style>
+  /* Six logo ideas side by side: big, as app icon on the home screen (48 px), round (maskable), light and dark.
+     The live icon (icons/icon.svg) is not changed until Husam picks one. */
+  :root{--bg:#F4F6FA;--surface:#fff;--ink:#16233A;--muted:#5A6275;--line:#D3D9E4;--accent:#0E7A68}
+  @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121826;--surface:#1B2333;--ink:#EEF1F7;--muted:#AAB3C5;--line:#33405A}}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'DM Sans','IBM Plex Sans Arabic',system-ui,sans-serif}
+  main{max-width:1100px;margin:0 auto;padding:24px 16px 48px}
+  h1{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-size:32px;margin:0 0 4px}
+  p.lead{color:var(--muted);margin:0 0 24px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px}
+  .card h2{margin:0;font-size:19px;font-family:'Bricolage Grotesque',system-ui,sans-serif}
+  .card p{margin:0;color:var(--muted);font-size:14px;line-height:1.45}
+  .big{display:flex;justify-content:center}.big img,.big svg{width:180px;height:180px}
+  .sizes{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .phone{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px}
+  .phone.light{background:#E9EEF5}.phone.dark{background:#0B0F17}
+  .phone img{width:48px;height:48px;border-radius:12px}
+  .phone .round{border-radius:50%}
+  .phone span{font-size:11px;color:#8792A6}
+  .mono{width:48px;height:48px;filter:grayscale(1) contrast(1.6);border-radius:12px}
+  .wm{display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px 0}
+  .wordmark{font-family:'Bricolage Grotesque',system-ui,sans-serif;font-weight:800;font-size:64px;letter-spacing:-.03em;line-height:1;position:relative}
+  .wordmark .a{color:var(--ink)}.wordmark .b{color:var(--accent)}
+  .wordmark i{position:absolute;left:4%;right:4%;bottom:-14px;height:6px;border-radius:3px;background:#FFD166}
+  .wordmark i::before,.wordmark i::after{content:"";position:absolute;top:-6px;width:18px;height:18px;border-radius:50%;background:#FFD166}
+  .wordmark i::before{left:22%}.wordmark i::after{right:22%}
+  .small{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+  <h1>Zugpal: Logo-Varianten</h1>
+  <p class="lead">Sechs Ideen. Jede ist groß zu sehen, als App-Symbol auf dem Handy (hell und dunkel), rund zugeschnitten (Android) und schwarz-weiß. Das aktuelle Logo bleibt, bis du dich entscheidest.</p>
+  <div class="grid" id="grid"></div>
+</main>
+<script>
+  const LOGOS = [
+    ["1-z-rail.svg", "1 · Z auf Schienen", "Das jetzige Logo, freundlicher: ein rundes Z, darunter die Schiene mit zwei Rädern in Sonnengelb. Ruhig und klar, auch klein gut lesbar."],
+    ["2-talking-windows.svg", "2 · Zwei Fenster, die reden", "Ein Waggon, dessen Fenster zwei Sprechblasen sind, die sich anschauen. Erzählt die Idee sofort: im Zug ins Gespräch kommen."],
+    ["3-friendly-train.svg", "3 · Freundlicher Zug, der winkt", "Eine Zugfront mit Scheinwerfer-Augen und Lächeln, daneben Winke-Bögen. Am wärmsten und verspieltesten, gut für Plakate."],
+    ["4-track-switch.svg", "4 · Z als Weiche", "Das Z wird zu einer Weiche zwischen zwei Gleisen: Wege, die sich treffen. Sehr reduziert, funktioniert auch einfarbig."],
+    ["6-bubbles-on-rail.svg", "6 · Sprechblasen auf der Schiene (ohne Buchstaben)", "Zwei Sprechblasen auf einem Gleis. Kein lateinischer Buchstabe, darum auch im arabischen Umfeld neutral."]
+  ];
+  const card = ([file, name, text]) => `<div class="card"><h2>${name}</h2><div class="big"><img src="${file}" alt="${name}"></div><p>${text}</p>
+    <div class="sizes"><div class="phone light"><img src="${file}" alt=""><img class="round" src="${file}" alt=""><span>48 px</span></div>
+      <div class="phone dark"><img src="${file}" alt=""><img class="round" src="${file}" alt=""></div><img class="mono" src="${file}" alt=""></div></div>`;
+  const wordmark = `<div class="card"><h2>5 · Schriftzug „zugpal“</h2><div class="wm"><div class="wordmark"><span class="a">zug</span><span class="b">pal</span><i></i></div></div>
+    <p>Der Name als Wortmarke: „zug“ in Dunkelblau, „pal“ in Petrol, darunter die gelbe Schiene mit Rädern. Für Plakat, Webseite, Partner-Folien, zusammen mit einem der Symbole.</p>
+    <div class="small">Schrift: Bricolage Grotesque (liegt schon in der App).</div></div>`;
+  document.getElementById("grid").innerHTML = LOGOS.slice(0, 4).map(card).join("") + wordmark + card(LOGOS[4]);
+</script>
+</body>
+</html>
