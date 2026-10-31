@@ -139,11 +139,12 @@ for (const lang of ["de", "en", "ar"]) {
     await page.goto("/?demo");
     await page.click('[data-act="openGames"] >> nth=0');
     await page.click('[data-act="zwCpu"]');
+    await page.click('[data-act="zwMode"][data-arg="cpu"]');
     const keys = page.locator('.keyboard [data-act="zwKey"]');
     for (let i = 0; i < 5; i++) await keys.nth(i).click();
     await page.click('[data-act="zwEnter"]');
     await expect(page.locator(".tiles .trow").first().locator(".tile.g, .tile.y, .tile.x")).toHaveCount(5);
-    await expect(page.locator(".vs .mrow")).toHaveCount(1);
+    await expect(page.locator(".vs .mrow")).toHaveCount(1, { timeout: 6000 });
     await shot("10-zugwort");
 
     // Letter Train vs computer: a tapped letter is used up

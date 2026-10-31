@@ -7,6 +7,7 @@ import { REPORT_REASONS, loadNotices, render } from "./screens.js";
 import { S, backend, save } from "./state.js";
 import { CARD, MAX_WAVES, berlinDate, hasContact, norm, t, toast } from "./util.js";
 import { wordActions } from "./words.js";
+import { zugwortActions } from "./zugwort.js";
 import { classicActions } from "./classic.js";
 import { libraryActions } from "./library.js";
 import { partyActions } from "./party.js";
@@ -290,6 +291,6 @@ async function finishRide(){
   save(); S.screen = "checkin"; toast(before && after && after > before ? t("moodUp") : t("endedToast"));
 }
 
-Object.assign(actions, wordActions, classicActions, libraryActions, partyActions, sponsorActions, solitaireActions, chessActions, damaActions, tableActions);
+Object.assign(actions, wordActions, classicActions, libraryActions, partyActions, sponsorActions, solitaireActions, chessActions, damaActions, tableActions, zugwortActions);
 
 export { actions, inviteLink, joinTest, openProfile, safe, startFeedback };

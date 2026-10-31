@@ -5,7 +5,8 @@ import { AGES, BADGES, DICE, ICE, LANGS, MOODS, TOPICS, WORDS } from "./data.js"
 import { COUNTED, GLYPH, boardHtml, chessState, damaBoard, damaState, onlineInfo } from "./games.js";
 import { S, backend } from "./state.js";
 import { ICON, MONEY_RE, esc, hasContact, loc, minsLeft, moodName, parseMsg, photo, t, todaysWord } from "./util.js";
-import { lettersScreen, wordCard, wordSheet, zugwortScreen } from "./words.js";
+import { lettersScreen, wordCard, wordSheet } from "./words.js";
+import { zugwortScreen, zwOverlay } from "./zugwort.js";
 import { cgCard, cgSheet } from "./classic.js";
 import { bookCard, bookScreen, creditsScreen, libraryScreen } from "./library.js";
 import { partyCard, quizScreen, slfScreen } from "./party.js";
@@ -100,6 +101,7 @@ function overlays(){
   if(S.screen==="chess"){ const o = chessOverlay(); if(o) return o; }
   if(S.screen==="dama"){ const o = damaOverlay(); if(o) return o; }
   if(S.screen==="table"){ const o = tableOverlay(); if(o) return o; }
+  if(S.screen==="zugwort"){ const o = zwOverlay(); if(o) return o; }
   if(S.reportDone) return `<div class="sheet" role="dialog" aria-modal="true"><div class="panel">
     <h2>${ICON.shield} ${t("reportThanksTitle")}</h2><p>${t("reportThanks",{n:Number(S.reportDone.n)||""})}</p>
     <div class="banner">${t("emergency")}</div>
