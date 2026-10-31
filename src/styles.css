@@ -154,6 +154,11 @@ footer.legal a{color:var(--muted);min-height:44px;display:inline-flex;align-item
 .chatbar input,.chatbar textarea{flex:1;min-width:0}
 .chatbar{align-items:flex-end}
 .mytrain .pname{display:flex;align-items:center;gap:8px}
+.sharerow{justify-content:center;gap:18px;flex-wrap:wrap}.sharerow .link{display:inline-flex;align-items:center;gap:6px}
+.qr svg{display:block;width:100%;height:auto;border-radius:8px}
+.qr.big{width:min(260px,72vw);align-self:center;background:#fff;padding:10px;border-radius:16px}
+.qrurl{text-align:center;overflow-wrap:anywhere}
+.hostqr{align-items:center;gap:14px}.hostqr .qr{width:96px;flex-shrink:0;background:#fff;padding:4px;border-radius:10px}.hostqr .grow{display:flex;flex-direction:column;gap:8px;align-items:flex-start}
 .twobtn{gap:10px}.twobtn .btn{flex:1}
 .ridebar{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line-soft);border-radius:12px;padding:8px 12px;font-size:14px;color:var(--muted)}
 .ridebar b{color:var(--ink)}.ridebar .link{white-space:nowrap}

@@ -103,6 +103,16 @@ const actions = {
   async notifyOn(){ try{ await Notification.requestPermission(); }catch(e){} if(Notification.permission === "granted") toast(t("notifyOnDone")); render(); },
   notifyLater(){ S.notifyOff = true; save(); render(); },
   nudgeOff(){ S.nudgeOff = true; save(); render(); },
+  showQr(what){ S.qrSheet = what || "talk"; render(); },
+  qrClose(){ S.qrSheet = null; render(); },
+  // the phone's share menu (WhatsApp, SMS, …); without it the link is copied
+  async shareLink(what){
+    const base = location.href.split("#")[0].split("?")[0];
+    const url = what === "test" && S.ride ? base + "#ride-" + S.ride.key.slice(5) : /^train-[A-Z0-9]{4,8}$/.test(what || "") ? base + "#" + what : base + "#talk";
+    const text = t("shareText");
+    try{ if(navigator.share){ await navigator.share({ title: "Zugpal", text, url }); return; } }catch(e){ if(e && e.name === "AbortError") return; }
+    try{ await navigator.clipboard.writeText(text + " " + url); toast(t("copied")); }catch(e){ prompt(t("copyLink"), url); }
+  },
   openGames(){ S.gamesBack = S.screen==="nearby" ? "nearby" : "checkin"; S.screen = "games"; render(); },
   chessCpu(){ const lvl = S.chess && S.chess.mode==="cpu" ? S.chess.level : "normal"; S.chess = {mode:"cpu", st:ZChess.newGame(), level:lvl, sel:null, last:null}; S.screen = "chess"; render(); },
   chessLevel(v){ if(S.chess) S.chess.level = v; render(); },

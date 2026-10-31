@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Zugpal QR-Plakat</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="vendor/fonts.css">
+<style>
+  /* The poster for the coach: a QR code that opens Zugpal on the Talk Train (or a train someone created).
+     Open it on a laptop and print (A4), or save as PDF. ?code=ABC123&label=RE%201%20%C2%B7%2007%3A42 makes the poster for one train. */
+  :root{--ink:#16233A;--muted:#4D5870;--accent:#0E7A68;--sun:#FFD166;--sky:#EAF3FB;--f-display:'Bricolage Grotesque','IBM Plex Sans Arabic',system-ui,sans-serif;--f-body:'DM Sans','IBM Plex Sans Arabic',system-ui,sans-serif}
+  *{box-sizing:border-box}
+  body{margin:0;background:#D8DEE8;color:var(--ink);font-family:var(--f-body)}
+  .tools{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;padding:14px 16px;font-size:15px}
+  .tools button,.tools a{font:inherit;min-height:44px;padding:0 18px;border-radius:999px;border:0;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center}
+  .tools a{background:#fff;color:var(--ink);border:1px solid #B9C2D0}
+  .sheet{width:min(210mm,100% - 32px);aspect-ratio:210/297;margin:0 auto 32px;background:var(--sky);border-radius:6px;box-shadow:0 10px 30px rgba(22,35,58,.18);
+    display:flex;flex-direction:column;align-items:center;text-align:center;padding:5% 7% 4%;gap:1.6%;container-type:inline-size;overflow:hidden;position:relative}
+  .sheet::before{content:"";position:absolute;inset:auto -10% -18% -10%;height:34%;background:var(--accent);border-radius:50% 50% 0 0;opacity:.12}
+  .brand{display:flex;align-items:center;gap:3cqw;font-family:var(--f-display);font-weight:800;font-size:9cqw;letter-spacing:-.02em}
+  .brand svg{width:12cqw;height:12cqw;border-radius:2.6cqw}
+  h1{font-family:var(--f-display);font-size:7.6cqw;line-height:1.02;margin:0;letter-spacing:-.02em}
+  .sub{font-size:3.6cqw;color:var(--muted);margin:0;line-height:1.35}
+  .sub[lang=ar]{font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;direction:rtl}
+  .train{background:var(--sun);color:var(--ink);font-weight:800;font-size:4cqw;padding:1.4cqw 4cqw;border-radius:999px}
+  .qrbox{background:#fff;padding:2.6cqw;border-radius:4cqw;box-shadow:0 1cqw 4cqw rgba(22,35,58,.12);width:46cqw}
+  .qrbox svg{display:block;width:100%;height:auto}
+  .url{font-weight:700;font-size:3.4cqw;margin-top:-1%}
+  ol{list-style:none;display:flex;gap:3cqw;margin:0;padding:0;width:100%;justify-content:center}
+  ol li{flex:1;background:#fff;border-radius:3cqw;padding:2cqw 1.6cqw;font-size:2.7cqw;line-height:1.3;position:relative}
+  ol b{display:block;font-family:var(--f-display);font-size:5cqw;color:var(--accent)}
+  .foot{font-size:2.4cqw;color:var(--muted);margin-top:auto;position:relative}
+  @media print{
+    @page{size:A4 portrait;margin:0}
+    body{background:#fff}.tools{display:none}
+    .sheet{width:210mm;height:297mm;margin:0;border-radius:0;box-shadow:none;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+<div class="tools"><button type="button" onclick="print()">Drucken / Als PDF sichern</button><a href="./">Zurück zur App</a></div>
+<main class="sheet" id="sheet">
+  <div class="brand"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="112" fill="#1F6B50"/><path d="M150 158h212v44L210 318h152v44H150v-44l152-116H150z" fill="#F3F5F4"/><rect x="112" y="398" width="288" height="14" rx="7" fill="#9FE0C3"/><circle cx="176" cy="405" r="18" fill="#9FE0C3"/><circle cx="336" cy="405" r="18" fill="#9FE0C3"/></svg>Zugpal</div>
+  <h1>Hier darf<br>geredet werden.</h1>
+  <p class="sub" lang="en">Talking welcome here.</p>
+  <p class="sub" lang="ar">هنا مرحَّب بالحديث.</p>
+  <div class="train" id="train">Gesprächszug</div>
+  <div class="qrbox" id="qr"></div>
+  <div class="url" id="url">zugpal.github.io</div>
+  <ol>
+    <li><b>1</b>Scannen<br><span lang="en">Scan</span> · <span lang="ar">امسح</span></li>
+    <li><b>2</b>Jemandem zuwinken<br><span lang="en">Wave</span> · <span lang="ar">لوّح</span></li>
+    <li><b>3</b>Winkt die Person zurück: redet!<br><span lang="en">Wave back: talk</span> · <span lang="ar">لوّح بالمقابل: تحدّثا</span></li>
+  </ol>
+  <div class="foot">Kein Dating · Keine Werbung · Kein Tracking · ab 18 &nbsp;|&nbsp; No dating · 18+ &nbsp;|&nbsp; بلا مواعدة · +18</div>
+</main>
+<script type="module">
+  import { loadQr, qrSvg } from "./src/qr.js";
+  const q = new URLSearchParams(location.search), code = (q.get("code") || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 8);
+  const base = location.origin + location.pathname.replace(/qr\.html$/, "");
+  const link = base + (code ? "#train-" + code : "#talk");
+  if(q.get("label")) document.getElementById("train").textContent = q.get("label").slice(0, 60);
+  document.getElementById("url").textContent = link.replace(/^https?:\/\//, "");
+  await loadQr();
+  document.getElementById("qr").innerHTML = qrSvg(link, "#16233A");
+</script>
+</body>
+</html>

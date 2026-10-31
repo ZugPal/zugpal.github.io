@@ -20,6 +20,7 @@ import { damaOverlay, damaScreen, mountDama } from "./damaui.js";
 import { mountTable, tableOverlay, tableScreen } from "./tablekit.js";
 import { googleLink, talkInfo } from "./talktrain.js";
 import { navSync } from "./nav.js";
+import { paintQrs } from "./qr.js";
 
 /* ---------------- Screens ---------------- */
 function header(){
@@ -56,6 +57,8 @@ function hostCard(){
   if(!S.isHost || !S.ride || !S.ride.key.startsWith("TALK-")) return "";
   const s = S.hostStats;
   return `<div class="card host"><div class="pname">${ICON.shield} ${t("hostTitle")}</div>
+    <div class="row hostqr"><div class="qr" data-qr="${esc(linkFor("talk"))}"></div><div class="grow"><div class="small">${t("hostQrBody")}</div>
+      <a class="btn ghost small" href="qr.html" target="_blank" rel="noopener">${t("printPoster")}</a></div></div>
     <div class="stats"><div><b>${s ? s.checked_in : "–"}</b><span class="small">${t("hostChecked")}</span></div><div><b>${s ? s.open_now : "–"}</b><span class="small">${t("hostOpenN")}</span></div><div><b>${s ? s.matches : "–"}</b><span class="small">${t("hostMatches")}</span></div></div>
     ${s && s.announced ? `<div class="small">${t("hostDone")}</div>` : `<div class="field"><label for="hostMsg">${t("hostMsgLabel")}</label><input type="text" id="hostMsg" data-bind="hostMsg" maxlength="280" dir="auto" value="${esc(S.draft.hostMsg||"")}"><div class="small">${t("hostMsgHint")}</div></div>
       <button class="btn ghost small" data-act="hostSend">${t("hostSend")}</button>`}</div>`;
@@ -97,7 +100,24 @@ function noticeText(n){
   if(n.kind==="removed") return t("n_removed",{r:esc(n.reason||"")});
   return t("n_"+n.kind,{n:Number(n.report_id)||""});
 }
+// A QR code to show on your phone, so the person next to you can scan it
+function qrSheet(){
+  const url = linkFor(S.qrSheet);
+  return `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="qrT"><div class="panel qrpanel">
+    <h2 id="qrT">${t("qrTitle")}</h2><p class="small">${t("qrBody")}</p>
+    <div class="qr big" data-qr="${esc(url)}"></div>
+    <div class="small qrurl">${esc(url.replace(/^https?:\/\//, ""))}</div>
+    <div class="row" style="justify-content:flex-end;gap:12px"><button class="link" data-act="shareLink" data-arg="${esc(S.qrSheet)}">${t("shareLink")}</button><button class="btn" data-act="qrClose">${t("close")}</button></div></div></div>`;
+}
+// links to the Talk Train, a private test ride, or a train someone created
+function linkFor(what){
+  const base = location.href.split("#")[0].split("?")[0];
+  if(what === "test" && S.ride) return base + "#ride-" + S.ride.key.slice(5);
+  if(/^train-[A-Z0-9]{4,8}$/.test(what || "")) return base + "#" + what;
+  return base + "#talk";
+}
 function overlays(){
+  if(S.qrSheet) return qrSheet();
   if(S.reportSheet) return reportSheet();
   if(S.wordSheet) return wordSheet();
   if(S.cgSheet) return cgSheet();
@@ -193,7 +213,8 @@ function talkHero(){
     <div class="small">${i.onTrainDay ? t("talkTrainBody") : t("talkNotToday")}</div>
     ${i.onTrainDay ? `<button class="btn mint" data-act="checkin" data-arg="talk">${t("joinTalk")}</button>`
       : `<div class="row calrow">${calButtons()}</div>
-        <button class="link onhero-link" data-act="checkin" data-arg="talk">${t("joinAnyway")}</button>`}${sponsorSlot()}</div>`;
+        <button class="link onhero-link" data-act="checkin" data-arg="talk">${t("joinAnyway")}</button>`}
+    <div class="row sharerow"><button class="link onhero-link" data-act="showQr" data-arg="talk">${ICON.qr}${t("showQr")}</button><button class="link onhero-link" data-act="shareLink" data-arg="talk">${t("inviteFriend")}</button></div>${sponsorSlot()}</div>`;
 }
 // Waving in three steps, until you have waved once; then one line
 function waveHelp(){
@@ -314,7 +335,7 @@ const screens = {
       <div class="ridebar">${ICON.train}<span class="grow"><b>${esc(S.ride.label)}</b> · ${t("minLeft",{n:minsLeft()})}</span><button class="link" data-act="endRide">${t("changeTrain")}</button></div>
       ${S.ride.key.startsWith("TEST-") ? `<div class="card"><span class="flabel">${t("inviteLabel")}</span>
         <div class="small" style="user-select:all;overflow-wrap:anywhere;color:var(--ink)" id="inviteText">${esc(inviteLink())}</div>
-        <button class="btn ghost small" data-act="copyInvite">${t("copyLink")}</button></div>` : ""}
+        <div class="row" style="flex-wrap:wrap;gap:8px"><button class="btn ghost small" data-act="shareLink" data-arg="test">${t("shareLink")}</button><button class="btn ghost small" data-act="showQr" data-arg="test">${ICON.qr}${t("showQr")}</button></div></div>` : ""}
       ${endingBanner()}
       ${S.announcement ? `<div class="banner info announce"><b>${t("hostAnnTitle")}</b><span dir="auto">${esc(S.announcement)}</span></div>` : ""}
       ${hostCard()}
@@ -525,6 +546,7 @@ function render(opts){
   if(S.screen==="chess") mountChess();
   if(S.screen==="dama") mountDama();
   if(S.screen==="table") mountTable();
+  paintQrs();
   navSync();
 }
 

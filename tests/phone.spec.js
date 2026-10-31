@@ -101,3 +101,21 @@ test("phone notice shows a number, never a name", async ({ page }) => {
   expect(notes[1].body).toBe("2 neue Nachrichten");
   expect(JSON.stringify(notes)).not.toMatch(/Lena|Karim|Aylin/);
 });
+
+test("QR code: on the phone for the person next to you, and the poster to print", async ({ page }) => {
+  const errors = []; page.on("pageerror", e => errors.push(String(e)));
+  await signUp(page, "ar");
+  await page.click('[data-act="showQr"][data-arg="talk"]');
+  await expect(page.locator(".qr.big svg path")).toHaveCount(1);
+  await expect(page.locator(".qrurl")).toContainText("#talk");
+  await page.screenshot({ path: path.join(SHOTS, "phone-4-qr.png") });
+  await page.goBack();                                                          // back closes the QR sheet
+  await expect(page.locator(".qr.big")).toHaveCount(0);
+  await page.goto("/qr.html");
+  await expect(page.locator("#qr svg path")).toHaveCount(1);
+  await page.screenshot({ path: path.join(SHOTS, "poster-talk.png"), fullPage: true });
+  await page.goto("/qr.html?code=ab12cd&label=RE%201%20%C2%B7%2007%3A42");
+  await expect(page.locator("#url")).toContainText("#train-AB12CD");
+  await expect(page.locator("#train")).toHaveText("RE 1 · 07:42");
+  expect(errors).toEqual([]);
+});
