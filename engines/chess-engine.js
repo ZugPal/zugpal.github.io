@@ -145,6 +145,101 @@ const ZChess = (function(){
     return best;
   }
 
-  return { newGame, fromFen, legal, apply, status, inCheck, uci, fromUci, bestMove, sqName, sqIndex };
+  /* Standard algebraic notation, e.g. "Nf3", "exd5", "O-O", "e8=Q+", "Nbd2", "R1a3", "Qxf7#" */
+  function san(st, m){
+    if(m.castle) return (m.castle === "K" ? "O-O" : "O-O-O") + suffix(st, m);
+    const p = st.b[m.from][1], to = sqName(m.to);
+    let s = "";
+    if(p === "P"){ s = (m.capture ? sqName(m.from)[0] + "x" : "") + to + (m.promo ? "=" + m.promo : ""); }
+    else {
+      const others = legal(st).filter(o => o.to === m.to && o.from !== m.from && st.b[o.from][1] === p);
+      let dis = "";
+      if(others.length){
+        const f = sqName(m.from)[0], r = sqName(m.from)[1];
+        if(!others.some(o => sqName(o.from)[0] === f)) dis = f;
+        else if(!others.some(o => sqName(o.from)[1] === r)) dis = r;
+        else dis = f + r;
+      }
+      s = p + dis + (m.capture ? "x" : "") + to;
+    }
+    return s + suffix(st, m);
+  }
+  function suffix(st, m){ const n = apply(st, m), s = status(n); return s.mate ? "#" : s.check ? "+" : ""; }
+  // position fingerprint for threefold repetition
+  const key = st => st.b.map(p => p || "-").join("") + st.turn + ["wK","wQ","bK","bQ"].filter(k => st.castle[k]).join("") + st.ep;
+
+  /* Stronger opponent: negamax + alpha-beta, captures searched to the end (quiescence), piece-square tables,
+     iterative deepening with a time limit. Levels: easy (1 ply, noisy), medium (2), hard (3), expert (up to 2 s). */
+  const PST = {
+    P:[0,0,0,0,0,0,0,0, 5,10,10,-20,-20,10,10,5, 5,-5,-10,0,0,-10,-5,5, 0,0,0,20,20,0,0,0, 5,5,10,25,25,10,5,5, 10,10,20,30,30,20,10,10, 50,50,50,50,50,50,50,50, 0,0,0,0,0,0,0,0],
+    N:[-50,-40,-30,-30,-30,-30,-40,-50, -40,-20,0,5,5,0,-20,-40, -30,5,10,15,15,10,5,-30, -30,0,15,20,20,15,0,-30, -30,5,15,20,20,15,5,-30, -30,0,10,15,15,10,0,-30, -40,-20,0,0,0,0,-20,-40, -50,-40,-30,-30,-30,-30,-40,-50],
+    B:[-20,-10,-10,-10,-10,-10,-10,-20, -10,5,0,0,0,0,5,-10, -10,10,10,10,10,10,10,-10, -10,0,10,10,10,10,0,-10, -10,5,5,10,10,5,5,-10, -10,0,5,10,10,5,0,-10, -10,0,0,0,0,0,0,-10, -20,-10,-10,-10,-10,-10,-10,-20],
+    R:[0,0,0,5,5,0,0,0, -5,0,0,0,0,0,0,-5, -5,0,0,0,0,0,0,-5, -5,0,0,0,0,0,0,-5, -5,0,0,0,0,0,0,-5, -5,0,0,0,0,0,0,-5, 5,10,10,10,10,10,10,5, 0,0,0,0,0,0,0,0],
+    Q:[-20,-10,-10,-5,-5,-10,-10,-20, -10,0,5,0,0,0,0,-10, -10,5,5,5,5,5,0,-10, 0,0,5,5,5,5,0,-5, -5,0,5,5,5,5,0,-5, -10,0,5,5,5,5,0,-10, -10,0,0,0,0,0,0,-10, -20,-10,-10,-5,-5,-10,-10,-20],
+    K:[20,30,10,0,0,10,30,20, 20,20,0,0,0,0,20,20, -10,-20,-20,-20,-20,-20,-20,-10, -20,-30,-30,-40,-40,-30,-30,-20, -30,-40,-40,-50,-50,-40,-40,-30, -30,-40,-40,-50,-50,-40,-40,-30, -30,-40,-40,-50,-50,-40,-40,-30, -30,-40,-40,-50,-50,-40,-40,-30],
+    KE:[-50,-30,-30,-30,-30,-30,-30,-50, -30,-30,0,0,0,0,-30,-30, -30,-10,20,30,30,20,-10,-30, -30,-10,30,40,40,30,-10,-30, -30,-10,30,40,40,30,-10,-30, -30,-10,20,30,30,20,-10,-30, -30,-20,-10,0,0,-10,-20,-30, -50,-40,-30,-20,-20,-30,-40,-50]
+  };
+  function evaluate2(st){
+    let s = 0, mat = 0;
+    for(let i = 0; i < 64; i++){ const p = st.b[i]; if(p && p[1] !== "K" && p[1] !== "P") mat += VAL[p[1]]; }
+    const endgame = mat <= 1400;
+    for(let i = 0; i < 64; i++){ const p = st.b[i]; if(!p) continue;
+      const idx = p[0] === "w" ? i : (7 - Math.floor(i / 8)) * 8 + (i % 8);
+      const t = p[1] === "K" && endgame ? "KE" : p[1];
+      const v = VAL[p[1]] + PST[t][idx];
+      s += p[0] === "w" ? v : -v; }
+    return st.turn === "w" ? s : -s;
+  }
+  const order = (st, ms) => ms.map(m => ({ m, k: (m.capture ? 10 * (VAL[(st.b[m.to] || "xP")[1]] || 100) - VAL[st.b[m.from][1]] / 10 : 0) + (m.promo ? 800 : 0) }))
+    .sort((a, b) => b.k - a.k).map(x => x.m);
+  class Timeout {}
+  function think(st, level, rnd){
+    rnd = rnd || Math.random;
+    const moves = legal(st); if(!moves.length) return null;
+    const lim = { easy: [1, 0], medium: [2, 0], hard: [3, 0], expert: [7, 2000] }[level] || [2, 0];
+    const deadline = lim[1] ? Date.now() + lim[1] : Infinity; let nodes = 0;
+    function q(s, alpha, beta, ply){
+      if((++nodes & 1023) === 0 && Date.now() > deadline) throw new Timeout();
+      const stand = evaluate2(s); if(stand >= beta) return beta; if(stand > alpha) alpha = stand;
+      if(ply > 8) return alpha;
+      for(const m of order(s, legal(s).filter(m => m.capture || m.promo))){
+        const v = -q(apply(s, m), -beta, -alpha, ply + 1);
+        if(v >= beta) return beta; if(v > alpha) alpha = v;
+      }
+      return alpha;
+    }
+    function nega(s, depth, alpha, beta, ply){
+      if((++nodes & 1023) === 0 && Date.now() > deadline) throw new Timeout();
+      const ms = legal(s);
+      if(!ms.length) return inCheck(s) ? -100000 + ply : 0;
+      if(s.half >= 100 || insufficient(s)) return 0;
+      if(depth <= 0) return q(s, alpha, beta, 0);
+      let best = -Infinity;
+      for(const m of order(s, ms)){
+        const v = -nega(apply(s, m), depth - 1, -beta, -alpha, ply + 1);
+        if(v > best) best = v; if(v > alpha) alpha = v; if(alpha >= beta) break;
+      }
+      return best;
+    }
+    let bestMove = moves[Math.floor(rnd() * moves.length)], prev = null;
+    for(let d = 1; d <= lim[0]; d++){
+      try{
+        let alpha = -Infinity, bm = null, bv = -Infinity;
+        const ms = order(st, moves); if(prev){ ms.splice(ms.indexOf(prev), 1); ms.unshift(prev); }
+        for(const m of ms){
+          // easy/medium score every move fully, so the random factor never promotes a move that was only cut off
+          const noisy = level === "easy" || level === "medium";
+          let v = -nega(apply(st, m), d - 1, -Infinity, noisy ? Infinity : -alpha, 1);
+          if(level === "easy") v += (rnd() - 0.5) * 240; else if(level === "medium") v += (rnd() - 0.5) * 40;
+          if(v > bv){ bv = v; bm = m; } if(v > alpha) alpha = v;
+        }
+        bestMove = prev = bm;
+        if(bv > 90000) break;
+      }catch(e){ if(e instanceof Timeout) break; throw e; }
+    }
+    return bestMove;
+  }
+
+  return { newGame, fromFen, legal, apply, status, inCheck, uci, fromUci, bestMove, sqName, sqIndex, san, key, think, evaluate: evaluate2 };
 })();
 if(typeof module !== "undefined") module.exports = ZChess;

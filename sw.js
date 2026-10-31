@@ -2,7 +2,7 @@
 // The app files are cached as one versioned set, so a phone never mixes old and new files.
 // Supabase (chat, waves, check-in) always goes to the network. Downloaded books live in IndexedDB, not here.
 // VERSION and FILES are written by tools/update-sw.js; do not edit them by hand.
-const VERSION = "27c5ec0a3362";
+const VERSION = "9245703d6bd9";
 const FILES = [
   "./",
   "index.html",
@@ -16,6 +16,7 @@ const FILES = [
   "src/backend-demo.js",
   "src/backend-live.js",
   "src/chat.js",
+  "src/chessui.js",
   "src/classic.js",
   "src/config.js",
   "src/data.js",
@@ -34,6 +35,7 @@ const FILES = [
   "src/words.js",
   "engines/backgammon-engine.js",
   "engines/chess-engine.js",
+  "engines/chess-worker.js",
   "engines/dama-engine.js",
   "engines/four-engine.js",
   "engines/maumau-engine.js",
@@ -64,6 +66,18 @@ const FILES = [
   "vendor/fonts/ibm-plex-sans-arabic-latin-400-normal.woff2",
   "vendor/fonts/ibm-plex-sans-arabic-latin-500-normal.woff2",
   "vendor/fonts/ibm-plex-sans-arabic-latin-700-normal.woff2",
+  "vendor/pieces/bB.svg",
+  "vendor/pieces/bK.svg",
+  "vendor/pieces/bN.svg",
+  "vendor/pieces/bP.svg",
+  "vendor/pieces/bQ.svg",
+  "vendor/pieces/bR.svg",
+  "vendor/pieces/wB.svg",
+  "vendor/pieces/wK.svg",
+  "vendor/pieces/wN.svg",
+  "vendor/pieces/wP.svg",
+  "vendor/pieces/wQ.svg",
+  "vendor/pieces/wR.svg",
   "icons/apple-touch-icon.png",
   "icons/icon-192.png",
   "icons/icon-512.png",

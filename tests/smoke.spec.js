@@ -103,7 +103,14 @@ for (const lang of ["de", "en", "ar"]) {
 
     // Online chess with the match: invite card + board
     await page.click('[data-act="chessInvite"]');
-    await expect(page.locator(".board .sq")).toHaveCount(64);
+    await expect(page.locator(".cboard .csq")).toHaveCount(64);
+    await expect(page.locator(".cpiece")).toHaveCount(32);
+    { // online: drag e2-e4, the (simulated) match answers
+      const r = await page.locator(".cboard").boundingBox(), sq = r.width / 8;
+      await page.mouse.move(r.x + 4.5 * sq, r.y + 6.5 * sq); await page.mouse.down();
+      await page.mouse.move(r.x + 4.5 * sq, r.y + 5 * sq, { steps: 4 }); await page.mouse.move(r.x + 4.5 * sq, r.y + 4.5 * sq, { steps: 4 }); await page.mouse.up();
+      await expect(page.locator(".cmoves .mv")).toHaveCount(2, { timeout: 10000 });
+    }
     await shot("7-chess-online");
 
     // Games screen: chess vs computer makes a move, solitaire deals
@@ -111,9 +118,7 @@ for (const lang of ["de", "en", "ar"]) {
     await page.click('[data-act="openGames"] >> nth=0');
     await shot("8-games");
     await page.click('[data-act="chessCpu"]');
-    await page.click('.sq[aria-label="e2 wP"]');
-    await page.click('.sq[aria-label="e4"]');
-    await expect(page.locator('.sq[aria-label="e4 wP"]')).toBeVisible();
+    await expect(page.locator(".cboard .cpiece")).toHaveCount(32);
     await page.goto("/?demo");
     await page.click('[data-act="openGames"] >> nth=0');
     await page.click('[data-act="solNew"]');

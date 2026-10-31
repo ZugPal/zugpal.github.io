@@ -3,7 +3,7 @@
 //   node tools/update-sw.js --check  (fails if sw.js is out of date; part of npm test)
 const fs = require("fs"), path = require("path"), crypto = require("crypto");
 const ROOT = path.join(__dirname, "..");
-const DIRS = ["src", "engines", "vendor", "vendor/fonts", "icons", "sponsor"];
+const DIRS = ["src", "engines", "vendor", "vendor/fonts", "vendor/pieces", "icons", "sponsor"];
 const TOP = ["./", "index.html", "manifest.webmanifest", "legal.css", "impressum.html", "datenschutz.html", "regeln.html", "library/catalog.json"];
 const skip = f => /LICENSE|\.txt$/.test(f);
 const files = TOP.concat(DIRS.flatMap(d => fs.readdirSync(path.join(ROOT, d)).filter(f => fs.statSync(path.join(ROOT, d, f)).isFile() && !skip(f)).sort().map(f => d + "/" + f)));

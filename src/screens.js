@@ -11,6 +11,7 @@ import { bookCard, bookScreen, creditsScreen, libraryScreen } from "./library.js
 import { partyCard, quizScreen, slfScreen } from "./party.js";
 import { sponsorSlot, supporterScreen } from "./sponsor.js";
 import { mountSolitaire, solDialogHtml, solitaireScreen } from "./solitaire.js";
+import { chessOverlay, chessScreen, mountChess } from "./chessui.js";
 
 /* ---------------- Screens ---------------- */
 function header(){
@@ -94,6 +95,7 @@ function overlays(){
   if(S.cgSheet) return cgSheet();
   if(S.hostSheet) return hostSheet();
   if(S.screen==="solitaire" && (S.solSheet || S.solDialog)) return solDialogHtml();
+  if(S.screen==="chess"){ const o = chessOverlay(); if(o) return o; }
   if(S.reportDone) return `<div class="sheet" role="dialog" aria-modal="true"><div class="panel">
     <h2>${ICON.shield} ${t("reportThanksTitle")}</h2><p>${t("reportThanks",{n:Number(S.reportDone.n)||""})}</p>
     <div class="banner">${t("emergency")}</div>
@@ -303,7 +305,7 @@ const screens = {
       if(p.type==="spin"){ const meAsks = (x.mine && p.val==="me") || (!x.mine && p.val==="you"); return `<div class="gamecard"><span class="lbl">${t("spin")}</span><span class="big">${meAsks ? t("spinYou") : t("spinThem",{name})}</span></div>`; }
       if(p.type==="ttl") return `<div class="gamecard"><span class="lbl">${t("ttl")}</span><span>${x.mine ? t("ttlYou",{name}) : t("ttlThem",{name})}</span></div>`;
       if(p.type==="bye") return `<div class="msg${x.mine?" mine":""}">${t("bye")}</div>`;
-      if(["cm","dm","zg","lg","cgm","qa","slsub","slstop","slrej"].includes(p.type)) return "";
+      if(["cm","cx","dm","zg","lg","cgm","qa","slsub","slstop","slrej"].includes(p.type)) return "";
       if(p.type==="qz" || p.type==="sl") return partyCard(p, x, name);
       if(p.type==="cg") return cgCard(p, x, name);
       if(p.type==="book") return bookCard(p, x, name);
@@ -399,29 +401,7 @@ const screens = {
   credits(){ return creditsScreen(); },
   letters(){ return lettersScreen() || screens.games(); },
 
-  chess(){
-    const c = S.chess, cs = chessState(); if(!c || !cs) return screens.games();
-    const {st, myColor} = cs, status = ZChess.status(st);
-    const m = c.mode==="online" ? (S.matches.find(x=>x.id===c.peerId) || {first_name:c.peerName||""}) : null;
-    const name = m ? esc(m.first_name) : t("computer");
-    let line;
-    if(status.mate) line = st.turn===myColor ? (c.mode==="cpu" ? t("cpuWins") : t("youLose",{name})) : t("youWin");
-    else if(status.draw) line = t("drawT");
-    else if(c.thinking) line = t("thinking");
-    else line = (st.turn===myColor ? t("yourMove") : (c.mode==="cpu" ? t("thinking") : t("peerMove",{name}))) + (status.check ? " · " + t("inCheck") : "");
-    const back = c.mode==="online" ? "chat" : "games";
-    return `<div class="screen">
-      <div class="row"><button class="iconbtn flip" data-act="chessBack" data-arg="${back}" aria-label="${t("back")}">${ICON.back}</button>
-        <div class="grow"><div class="pname">${t("chess")}</div><div class="small">${c.mode==="cpu" ? t("vsComputer") : name}</div></div></div>
-      <span class="pill${status.over?"":" off"}" style="align-self:flex-start">${line}</span>
-      ${c.mode==="online" ? onlineInfo("chess", c) : ""}
-      ${boardHtml(st, myColor, c.sel)}
-      <div class="small">${t("autoQueen")}</div>
-      ${c.mode==="cpu" ? `<div class="row" style="flex-wrap:wrap">
-        <div class="seg"><button class="chip" data-act="chessLevel" data-arg="easy" aria-pressed="${c.level==="easy"}">${t("easy")}</button><button class="chip" data-act="chessLevel" data-arg="normal" aria-pressed="${c.level!=="easy"}">${t("normal")}</button></div>
-        <button class="btn ghost small" data-act="chessCpu">${t("newGame")}</button></div>` : `<div class="row" style="flex-wrap:wrap"><button class="btn ghost small" data-act="chessInvite">${t("newGame")}</button><button class="btn ghost small" data-act="chessBack" data-arg="chat">${t("backChat")}</button></div>`}
-    </div>`;
-  },
+  chess(){ return chessScreen(); },
 
   dama(){
     const d = S.dama, ds = damaState(); if(!d || !ds) return screens.games();
@@ -480,6 +460,7 @@ function render(){
   if(active){ const el = document.getElementById(active); if(el && el.tagName==="INPUT" && el.type==="text"){ el.focus(); try{ const l=el.value.length; el.setSelectionRange(l,l); }catch(e){} } }
   const log = document.getElementById("chatLog"); if(log) log.scrollTop = log.scrollHeight;
   if(S.screen==="solitaire") mountSolitaire();
+  if(S.screen==="chess") mountChess();
 }
 
 export { REPORT_REASONS, loadNotices, render };

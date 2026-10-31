@@ -101,7 +101,7 @@ function creditsScreen(){
   return `<div class="screen">
     <div class="row"><button class="iconbtn flip" data-act="go" data-arg="library" aria-label="${t("back")}">${ICON.back}</button><h1 class="grow" style="font-size:24px">${t("libCredits")}</h1></div>
     <p class="small">${t("libCreditsIntro")}</p>
-    <div class="card"><div class="pname">${t("libSoftware")}</div><div class="small">epub.js (BSD-2-Clause), JSZip (MIT), Supabase JS (MIT), Schriften/fonts: Bricolage Grotesque, DM Sans, IBM Plex Sans Arabic (SIL OFL 1.1).</div></div>
+    <div class="card"><div class="pname">${t("libSoftware")}</div><div class="small">epub.js (BSD-2-Clause), JSZip (MIT), Supabase JS (MIT), chess pieces “cburnett” by Colin M.L. Burnett (GPLv2+, via Lichess), Schriften/fonts: Bricolage Grotesque, DM Sans, IBM Plex Sans Arabic (SIL OFL 1.1).</div></div>
     ${S.lib.books.map(b => `<div class="credit" lang="${b.lang}"><div class="pname" dir="auto">${esc(b.title)}</div>
       <div class="small" dir="auto">${esc(b.author)}${b.dates ? " (" + esc(b.dates) + ")" : ""}${b.others.length ? "; " + esc(b.others.join("; ")) : ""}</div>
       <div class="small"><a href="${esc(b.sourceUrl)}" target="_blank" rel="noopener">${esc(b.source)}</a> · ${esc(b.licence)}</div>
