@@ -36,8 +36,9 @@ test("placing: tap, drag from the hand, taken point, computer reply, takeback", 
   await expect.poll(async () => (await keys(page, "cpu"))[0]).toBe("p0");
   await expect.poll(async () => (await keys(page, "cpu")).length, { timeout: 8000 }).toBe(2);
   const hand = await page.locator(".mlh-bot .mlp").first().boundingBox();
-  await drag(page, { x: hand.x + hand.width / 2, y: hand.y + hand.height / 2 }, await pt(page, 12));
-  await expect.poll(async () => (await keys(page, "cpu"))[2]).toBe("p12");
+  const taken = (await keys(page, "cpu")).join(), free = [12, 20, 4].find(i => !taken.includes("p" + i));   // the computer may have used one
+  await drag(page, { x: hand.x + hand.width / 2, y: hand.y + hand.height / 2 }, await pt(page, free));
+  await expect.poll(async () => (await keys(page, "cpu"))[2]).toBe("p" + free);
   await expect(page.locator(".mlh-bot .mlp")).toHaveCount(7);
   await expect.poll(async () => (await keys(page, "cpu")).length, { timeout: 8000 }).toBe(4);
   await tap(page, 0);                                                         // already taken
