@@ -18,6 +18,7 @@ import { solitaireActions } from "./solitaire.js";
 import { chessActions } from "./chessui.js";
 import { damaActions } from "./damaui.js";
 import { tableActions } from "./tablekit.js";
+import { calendarFile } from "./talktrain.js";
 
 /* ---------------- Actions ---------------- */
 function selectInvite(){ const el = document.getElementById("inviteText"); if(!el) return; const r = document.createRange(); r.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
@@ -44,6 +45,7 @@ const actions = {
     const e = S.edit, name = String(e.name||"").trim();
     if(!name) return toast(t("needName"));
     if(!e.gender) return toast(t("needGender"));
+    if(!e.topics.length) return toast(t("needTopic"));
     if(!e.agree) return toast(t("needRules"));
     if(hasContact(e.askMe)) return toast(t("noContact"));
     S.profile = {name:name.slice(0,30), gender:e.gender, age:AGES.includes(e.age)?e.age:"", langs:e.langs.filter(l=>LANGS.includes(l)), topics:e.topics.filter(x=>TOPICS[x]).slice(0,5), photo:e.photo, photoSmall:e.photoSmall, askMe:String(e.askMe||"").trim().slice(0,60), acceptPhotos:e.acceptPhotos!==false, practice:/^(helper|learner-(A1|A2|B1|B2|C1))$/.test(e.practice||"") ? e.practice : ""};
@@ -86,10 +88,19 @@ const actions = {
   wave(id){
     const r = S.riders.find(x=>x.id===id); if(!r) return;
     if(!r.waved && S.riders.filter(x=>x.waved).length + S.matches.length >= MAX_WAVES) return toast(t("waveLimit"));
-    r.waved = !r.waved; render();
+    r.waved = !r.waved; if(r.waved && !S.wavedOnce){ S.wavedOnce = true; save(); } render();
     safe(async()=>{ r.waved ? await backend.wave(id) : await backend.unwave(id); });
   },
   nextIce(){ S.iceIndex++; render(); },
+  // Talk Train in your calendar: a weekly .ics made on the phone (opens the calendar app), nothing is sent anywhere
+  calAdd(){
+    const url = URL.createObjectURL(new Blob([calendarFile()], { type: "text/calendar" }));
+    const a = document.createElement("a"); a.href = url; a.download = "zugpal-talk-train.ics"; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000); toast(t("calDone"));
+  },
+  async notifyOn(){ try{ await Notification.requestPermission(); }catch(e){} if(Notification.permission === "granted") toast(t("notifyOnDone")); render(); },
+  notifyLater(){ S.notifyOff = true; save(); render(); },
+  nudgeOff(){ S.nudgeOff = true; save(); render(); },
   openGames(){ S.gamesBack = S.screen==="nearby" ? "nearby" : "checkin"; S.screen = "games"; render(); },
   chessCpu(){ const lvl = S.chess && S.chess.mode==="cpu" ? S.chess.level : "normal"; S.chess = {mode:"cpu", st:ZChess.newGame(), level:lvl, sel:null, last:null}; S.screen = "chess"; render(); },
   chessLevel(v){ if(S.chess) S.chess.level = v; render(); },
@@ -193,7 +204,7 @@ const actions = {
   },
   moodBefore(n){ n = +n; S.moodBefore = S.moodBefore===n ? null : n; render(); },
   moodAfterSet(n){ n = +n; S.moodAfter = S.moodAfter===n ? null : n; render(); },
-  chat(id){ S.chatWith = id; S.current = S.matches.find(m=>m.id===id) || S.current; S.messages = []; S.screen = "chat"; render(); safe(loadMessages); },
+  chat(id){ delete S.unread[id]; S.chatWith = id; S.current = S.matches.find(m=>m.id===id) || S.current; S.messages = []; S.screen = "chat"; render(); safe(loadMessages); },
   accLink(){
     const email = String(S.draft.accEmail||"").trim();
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return toast(t("accBad"));
@@ -218,8 +229,12 @@ const actions = {
   },
   reloadApp(){ location.reload(); },
   install(){ const p = S.installPrompt; if(!p) return; S.installPrompt = null; p.prompt(); p.userChoice.finally(() => render()); },
-  practice(v){ if(S.edit){ S.edit.practice = S.edit.practice === v ? "" : v; render(); } },
+  practice(v){ if(S.edit){ S.edit.practice = v === "none" || S.edit.practice === v ? "" : v; render(); } },
+  // the same choice on the mood screen at check-in: saved straight into the profile
+  mpractice(v){ if(!S.profile) return; S.profile.practice = v === "none" || S.profile.practice === v ? "" : v; save(); render(); },
+  mpracticeLevel(l){ if(S.profile && ["A1","A2","B1","B2","C1"].includes(l)){ S.profile.practice = "learner-" + l; save(); render(); } },
   practiceLevel(l){ if(S.edit && ["A1","A2","B1","B2","C1"].includes(l)){ S.edit.practice = "learner-" + l; render(); } },
+  chatWord(id){ actions.chat(id); actions.sendWord(); },
   sendWord(){ const d = new Date(berlinDate()); sendBody(CARD + "word:" + (Math.floor(d.getTime()/86400000) % WORDS.length)); },
   game(kind){
     let body = CARD + kind;

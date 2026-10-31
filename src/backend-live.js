@@ -27,7 +27,7 @@ async function LiveBackend(){
     listen(fn){
       onChange = fn;
       if(!msgCh) msgCh = sb.channel("me-" + uid)
-        .on("postgres_changes", { event:"INSERT", schema:"public", table:"messages", filter:"to_id=eq." + uid }, () => onChange("msg"))
+        .on("postgres_changes", { event:"INSERT", schema:"public", table:"messages", filter:"to_id=eq." + uid }, p => onChange("msg", p && p.new))
         .subscribe(st => { api.realtime = st === "SUBSCRIBED"; });
       joinRide();
     },

@@ -4,7 +4,7 @@ const { test, expect } = require("@playwright/test");
 test("works offline after the first visit", async ({ page, context }) => {
   await page.goto("/?demo&sw");
   // download a book while online
-  await page.fill("#name", "Offline"); await page.click('[data-act="gender"][data-arg="other"]'); await page.check("#agree"); await page.click('[data-act="saveProfile"]');
+  await page.fill("#name", "Offline"); await page.click('[data-act="gender"][data-arg="other"]'); await page.click('[data-act="topic"] >> nth=0'); await page.check("#agree"); await page.click('[data-act="saveProfile"]');
   await page.click('[data-act="openLibrary"] >> nth=0');
   await page.click('.bookrow[data-arg="pg17161"]');
   await page.click('[data-act="libDownload"]');

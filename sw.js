@@ -2,7 +2,7 @@
 // The app files are cached as one versioned set, so a phone never mixes old and new files.
 // Supabase (chat, waves, check-in) always goes to the network. Downloaded books live in IndexedDB, not here.
 // VERSION and FILES are written by tools/update-sw.js; do not edit them by hand.
-const VERSION = "8aa111a62949";
+const VERSION = "8410c57b86bf";
 const FILES = [
   "./",
   "index.html",
@@ -39,6 +39,7 @@ const FILES = [
   "src/state.js",
   "src/styles.css",
   "src/tablekit.js",
+  "src/talktrain.js",
   "src/util.js",
   "src/words.js",
   "src/zugwort.js",
@@ -104,6 +105,11 @@ self.addEventListener("activate", event => {
   event.waitUntil(caches.keys()
     .then(keys => Promise.all(keys.filter(k => k.startsWith("zugpal-") && k !== CACHE).map(k => caches.delete(k))))
     .then(() => self.clients.claim()));
+});
+// Tapping a "new message" notice brings Zugpal back to the front
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
+  event.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(list => list.length ? list[0].focus() : self.clients.openWindow("./")));
 });
 self.addEventListener("fetch", event => {
   const req = event.request, url = new URL(req.url);

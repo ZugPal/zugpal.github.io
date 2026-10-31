@@ -71,6 +71,39 @@ html[lang="ar"] h1{letter-spacing:0;line-height:1.35}
 .tag{font-size:13px;font-weight:700;background:var(--soft);color:var(--soft-ink);padding:3px 8px;border-radius:10px}
 .tag.gold{background:var(--gold-bg);color:var(--gold)}
 .tag.lang{background:var(--info-bg);color:var(--info-ink)}
+.tag.new{background:var(--accent);color:var(--accent-ink)}
+/* Talk Train date, waving steps, sign-up, games list, alerts */
+.talkwhen{font-family:var(--f-display);font-size:24px;font-weight:700;line-height:1.2;display:flex;align-items:center;gap:8px}
+.talkwhen.live .dot{background:var(--mint);animation:livepulse 1.4s ease-in-out infinite}
+@keyframes livepulse{50%{opacity:.35}}
+.calrow{flex-wrap:wrap;gap:8px}.calrow .btn{flex:1 1 auto}
+.btn.onhero.small{min-height:44px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.talkbanner{display:flex;flex-direction:column;gap:2px}
+.howwave{gap:6px}
+.steps{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:6px}
+.steps li::marker{font-weight:700;color:var(--accent)}
+.nudge{background:var(--soft);border-color:transparent;color:var(--soft-ink)}.nudge .small{color:var(--soft-ink)}
+.nudge .btn{color:var(--accent-ink)}
+details.more{padding:0}
+details.more summary{cursor:pointer;list-style:none;padding:14px 16px;display:flex;flex-direction:column;gap:2px;font-weight:700;min-height:48px}
+details.more summary::-webkit-details-marker{display:none}
+details.more summary::after{content:"+";position:absolute;inset-inline-end:16px;font-size:22px;font-weight:400;color:var(--muted)}
+details.more{position:relative}details.more[open] summary::after{content:"−"}
+details.more summary .small{font-weight:400}
+details.more .morebody{display:flex;flex-direction:column;gap:16px;padding:0 16px 16px}
+.rulescard .rules{margin:4px 0}
+.gamelist{padding:4px 12px}
+.gamerow{display:flex;align-items:center;gap:12px;min-height:56px;border-bottom:1px solid var(--line-soft)}
+.gamerow:last-child{border-bottom:none}
+.gicon-box{width:48px;display:flex;justify-content:center;flex-shrink:0}
+.gicon-box .gicon-train{transform:scale(.8)}
+.gamerow .pc.b{color:var(--ink);text-shadow:none}.gamerow .dm.b{box-shadow:0 0 0 2px var(--line)}
+.reconnect{display:flex;align-items:center;gap:8px}.reconnect .dot{animation:livepulse 1.2s ease-in-out infinite}
+.notifycard .row{gap:10px}.notifycard svg{flex-shrink:0;margin-top:2px;color:var(--accent)}
+.chip.suggest{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.chip.suggest b{display:inline-flex;width:18px;height:18px;border-radius:50%;background:var(--accent);color:var(--accent-ink);align-items:center;justify-content:center;font-size:12px}
+.wordmeet{align-items:center}.wordmeet .btn{flex-shrink:0;color:var(--mint-ink)}
+@media (prefers-reduced-motion: reduce){.talkwhen.live .dot,.reconnect .dot{animation:none}}
 .tag.plain{background:transparent;border:1px solid var(--line);color:var(--muted);font-weight:500}
 .btn.wave{min-height:48px;width:auto;font-size:15px;border-radius:24px;padding:0 18px;flex-shrink:0;align-self:center}
 .btn.wave.done{background:var(--soft);color:var(--soft-ink)}
@@ -91,6 +124,7 @@ html[lang="ar"] .lbl{letter-spacing:0}
 .iconbtn[aria-pressed="true"]{color:var(--gold)}
 .meet{background:var(--hero-card);border-radius:18px;padding:14px 16px;display:flex;gap:12px;align-items:center}
 .meet .small{color:var(--hero-muted)}
+.meet .btn.mint{color:var(--mint-ink)}
 .games{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none}
 .games .chip{flex-shrink:0;font-size:14px}
 .chatlog{flex:1;min-height:240px;max-height:52vh;overflow-y:auto;display:flex;flex-direction:column;gap:8px;padding:4px 0}

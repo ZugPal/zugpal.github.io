@@ -35,6 +35,8 @@ document.addEventListener("change", async e => {
   if(el.dataset && el.dataset.fbbuddy){ S.fb[el.dataset.fbbuddy].buddy = el.checked; return; }
   if(el.dataset && el.dataset.bind) bind(el);
 });
+// remember folded sections ("More about you") across re-renders; toggle does not bubble, so listen while capturing
+document.addEventListener("toggle", e => { if(e.target && e.target.classList && e.target.classList.contains("more")) S.moreOpen = e.target.open; }, true);
 document.addEventListener("submit", e => { if(e.target.id==="chatForm"){ e.preventDefault(); sendChat(); } });
 // Offline + install (PWA). The service worker caches the app; see sw.js.
 // On localhost only with ?sw (so local testing always shows the newest files). A new version shows an "update" bar.

@@ -28,8 +28,9 @@ for (const lang of ["de", "en", "ar"]) {
     // Profile
     await page.fill("#name", "Husam");
     await page.click('[data-act="gender"][data-arg="man"]');
-    await page.click('[data-act="lang2"] >> nth=0');
     await page.click('[data-act="topic"] >> nth=0');
+    await page.click("details.more summary");                       // the optional part of the sign-up
+    await page.click('[data-act="lang2"] >> nth=0');
     await page.click('[data-act="practiceLevel"]');
     await page.click('[data-act="practiceLevel"][data-arg="B1"]');
     await page.check("#agree");
@@ -90,7 +91,7 @@ for (const lang of ["de", "en", "ar"]) {
 
     // Quiz and Stadt-Land-Fluss with the match
     await page.click('.games [data-act="cgSheet"]');
-    await page.click('[data-act="qzInvite"]');
+    await page.click('.sheet [data-act="qzInvite"]');
     await page.click('[data-act="qzGo"]:not([disabled])', { timeout: 6000 });
     await expect(page.locator('.quizq [data-act="qzAnswer"]')).toHaveCount(4);
     await page.click('[data-act="chessBack"][data-arg="chat"] >> nth=0');

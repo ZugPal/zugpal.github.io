@@ -1,11 +1,11 @@
 // Refreshing the train: Supabase Realtime triggers an instant refresh; polling stays as the fallback
 // (every 6 s, or every 20 s while Realtime is connected; 1.5 s in demo mode).
-import { safe, startFeedback } from "./actions.js";
+import { startFeedback } from "./actions.js";
 import { loadMessages } from "./chat.js";
 import { currentActivity } from "./games.js";
 import { loadNotices, render } from "./screens.js";
 import { S, backend } from "./state.js";
-import { t, toast } from "./util.js";
+import { parseMsg, t, toast } from "./util.js";
 
 /* ---------------- Polling ---------------- */
 let pollTimer = null, rtTimer = null, lastRefresh = 0;
@@ -39,8 +39,33 @@ async function refresh(){
   if(S.screen==="chat" || onlineChessOpen) await loadMessages();
   if(["nearby","match","chat"].includes(S.screen) || onlineChessOpen) render();
 }
-function onRealtime(){ clearTimeout(rtTimer); rtTimer = setTimeout(()=>safe(refresh), 250); }
-function tick(){ if(backend.realtime && Date.now() - lastRefresh < 20000) return; safe(refresh); }
+// Background refresh: in a tunnel it fails quietly and shows "Reconnecting…" instead of an error every few seconds
+async function poll(){
+  try{ await refresh(); if(S.netDown){ S.netDown = false; render(); } }
+  catch(e){ console.error(e); if(!S.netDown){ S.netDown = true; render(); } }
+}
+// A new message from a match (via Realtime): a vibration, "new" on the match list, and a phone notice while Zugpal is in the background
+const MOVES = ["cm","cx","dm","dx","zg","lg","cgm","cgx","qa","slsub","slstop","slrej"];
+function messageAlert(row){
+  if(!row || !row.from_id || MOVES.includes(parseMsg(row.body || "").type)) return;
+  const from = row.from_id, here = !document.hidden && S.screen === "chat" && S.chatWith === from;
+  if(here) return;
+  S.unread[from] = (S.unread[from] || 0) + 1;
+  const m = S.matches.find(x => x.id === from), name = m ? m.first_name : "";
+  try{ navigator.vibrate && navigator.vibrate([60, 40, 60]); }catch(e){}
+  if(document.hidden) return notify(name);
+  // games already show their own notice for the person you are playing with
+  if(!(S.chatWith === from && ["chess","dama","table"].includes(S.screen))) toast(t("newMsgFrom",{name}));
+}
+function notify(name){
+  if(S.notifyOff || !("Notification" in window) || Notification.permission !== "granted") return;
+  const opts = { body: t("notifyText"), icon: "icons/icon-192.png", badge: "icons/icon-192.png", tag: "zugpal-msg", renotify: true };
+  const title = t("newMsgFrom",{name});
+  (navigator.serviceWorker ? navigator.serviceWorker.getRegistration() : Promise.resolve(null))
+    .then(reg => reg ? reg.showNotification(title, opts) : new Notification(title, opts)).catch(e => console.error(e));
+}
+function onRealtime(kind, row){ if(kind === "msg") messageAlert(row); clearTimeout(rtTimer); rtTimer = setTimeout(poll, 250); }
+function tick(){ if(backend.realtime && Date.now() - lastRefresh < 20000) return; poll(); }
 function startPolling(){
   stopPolling();
   if(backend.listen) backend.listen(onRealtime);

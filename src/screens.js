@@ -18,6 +18,7 @@ import { mountSolitaire, solDialogHtml, solitaireScreen } from "./solitaire.js";
 import { chessOverlay, chessScreen, mountChess } from "./chessui.js";
 import { damaOverlay, damaScreen, mountDama } from "./damaui.js";
 import { mountTable, tableOverlay, tableScreen } from "./tablekit.js";
+import { googleLink, talkInfo } from "./talktrain.js";
 
 /* ---------------- Screens ---------------- */
 function header(){
@@ -29,7 +30,7 @@ function header(){
     </select></div>
     ${backend && backend.mode==="demo" ? `<div class="banner info">${t("demoBanner")}</div>` : ""}
     ${S.updateReady ? `<div class="banner info action"><span>${t("updateReady")}</span><button class="btn small" data-act="reloadApp">${t("updateBtn")}</button></div>` : ""}
-    ${navigator.onLine === false ? `<div class="banner info">${t("offlineBanner")}</div>` : ""}`;
+    ${navigator.onLine === false ? `<div class="banner info">${t("offlineBanner")}</div>` : S.netDown && S.ride ? `<div class="banner info reconnect" role="status"><span class="dot"></span>${t("reconnecting")}</div>` : ""}`;
 }
 const trustStrip = () => `<ul class="trust" aria-label="Zugpal">${[1,2,3,4].map(i=>`<li>${ICON.shield}${t("trust"+i)}</li>`).join("")}</ul>`;
 function legalFooter(){
@@ -158,6 +159,45 @@ function personCard(r){
       <button class="link quiet" data-act="reportOpen" data-arg="${esc(r.id)}">${ICON.shield}${t("reportShort")}</button></div>
     <button class="btn wave${r.waved?" done":""}" data-act="wave" data-arg="${esc(r.id)}" aria-pressed="${!!r.waved}">${r.waved?t("waved"):t("wave")}</button></div>`;
 }
+// Sprachpraxis chips, used on the profile (edits S.edit) and on the mood screen at check-in (edits the profile directly)
+function practiceField(cur, act, levelAct){
+  const learner = /^learner-/.test(cur||"");
+  return `<div class="field"><span class="flabel">${t("prTitle")}</span><div class="small">${t("prHint")}</div>
+    <div class="seg"><button class="chip" data-act="${act}" data-arg="helper" aria-pressed="${cur==="helper"}">${t("prHelper")}</button>
+      <button class="chip" data-act="${levelAct}" data-arg="${learner ? cur.slice(8) : "A2"}" aria-pressed="${learner}">${t("prLearner")}</button>
+      <button class="chip" data-act="${act}" data-arg="none" aria-pressed="${!cur}">${t("prNone")}</button></div>
+    ${learner ? `<div class="seg">${["A1","A2","B1","B2","C1"].map(l=>`<button class="chip" data-act="${levelAct}" data-arg="${l}" aria-pressed="${cur==="learner-"+l}">${l}</button>`).join("")}</div>` : ""}</div>`;
+}
+// Offer a phone notice for new messages while Zugpal is in the background (only where the browser supports it, asked once)
+function notifyCard(){
+  if(S.notifyOff || !backend || backend.mode !== "live" || !("Notification" in window) || Notification.permission !== "default") return "";
+  return `<div class="card notifycard"><div class="row" style="align-items:flex-start">${ICON.bell}<div class="grow"><div class="pname">${t("notifyTitle")}</div><div class="small">${t("notifyBody")}</div></div></div>
+    <div class="row"><button class="btn small" data-act="notifyOn">${t("notifyBtn")}</button><button class="link" data-act="notifyLater">${t("nudgeLater")}</button></div></div>`;
+}
+// The weekly Talk Train: on its day you check in; on other days you see the next date and can put it in your calendar
+function talkHero(){
+  const i = talkInfo();
+  return `<div class="hero talkhero"><div class="small">${t("talkTrain")}</div>
+    <div class="talkwhen${i.state === "now" ? " live" : ""}">${i.state === "now" ? `<span class="dot"></span>` : ""}${esc(i.when)}</div>
+    <div style="font-weight:700">${esc(i.route)}</div>
+    <div class="small">${i.onTrainDay ? t("talkTrainBody") : t("talkNotToday")}</div>
+    ${i.onTrainDay ? `<button class="btn mint" data-act="checkin" data-arg="talk">${t("joinTalk")}</button>`
+      : `<div class="row calrow"><button class="btn mint small" data-act="calAdd">${ICON.calendar}${t("calAdd")}</button><a class="btn onhero small" href="${esc(googleLink())}" target="_blank" rel="noopener">${t("calGoogle")}</a></div>
+        <button class="link onhero-link" data-act="checkin" data-arg="talk">${t("joinAnyway")}</button>`}${sponsorSlot()}</div>`;
+}
+// Waving in three steps, until you have waved once; then one line
+function waveHelp(){
+  if(!S.open) return `<div class="empty"><div class="muted">${t("invisibleNote")}</div></div>`;
+  if(S.wavedOnce) return `<div class="banner info">${t("waveNote")}</div>`;
+  return `<div class="card howwave"><div class="pname">${t("howTitle")}</div>
+    <ol class="steps"><li>${t("how1")}</li><li>${t("how2")}</li><li>${t("how3")}</li></ol></div>`;
+}
+// After a quick sign-up: a gentle reminder to add a photo and languages (until done or dismissed)
+function profileNudge(){
+  const p = S.profile; if(!p || S.nudgeOff || (p.photo && (p.langs || []).length)) return "";
+  return `<div class="card nudge"><div class="pname">${t("nudgeTitle")}</div><div class="small">${t("nudgeBody")}</div>
+    <div class="row"><button class="btn small" data-act="editProfile">${t("nudgeBtn")}</button><button class="link" data-act="nudgeOff">${t("nudgeLater")}</button></div></div>`;
+}
 const screens = {
   loading(){ return `<div class="screen"><p class="muted">${t("loading")}</p></div>`; },
 
@@ -168,31 +208,33 @@ const screens = {
     const ageOpts = `<option value="">${t("ageHidden")}</option>` + AGES.map(a=>`<option value="${a}"${e.age===a?" selected":""}>${a}</option>`).join("");
     const langChips = LANGS.map(l=>`<button class="chip" data-act="lang2" data-arg="${esc(l)}" aria-pressed="${e.langs.includes(l)}">${esc(l)}</button>`).join("");
     const topicChips = Object.keys(TOPICS).map(id=>`<button class="chip" data-act="topic" data-arg="${id}" aria-pressed="${e.topics.includes(id)}">${esc(loc(TOPICS,id))}</button>`).join("");
-    return `<div class="screen">
-      ${first ? `<div class="muted">${t("tagline")}</div><h1>${t("welcomeTitle")}</h1><p class="muted" style="margin:0">${t("welcomeBody")}</p>${trustStrip()}` : `<h1>${t("profileTitle")}</h1>`}
-      <div class="field"><span class="flabel">${t("photo")}</span>
+    const rulesHref = "regeln.html" + (S.lang==="de" ? "" : "#" + S.lang);
+    // photo, age, languages, "ask me about", German practice: optional, and folded away on the first sign-up
+    const more = `<div class="field"><span class="flabel">${t("photo")}</span>
         <div class="photoedit">${photo("me", e.name, e.photo, 88, false)}
           <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start">
             <label class="btn ghost small filebtn">${e.photo ? t("changePhoto") : t("addPhoto")}<input type="file" id="photoInput" accept="image/*"></label>
             ${e.photo ? `<button class="link" data-act="removePhoto">${t("removePhoto")}</button>` : ""}
           </div></div>
         <div class="small">${t("photoHint")}</div></div>
+      <div class="field"><label for="age">${t("age")}</label><select id="age" data-bind="edit.age">${ageOpts}</select></div>
+      <div class="field"><span class="flabel">${t("langs")}</span><div class="seg">${langChips}</div></div>
+      <div class="field"><label for="askme">${t("askMe")}</label><input type="text" id="askme" data-bind="edit.askMe" maxlength="60" placeholder="${t("askMePh")}" value="${esc(e.askMe||"")}"></div>
+      ${practiceField(e.practice, "practice", "practiceLevel")}
+      <label class="check" for="acceptPhotos"><input type="checkbox" id="acceptPhotos" data-bind="edit.acceptPhotos"${e.acceptPhotos!==false?" checked":""}> ${t("acceptPhotos")}</label>`;
+    return `<div class="screen">
+      ${first && S.autoTalk ? `<div class="banner info talkbanner"><b>${t("talkOnBoard")}</b><span>${esc(talkInfo().route)}</span></div>` : ""}
+      ${first ? `<div class="muted">${t("tagline")}</div><h1>${t("welcomeTitle")}</h1><p class="muted" style="margin:0">${t("welcomeBody")}</p>${trustStrip()}` : `<h1>${t("profileTitle")}</h1>`}
       <div class="field"><label for="name">${t("firstName")}</label>
         <input type="text" id="name" data-bind="edit.name" maxlength="30" autocomplete="given-name" value="${esc(e.name)}">
         <div class="small">${t("firstNameHint")}</div></div>
-      <div class="field"><span class="flabel">${t("iAm")}</span><div class="seg">${gBtn("woman")}${gBtn("man")}${gBtn("other")}</div></div>
-      <div class="field"><label for="age">${t("age")}</label><select id="age" data-bind="edit.age">${ageOpts}</select></div>
-      <div class="field"><span class="flabel">${t("langs")}</span><div class="seg">${langChips}</div></div>
-      <div class="field"><span class="flabel">${t("topics")}</span><div class="seg">${topicChips}</div></div>
-      <div class="field"><label for="askme">${t("askMe")}</label><input type="text" id="askme" data-bind="edit.askMe" maxlength="60" placeholder="${t("askMePh")}" value="${esc(e.askMe||"")}"></div>
-      <div class="field"><span class="flabel">${t("prTitle")}</span><div class="small">${t("prHint")}</div>
-        <div class="seg"><button class="chip" data-act="practice" data-arg="helper" aria-pressed="${e.practice==="helper"}">${t("prHelper")}</button>
-          <button class="chip" data-act="practiceLevel" data-arg="${/^learner-/.test(e.practice||"") ? e.practice.slice(8) : "A2"}" aria-pressed="${/^learner-/.test(e.practice||"")}">${t("prLearner")}</button></div>
-        ${/^learner-/.test(e.practice||"") ? `<div class="seg">${["A1","A2","B1","B2","C1"].map(l=>`<button class="chip" data-act="practiceLevel" data-arg="${l}" aria-pressed="${e.practice==="learner-"+l}">${l}</button>`).join("")}</div>` : ""}</div>
-      <label class="check" for="acceptPhotos"><input type="checkbox" id="acceptPhotos" data-bind="edit.acceptPhotos"${e.acceptPhotos!==false?" checked":""}> ${t("acceptPhotos")}</label>
-      <div class="card"><div class="pname">${t("rulesTitle")}</div>
+      <div class="field"><span class="flabel">${t("iAm")}</span><div class="seg">${gBtn("woman")}${gBtn("man")}${gBtn("other")}</div><div class="small">${t("genderHint")}</div></div>
+      <div class="field"><span class="flabel">${t("topics")}</span><div class="small">${t("topicsHint")}</div><div class="seg">${topicChips}</div></div>
+      ${first ? `<details class="more card"${S.moreOpen ? " open" : ""}><summary>${t("moreAboutYou")}<span class="small">${t("moreAboutYouHint")}</span></summary><div class="morebody">${more}</div></details>` : more}
+      <div class="card rulescard"><div class="pname">${t("rulesTitle")}</div>
         <ul class="rules"><li>${t("rule1")}</li><li>${t("rule2")}</li><li>${t("rule3")}</li><li>${t("rule4")}</li></ul>
-        <label class="check" for="agree"><input type="checkbox" id="agree" data-bind="edit.agree"${e.agree?" checked":""}> ${t("agree")}</label></div>
+        <label class="check" for="agree"><input type="checkbox" id="agree" data-bind="edit.agree"${e.agree?" checked":""}> ${t("agree")}</label>
+        <a class="small" href="${rulesHref}" target="_blank" rel="noopener">${t("rulesFull")}</a></div>
       <div class="end"><button class="btn" data-act="saveProfile">${first ? t("start") : t("save")}</button></div>
       ${accountCard()}
     </div>`;
@@ -204,10 +246,7 @@ const screens = {
     return `<div class="screen">
       <div class="row">${photo("me", S.profile.name, S.profile.photo, 40, false)}<div class="grow muted">${esc(S.profile.name)}</div><button class="link" data-act="editProfile">${t("editProfile")}</button></div>
       <h1>${t("checkinTitle")}</h1>
-      <div class="hero"><div class="small">${t("talkTrain")}</div>
-        <div style="font-size:19px;font-weight:700">${esc(CONFIG.talkTrain[S.lang] || CONFIG.talkTrain.en)}</div>
-        <div class="small">${t("talkTrainBody")}</div>
-        <button class="btn mint" data-act="checkin" data-arg="talk">${t("joinTalk")}</button>${sponsorSlot()}</div>
+      ${talkHero()}
       <button class="btn ghost" data-act="openGames">${t("games")}</button>
       <button class="btn ghost" data-act="openLibrary">${ICON.book}${t("libTitle")}</button>
       ${S.installPrompt ? `<div class="card"><div class="pname">${t("installTitle")}</div><div class="small">${t("installBody")}</div><button class="btn ghost" data-act="install">${t("installBtn")}</button></div>` : ""}
@@ -241,6 +280,7 @@ const screens = {
         <button class="chip" data-act="mode" data-arg="chat" aria-pressed="${co}">${t("modeChat")}</button></div></div>
       ${co ? "" : `<div class="field"><label for="coach">${t("coach")}</label><input type="text" id="coach" data-bind="coach" maxlength="4" inputmode="numeric" value="${esc(S.draft.coach ?? S.coach)}"><div class="small">${t("coachHint")}</div></div>`}
       <div class="field"><span class="flabel">${t("moodNow")}</span><div class="seg">${[1,2,3,4,5].map(n=>`<button class="chip" data-act="moodBefore" data-arg="${n}" aria-pressed="${S.moodBefore===n}">${t("m"+n)}</button>`).join("")}</div><div class="small">${t("moodPrivate")}</div></div>
+      ${practiceField(S.profile.practice, "mpractice", "mpracticeLevel")}
       ${S.profile.gender==="woman" ? `<label class="check card" for="wo" style="flex-direction:row"><input type="checkbox" id="wo" data-bind="womenOnly"${(S.draft.womenOnly ?? S.womenOnly)?" checked":""}> ${t("womenOnly")}</label>` : ""}
       <div class="end"><button class="btn" data-act="goOpen">${t("openBtn")}</button><div class="small" style="text-align:center">${t("offAnytime")}</div></div>
     </div>`;
@@ -252,7 +292,7 @@ const screens = {
     const matchIds = new Set(S.matches.map(m=>m.id));
     const matchList = S.matches.length && S.open ? `<div class="pname">${t("matchesTitle")}</div>` + S.matches.map(m=>`
       <div class="person">${photo(m.id, m.first_name, m.photo, 56, false)}<div class="grow"><div class="pname">${esc(m.first_name)}</div><div class="small">${esc((m.moods||[]).map(moodName).join(" · "))}</div>
-      ${m.chat_only ? `<div class="tags"><span class="tag">${t("chatOnlyTag")}</span></div>` : ""}</div>
+      ${m.chat_only || S.unread[m.id] ? `<div class="tags">${S.unread[m.id] ? `<span class="tag new">${t("unreadTag",{n:S.unread[m.id]})}</span>` : ""}${m.chat_only ? `<span class="tag">${t("chatOnlyTag")}</span>` : ""}</div>` : ""}</div>
       <button class="btn wave" data-act="chat" data-arg="${esc(m.id)}">${t("openChat")}</button></div>`).join("") : "";
     const others = S.riders.filter(r=>!matchIds.has(r.id)).sort((a,b)=>((b.buddy?2:0)+(practicePair(b.practice)?1:0))-((a.buddy?2:0)+(practicePair(a.practice)?1:0)));
     const [w, de, en, ar] = todaysWord();
@@ -268,8 +308,9 @@ const screens = {
       ${S.announcement ? `<div class="banner info announce"><b>${t("hostAnnTitle")}</b><span dir="auto">${esc(S.announcement)}</span></div>` : ""}
       ${hostCard()}
       <h1>${title}</h1>
-      ${S.open ? `<div class="banner info">${t("waveNote")}</div>` : `<div class="empty"><div class="muted">${t("invisibleNote")}</div></div>`}
+      ${waveHelp()}
       ${matchList}
+      ${profileNudge()}
       ${S.open ? (others.map(personCard).join("") || (S.matches.length ? "" : `<div class="empty"><div class="muted">${t("emptyBody")}</div></div>`)) : ""}
       <div class="word"><span class="lbl" style="color:var(--muted)">${t("wordTitle")}</span><span class="w" lang="de">${esc(w)}</span>
         <span class="muted">${esc(S.lang==="de"?de:S.lang==="ar"?ar:en)}</span></div>
@@ -285,6 +326,11 @@ const screens = {
     const meet = m.chat_only
       ? `<div class="meet">${ICON.bubble}<div style="font-weight:700">${t("chatOnlyMatch")}</div></div>`
       : `<div class="meet">${ICON.pin}<div><div class="small">${t("meetAt")}</div><div style="font-weight:700">${m.coach ? t("coachX",{c:esc(m.coach)}) : t("noCoach")}</div></div></div>`;
+    // German practice: if one of you practises (or helps), suggest starting with the German word of the ride
+    const theirPr = m.practice || (S.riders.find(r=>r.id===m.id) || {}).practice, [w, wde, wen, war] = todaysWord();
+    const wordStart = (S.profile.practice || theirPr) ? `<div class="meet wordmeet"><div class="grow"><div class="small">${t("matchWordTitle")}</div>
+        <div style="font-weight:700;font-size:18px" lang="de">${esc(w)}</div><div class="small">${esc(S.lang==="de"?wde:S.lang==="ar"?war:wen)}</div></div>
+        <button class="btn mint small" data-act="chatWord" data-arg="${esc(m.id)}">${t("matchWordBtn")}</button></div>` : "";
     return `<div class="screen"><div class="match">
       <div class="pair">${photo("me", S.profile.name, S.profile.photo, 84, false)}${photo(m.id, m.first_name, m.photo, 84, false)}</div>
       <h1 style="text-align:center">${t("matchTitle",{name:esc(m.first_name)})}</h1>
@@ -292,6 +338,7 @@ const screens = {
       <div class="ice"><div class="row" style="justify-content:space-between"><span class="lbl">${t("ice")}</span>
         <button class="iconbtn" data-act="nextIce" aria-label="${t("anotherIce")}" style="margin:-10px">${ICON.refresh}</button></div>
         <div class="q">“${esc(q)}”</div><div class="small" style="color:inherit">${why ? t("iceBecause",{mood:esc(moodName(why))}) : t("iceGeneric")}</div></div>
+      ${wordStart}
       ${meet}
       <div class="end"><button class="btn mint" data-act="chat" data-arg="${esc(m.id)}">${t("sayHi")}</button>
         <button class="btn onhero" data-act="go" data-arg="nearby">${t("notToday")}</button>
@@ -351,6 +398,7 @@ const screens = {
       <div class="games" role="toolbar">
         <button class="chip" data-act="libPick">${ICON.book}${t("libStory")}</button>
         <button class="chip" data-act="sendWord">${ICON.bubble}${t("wordTitle")}</button>
+        <button class="chip suggest" data-act="qzInvite" title="${t("suggested")}"><b aria-hidden="true">?</b>${t("qzName")}</button>
         <button class="chip" data-act="game" data-arg="dice">${ICON.dice}${t("dice")}</button>
         <button class="chip" data-act="game" data-arg="spin">${ICON.spin}${t("spin")}</button>
         <button class="chip" data-act="game" data-arg="ttl">${ICON.cards}${t("ttl")}</button>
@@ -359,6 +407,7 @@ const screens = {
         <button class="chip" data-act="wordSheet" data-arg="lt">${ICON.cards}${t("ltName")}</button>
         <button class="chip" data-act="cgSheet">${ICON.dice}${t("moreGames")}</button>
         <button class="chip" data-act="damaInvite"><span class="dm b" style="width:16px;height:16px"></span>${t("damaT")}</button></div>
+      ${notifyCard()}
       <div id="chatLog" class="chatlog">${log}</div>
       <form class="chatbar" id="chatForm">${S.recording
         ? `<div class="recbar"><span class="dot"></span><span id="recTime">0:00</span><span class="small">${t("recording")}</span></div>
@@ -373,30 +422,30 @@ const screens = {
   },
 
   games(){
+    // three quick favourites for a short ride, the rest as a compact list
+    const icon = {
+      chess: `<span class="pc b" style="font-size:34px">${GLYPH.N}︎</span>`, mau: `<span class="pc b" style="font-size:34px;color:#B3261E">♥︎</span>`, quiz: `<span class="pc b" style="font-size:34px">?</span>`,
+      dama: `<span class="dm b" style="width:28px;height:28px;flex-shrink:0"></span>`, sol: `<span class="pc b" style="font-size:28px">♠︎</span>`,
+      zw: `<span class="tile g" style="width:28px;height:28px;font-size:15px;flex-shrink:0">Z</span>`, four: `<span class="gicon four" aria-hidden="true"><i></i><i></i><i></i><i></i></span>`,
+      muehle: `<span class="gicon muehle" aria-hidden="true"></span>`, slf: `<span class="tile g" style="width:28px;height:28px;font-size:15px;flex-shrink:0">S</span>`,
+      lt: `<span class="gicon-train" aria-hidden="true"><span class="lcoach c1"></span><span class="lcoach"></span><span class="lloco"></span></span>` };
+    const big = (ic, name, body, act, arg) => `<div class="card"><div class="gamecard2"><span class="gicon-box">${icon[ic]}</span><div class="grow"><div class="pname">${name}</div><div class="small">${body}</div></div></div>
+        <button class="btn" data-act="${act}"${arg ? ` data-arg="${arg}"` : ""}>${t("play")}</button></div>`;
+    const row = (ic, name, act, arg) => `<div class="gamerow"><span class="gicon-box">${icon[ic]}</span><span class="grow pname">${name}</span>
+        <button class="btn ghost small" data-act="${act}"${arg ? ` data-arg="${arg}"` : ""}>${t("play")}</button></div>`;
     return `<div class="screen">
       <div class="row"><button class="iconbtn flip" data-act="go" data-arg="${S.gamesBack}" aria-label="${t("back")}">${ICON.back}</button><h1 class="grow" style="font-size:26px">${t("games")}</h1></div>
       <p class="muted" style="margin:-6px 0 0">${t("gamesHint")}</p>
-      <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">${GLYPH.N}\uFE0E</span><div class="grow"><div class="pname">${t("vsComputer")}</div><div class="small">${t("vsComputerBody")}</div></div></div>
-        <button class="btn" data-act="chessCpu">${t("play")}</button></div>
-      <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">${GLYPH.K}\uFE0E</span><div class="grow"><div class="pname">${t("withMatch")}</div><div class="small">${t("withMatchBody")}</div></div></div></div>
-      <div class="card"><div class="gamecard2"><span class="dm b" style="width:34px;height:34px;flex-shrink:0"></span><div class="grow"><div class="pname">${t("damaT")}</div><div class="small">${t("daBody")}</div></div></div>
-        <button class="btn" data-act="damaCpuNew">${t("play")}</button></div>
-      <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">♠\uFE0E</span><div class="grow"><div class="pname">${t("solVs")}</div><div class="small">${t("solBody2")}</div></div></div>
-        <button class="btn" data-act="solNew">${t("play")}</button></div>
-      <div class="card"><div class="gamecard2"><span class="tile g" style="width:34px;height:34px;font-size:18px;flex-shrink:0">Z</span><div class="grow"><div class="pname">${t("zwName")}</div><div class="small">${t("zwBody")}</div></div></div>
-        <button class="btn" data-act="zwCpu">${t("play")}</button></div>
-      <div class="card"><div class="gamecard2"><span class="gicon four" aria-hidden="true"><i></i><i></i><i></i><i></i></span><div class="grow"><div class="pname">${t("fourName")}</div><div class="small">${t("fourBody")}</div></div></div>
-        <button class="btn" data-act="cgCpu" data-arg="four">${t("play")}</button></div>
-      <div class="card"><div class="gamecard2"><span class="gicon muehle" aria-hidden="true"></span><div class="grow"><div class="pname">${t("muehleName")}</div><div class="small">${t("muehleBody")}</div></div></div>
-        <button class="btn" data-act="cgCpu" data-arg="muehle">${t("play")}</button></div>
-      <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px;color:#B3261E">♥︎</span><div class="grow"><div class="pname">${t("mauName")}</div><div class="small">${t("mauBody")}</div></div></div>
-        <button class="btn" data-act="cgCpu" data-arg="mau">${t("play")}</button></div>
-      <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">?</span><div class="grow"><div class="pname">${t("qzName")}</div><div class="small">${t("qzBody")}</div></div></div>
-        <button class="btn" data-act="qzCpu">${t("play")}</button></div>
-      <div class="card"><div class="gamecard2"><span class="tile g" style="width:34px;height:34px;font-size:18px;flex-shrink:0">S</span><div class="grow"><div class="pname">${t("slName")}</div><div class="small">${t("slBody")}</div></div></div>
-        <button class="btn" data-act="slSolo">${t("play")}</button></div>
-      <div class="card"><div class="gamecard2"><span class="gicon-train" aria-hidden="true"><span class="lcoach c1"></span><span class="lcoach"></span><span class="lloco"></span></span><div class="grow"><div class="pname">${t("ltName")}</div><div class="small">${t("ltBody")}</div></div></div>
-        <button class="btn" data-act="ltCpu">${t("play")}</button></div>
+      <div class="pname">${t("gamesTop")}</div>
+      ${big("chess", t("vsComputer"), t("vsComputerBody"), "chessCpu")}
+      ${big("mau", t("mauName"), t("mauBody"), "cgCpu", "mau")}
+      ${big("quiz", t("qzName"), t("qzBody"), "qzCpu")}
+      <div class="small">${t("gamesWithMatch")}</div>
+      <div class="pname">${t("gamesMore")}</div>
+      <div class="card gamelist">
+        ${row("dama", t("damaT"), "damaCpuNew")}${row("sol", t("solVs"), "solNew")}${row("zw", t("zwName"), "zwCpu")}${row("lt", t("ltName"), "ltCpu")}
+        ${row("four", t("fourName"), "cgCpu", "four")}${row("muehle", t("muehleName"), "cgCpu", "muehle")}${row("slf", t("slName"), "slSolo")}
+      </div>
     </div>`;
   },
 
