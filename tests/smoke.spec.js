@@ -150,7 +150,7 @@ for (const lang of ["de", "en", "ar"]) {
     // Letter Train vs computer: a tapped letter is used up
     await page.click('[data-act="chessBack"][data-arg="games"]');
     await page.click('[data-act="ltCpu"]');
-    await expect(page.locator(".train .coach")).toHaveCount(7);
+    await expect(page.locator(".ltrain .lcoach")).toHaveCount(7);
     await page.locator('.keyboard [data-act="ltKey"]').first().click();
     await expect(page.locator('.keyboard [data-act="ltKey"]:disabled')).toHaveCount(1);
     await shot("11-letter-train");

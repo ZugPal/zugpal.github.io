@@ -35,4 +35,30 @@ const ZWords = {
       "برتقال بطيخ سفينة طائرة مدرسة جامعة حديقة موسيقى قطارات محطة").split(" ")
   }
 };
+/* Letter Train themes (Buchstabenzug). "long" is every theme together; online games and the tests use it. */
+ZWords.de.cats = {
+  travel: "BAHNHOF FAHRKARTE SCHAFFNER LOKOMOTIVE BAHNSTEIG KOFFER ABTEIL GEPÄCK FAHRPLAN TUNNEL HALTESTELLE VERSPÄTUNG UMSTEIGEN FLUGHAFEN REISEPASS AACHEN DÜSSELDORF URLAUB".split(" "),
+  food: "KAFFEE SCHOKOLADE KARTOFFEL ERDBEERE BUTTERBROT APFELKUCHEN MARMELADE BRÖTCHEN SPAGHETTI ZITRONE KAROTTE PFANNKUCHEN KÄSEKUCHEN BANANE".split(" "),
+  nature: "SONNENBLUME REGENBOGEN LANDSCHAFT BERGWANDERUNG GEWITTER SCHNEEFLOCKE WASSERFALL GÄNSEBLÜMCHEN VULKAN WÜSTE OZEAN JAHRESZEIT HERBSTLAUB".split(" "),
+  animals: "SCHMETTERLING ELEFANT GIRAFFE PINGUIN EICHHÖRNCHEN SCHILDKRÖTE KROKODIL DELFIN PAPAGEI KÄNGURU HAMSTER MARIENKÄFER NASHORN".split(" "),
+  home: "BRÜCKE FENSTER ZEITUNG BÜCHEREI NACHBAR REGENSCHIRM FAHRRAD KÜHLSCHRANK WASCHMASCHINE SPIELPLATZ BÄCKEREI RATHAUS TREPPENHAUS".split(" "),
+  free: "FUSSBALL GITARRE KLAVIER FREUNDSCHAFT SPRACHKURS WÖRTERBUCH SCHWIMMBAD KINOKARTE ZEICHNEN PICKNICK GEBURTSTAG BRETTSPIEL".split(" ")
+};
+ZWords.en.cats = {
+  travel: "STATION TICKET PLATFORM CONDUCTOR LUGGAGE TUNNEL JOURNEY TIMETABLE PASSPORT AIRPORT SUITCASE CARRIAGE HOLIDAY".split(" "),
+  food: "CHOCOLATE STRAWBERRY SANDWICH PINEAPPLE PANCAKE SPAGHETTI LEMONADE BISCUIT AVOCADO CARROT CHEESECAKE BREAKFAST".split(" "),
+  nature: "SUNFLOWER RAINBOW MOUNTAIN WATERFALL THUNDER SNOWFLAKE VOLCANO MEADOW AUTUMN OCEAN SUNSHINE FOREST".split(" "),
+  animals: "BUTTERFLY ELEPHANT GIRAFFE PENGUIN SQUIRREL TORTOISE CROCODILE DOLPHIN PARROT KANGAROO HAMSTER LADYBIRD".split(" "),
+  home: "WINDOW BRIDGE NEWSPAPER LIBRARY CATHEDRAL BICYCLE UMBRELLA NEIGHBOUR KITCHEN BAKERY STAIRCASE PLAYGROUND".split(" "),
+  free: "FOOTBALL GUITAR FRIENDSHIP DICTIONARY ADVENTURE SWIMMING CINEMA DRAWING PICNIC BIRTHDAY PUZZLE MUSEUM".split(" ")
+};
+ZWords.ar.cats = {
+  travel: "تذكرة مسافر حقيبة قطارات محطة سفينة طائرة جواز مطار رحلة حافلة فندق خريطة".split(" "),
+  food: "شوكولاتة فراولة شطيرة أناناس برتقال بطيخ فطيرة زيتون عصير تفاحة حليب بسكويت ليمون جبنة".split(" "),
+  nature: "حديقة سحابة شلال بركان صحراء جبال غابة زهرة نجوم شجرة بحيرة".split(" "),
+  animals: "فراشة زرافة سلحفاة تمساح دلفين ببغاء كنغر أرنب غزال حصان عصفور نحلة".split(" "),
+  home: "مكتبة نافذة صحيفة جيران مظلة دراجة مدرسة جامعة مطبخ مخبز ثلاجة شرفة متحف".split(" "),
+  free: "موسيقى مغامرة صداقة قاموس عطلة رياضة سباحة سينما شطرنج أغنية حفلة ألعاب نزهة".split(" ")
+};
+for(const lang of ["de", "en", "ar"]) ZWords[lang].long = [...new Set(Object.values(ZWords[lang].cats).flat().concat(ZWords[lang].long))];
 if(typeof module !== "undefined") module.exports = ZWords;

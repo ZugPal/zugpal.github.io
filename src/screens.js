@@ -5,7 +5,8 @@ import { AGES, BADGES, DICE, ICE, LANGS, MOODS, TOPICS, WORDS } from "./data.js"
 import { COUNTED, GLYPH, boardHtml, chessState, damaBoard, damaState, onlineInfo } from "./games.js";
 import { S, backend } from "./state.js";
 import { ICON, MONEY_RE, esc, hasContact, loc, minsLeft, moodName, parseMsg, photo, t, todaysWord } from "./util.js";
-import { lettersScreen, wordCard, wordSheet } from "./words.js";
+import { wordCard, wordSheet } from "./words.js";
+import { lettersScreen, ltOverlay } from "./letters.js";
 import { zugwortScreen, zwOverlay } from "./zugwort.js";
 import { cgCard, cgSheet } from "./classic.js";
 import { bookCard, bookScreen, creditsScreen, libraryScreen } from "./library.js";
@@ -102,6 +103,7 @@ function overlays(){
   if(S.screen==="dama"){ const o = damaOverlay(); if(o) return o; }
   if(S.screen==="table"){ const o = tableOverlay(); if(o) return o; }
   if(S.screen==="zugwort"){ const o = zwOverlay(); if(o) return o; }
+  if(S.screen==="letters"){ const o = ltOverlay(); if(o) return o; }
   if(S.reportDone) return `<div class="sheet" role="dialog" aria-modal="true"><div class="panel">
     <h2>${ICON.shield} ${t("reportThanksTitle")}</h2><p>${t("reportThanks",{n:Number(S.reportDone.n)||""})}</p>
     <div class="banner">${t("emergency")}</div>
@@ -390,7 +392,7 @@ const screens = {
       <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">?</span><div class="grow"><div class="pname">${t("qzName")}</div><div class="small">${t("qzBody")}</div></div></div>
         <button class="btn" data-act="qzCpu">${t("play")}</button></div>
       <div class="card"><div class="gamecard2"><span class="tile g" style="width:34px;height:34px;font-size:18px;flex-shrink:0">S</span><div class="grow"><div class="pname">${t("slName")}</div><div class="small">${t("slBody")}</div></div></div></div>
-      <div class="card"><div class="gamecard2"><span class="train mini-train" aria-hidden="true"><span class="loco"></span><span class="coach"></span><span class="coach"></span></span><div class="grow"><div class="pname">${t("ltName")}</div><div class="small">${t("ltBody")}</div></div></div>
+      <div class="card"><div class="gamecard2"><span class="gicon-train" aria-hidden="true"><span class="lcoach c1"></span><span class="lcoach"></span><span class="lloco"></span></span><div class="grow"><div class="pname">${t("ltName")}</div><div class="small">${t("ltBody")}</div></div></div>
         <button class="btn" data-act="ltCpu">${t("play")}</button></div>
     </div>`;
   },

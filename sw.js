@@ -2,7 +2,7 @@
 // The app files are cached as one versioned set, so a phone never mixes old and new files.
 // Supabase (chat, waves, check-in) always goes to the network. Downloaded books live in IndexedDB, not here.
 // VERSION and FILES are written by tools/update-sw.js; do not edit them by hand.
-const VERSION = "28ee9e056394";
+const VERSION = "f53e9d2c0d0c";
 const FILES = [
   "./",
   "index.html",
@@ -24,6 +24,7 @@ const FILES = [
   "src/fourui.js",
   "src/games.js",
   "src/i18n.js",
+  "src/letters.js",
   "src/library.js",
   "src/main.js",
   "src/mauui.js",

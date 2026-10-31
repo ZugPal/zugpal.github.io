@@ -71,10 +71,17 @@ const ZWord = (function(){
 })();
 
 const ZLetters = (function(){
-  function newGame(word, maxWrong){ return { word: word.slice(), tried: [], max: maxWrong || 7 }; }
+  function newGame(word, maxWrong){ return { word: word.slice(), tried: [], max: maxWrong || 7, hints: 0 }; }
   function guess(st, letter){
     if(!letter || st.tried.includes(letter) || status(st).over) return st;
-    return { word: st.word, tried: st.tried.concat([letter]), max: st.max };
+    return { word: st.word, tried: st.tried.concat([letter]), max: st.max, hints: st.hints || 0 };
+  }
+  // A hint shows one missing letter and costs a coach (only while at least two are left)
+  function hint(st, rnd){
+    const s = status(st); if(s.over || s.left < 2) return st;
+    const miss = [...new Set(st.word.filter(c => !st.tried.includes(c)))]; if(!miss.length) return st;
+    const c = miss[Math.floor((rnd || Math.random)() * miss.length)];
+    return { word: st.word, tried: st.tried.concat([c]), max: st.max - 1, hints: (st.hints || 0) + 1 };
   }
   const view = st => st.word.map(c => st.tried.includes(c) ? c : null);
   function status(st){
@@ -82,6 +89,6 @@ const ZLetters = (function(){
     const won = st.word.every(c => st.tried.includes(c));
     return { wrong, left: st.max - wrong, won, lost: !won && wrong >= st.max, over: won || wrong >= st.max };
   }
-  return { newGame, guess, view, status };
+  return { newGame, guess, hint, view, status };
 })();
 if(typeof module !== "undefined") module.exports = { ZWord, ZLetters };
