@@ -383,8 +383,6 @@ const screens = {
         <button class="btn" data-act="cgCpu" data-arg="muehle">${t("play")}</button></div>
       <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px;color:#B3261E">♥︎</span><div class="grow"><div class="pname">${t("mauName")}</div><div class="small">${t("mauBody")}</div></div></div>
         <button class="btn" data-act="cgCpu" data-arg="mau">${t("play")}</button></div>
-      <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">⚄︎</span><div class="grow"><div class="pname">${t("bgName")}</div><div class="small">${t("bgBody")}</div></div></div>
-        <button class="btn" data-act="cgCpu" data-arg="bg">${t("play")}</button></div>
       <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">?</span><div class="grow"><div class="pname">${t("qzName")}</div><div class="small">${t("qzBody")}</div></div></div>
         <button class="btn" data-act="qzCpu">${t("play")}</button></div>
       <div class="card"><div class="gamecard2"><span class="tile g" style="width:34px;height:34px;font-size:18px;flex-shrink:0">S</span><div class="grow"><div class="pname">${t("slName")}</div><div class="small">${t("slBody")}</div></div></div></div>

@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node tools/serve.js 8080",
     "test": "npm run test:engines && npm run test:ui",
-    "test:engines": "node tests/perft.js engines/chess-engine.js && node tests/chessplus.js && node tests/damatest.js engines/dama-engine.js && node tests/damaplus.js && node tests/patiencetest.js && node tests/wordtest.js && node tests/classictest.js && node tests/backgammontest.js && node tests/partytest.js && node tools/update-sw.js --check",
+    "test:engines": "node tests/perft.js engines/chess-engine.js && node tests/chessplus.js && node tests/damatest.js engines/dama-engine.js && node tests/damaplus.js && node tests/patiencetest.js && node tests/wordtest.js && node tests/classictest.js && node tests/partytest.js && node tools/update-sw.js --check",
     "test:ui": "playwright test"
   },
   "devDependencies": {

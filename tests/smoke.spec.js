@@ -179,13 +179,7 @@ for (const lang of ["de", "en", "ar"]) {
     else await page.click('[data-act="cgMove"][data-arg="d"]');
     await shot("14-maumau");
 
-    // Backgammon vs computer and the quiz played to the end
-    await page.click('[data-act="chessBack"][data-arg="games"]');
-    await page.click('[data-act="cgCpu"][data-arg="bg"]');
-    await expect(page.locator(".bgboard .bpt")).toHaveCount(24);
-    await page.locator(".bpt.hot").first().click();
-    await expect(page.locator(".bpt.tgt, .chip.tgt").first()).toBeVisible();
-    await shot("14b-backgammon");
+    // The quiz played to the end
     await page.click('[data-act="chessBack"][data-arg="games"]');
     await page.click('[data-act="qzCpu"]');
     for (let q = 0; q < 6; q++) { await page.locator('[data-act="qzAnswer"]').first().click(); await page.click('[data-act="qzNext"]'); }
