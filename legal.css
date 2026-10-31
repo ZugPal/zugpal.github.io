@@ -1,7 +1,7 @@
 /* Shared style for the static pages (Impressum, Datenschutz, Regeln). Same colours as the app. */
-:root{--bg:#F2F4F3;--surface:#FFFFFF;--ink:#15211D;--muted:#4A5A54;--line:#C9D1CD;--accent:#1F6B50;--link:#1F6B50;--mark:#FFF4E0;--mark-ink:#5C3A0C;
+:root{--bg:#F4F6FA;--surface:#FFFFFF;--ink:#1F2433;--muted:#5A6275;--line:#D3D9E4;--accent:#0E7A68;--link:#0E7A68;--mark:#FFF1D6;--mark-ink:#6B4300;
   --f-display:'Bricolage Grotesque','IBM Plex Sans Arabic',system-ui,sans-serif;--f-body:'DM Sans','IBM Plex Sans Arabic',system-ui,sans-serif}
-@media (prefers-color-scheme: dark){:root{--bg:#0F1714;--surface:#18231F;--ink:#E8EEEB;--muted:#A3B2AC;--line:#2E3D37;--link:#9FE0C3;--mark:#3A2C14;--mark-ink:#F2D7A6;color-scheme:dark}}
+@media (prefers-color-scheme: dark){:root{--bg:#121826;--surface:#1B2333;--ink:#EEF1F7;--muted:#AAB3C5;--line:#33405A;--link:#7FE0C9;--mark:#3B2E12;--mark-ink:#F8DDA4;color-scheme:dark}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55}
 main{max-width:680px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 48px max(16px,env(safe-area-inset-left,0px))}

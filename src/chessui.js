@@ -296,7 +296,7 @@ function sound(kind){
 function confetti(){
   const cv = document.createElement("canvas"); cv.className = "confetti"; document.body.appendChild(cv);
   const W = cv.width = innerWidth, H = cv.height = innerHeight, g = cv.getContext("2d");
-  const cols = ["#1F6B50", "#9FE0C3", "#F2C46B", "#E0A526", "#2D5B8A", "#F3F5F4"];
+  const cols = ["#0E7A68", "#FFD166", "#F2C46B", "#E0A526", "#2D5B8A", "#F3F5F4"];
   const parts = Array.from({ length: 140 }, () => ({ x: W / 2, y: H * .45, vx: (Math.random() - .5) * 14, vy: -Math.random() * 14 - 4, r: Math.random() * 6.28, s: 5 + Math.random() * 6, c: cols[Math.floor(Math.random() * cols.length)] }));
   let f = 0; const tick = () => { g.clearRect(0, 0, W, H);
     parts.forEach(p => { p.vy += .35; p.x += p.vx; p.y += p.vy; p.r += .2; g.save(); g.translate(p.x, p.y); g.rotate(p.r); g.fillStyle = p.c; g.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); g.restore(); });

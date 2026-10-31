@@ -130,7 +130,7 @@ async function openReader(id){
     const book = ePub(buf), dark = matchMedia("(prefers-color-scheme: dark)").matches;
     const rendition = book.renderTo("rview", { width: "100%", height: "100%", flow: "paginated", spread: "none", allowScriptedContent: false });
     rendition.themes.default({ body: { "font-family": rtl ? "'IBM Plex Sans Arabic', system-ui, sans-serif" : "Georgia, 'Times New Roman', serif", "line-height": "1.6",
-      color: dark ? "#EAF0ED" : "#15211D", background: dark ? "#0D1412" : "#FBFAF6", padding: "0 6px !important" }, "a": { color: "inherit" } });
+      color: dark ? "#EEF1F7" : "#1F2433", background: dark ? "#121826" : "#FBFAF6", padding: "0 6px !important" }, "a": { color: "inherit" } });
     const size = Number(localStorage.getItem("zugpal.readSize") || 110); rendition.themes.fontSize(size + "%");
     reader = { id, book, rendition, size, el };
     const saved = progress(id);

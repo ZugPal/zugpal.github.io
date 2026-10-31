@@ -158,7 +158,7 @@ function soloScreen(g){
 }
 function confetti(){
   const cv = document.createElement("canvas"); cv.className = "confetti"; document.body.appendChild(cv);
-  const W = cv.width = innerWidth, H = cv.height = innerHeight, g = cv.getContext("2d"), cols = ["#1F6B50", "#E0A526", "#1F5FBF", "#C0262D", "#9FE0C3"];
+  const W = cv.width = innerWidth, H = cv.height = innerHeight, g = cv.getContext("2d"), cols = ["#0E7A68", "#FFD166", "#1F5FBF", "#C0262D", "#9FE0C3"];
   const parts = Array.from({ length: 130 }, () => ({ x: W / 2, y: H * .4, vx: (Math.random() - .5) * 14, vy: -Math.random() * 14 - 4, s: 6 + Math.random() * 6, c: cols[Math.floor(Math.random() * cols.length)] }));
   let f = 0; const tick = () => { g.clearRect(0, 0, W, H); parts.forEach(p => { p.vy += .35; p.x += p.vx; p.y += p.vy; g.fillStyle = p.c; g.fillRect(p.x, p.y, p.s, p.s * .6); }); if(++f < 140) requestAnimationFrame(tick); else cv.remove(); };
   requestAnimationFrame(tick);

@@ -12,7 +12,7 @@ import { S } from "./state.js";
 import { CARD, ICON, esc, parseMsg, t } from "./util.js";
 
 const GID = /^[A-Za-z0-9]{4,12}$/, LEVELS = ["easy", "medium", "hard"];
-const QTIME = 20000, SPIN = 2600, COLORS = { lid: "#1F5FBF", geo: "#2A9D8F", rail: "#1F6B50", nature: "#6A994E", lang: "#E0A526", mix: "#C0262D" };
+const QTIME = 20000, SPIN = 2600, COLORS = { lid: "#1F5FBF", geo: "#2A9D8F", rail: "#0E7A68", nature: "#6A994E", lang: "#E0A526", mix: "#C0262D" };
 const ICONS = { lid: "🏛", geo: "🌍", rail: "🚆", nature: "🌿", lang: "💬", mix: "💡" };
 const store = { get(k, d){ try{ const v = localStorage.getItem("zugpal.qz." + k); return v ? JSON.parse(v) : d; }catch(e){ return d; } },
   set(k, v){ try{ localStorage.setItem("zugpal.qz." + k, JSON.stringify(v)); }catch(e){} } };
