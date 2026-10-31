@@ -154,6 +154,8 @@ footer.legal a{color:var(--muted);min-height:44px;display:inline-flex;align-item
 .chatbar input,.chatbar textarea{flex:1;min-width:0}
 .chatbar{align-items:flex-end}
 .mytrain .pname{display:flex;align-items:center;gap:8px}
+.msg .tick{display:inline-flex;vertical-align:-1px;margin-inline-start:8px;font-size:12px;opacity:.75}
+.msg.pending{opacity:.85}
 .wavedme{border:2px solid var(--accent);gap:10px}.wavedme .person{padding:10px 0;border:0;background:none;box-shadow:none}
 .askbtns{display:flex;align-items:center;gap:18px;width:100%;padding-inline-start:68px}
 .wavedme .person{flex-wrap:wrap}

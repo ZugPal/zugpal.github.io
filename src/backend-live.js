@@ -7,7 +7,14 @@ const here = () => location.origin + location.pathname;
 function loadScript(src){ return new Promise((ok,fail)=>{ const s=document.createElement("script"); s.src=src; s.onload=ok; s.onerror=fail; document.head.appendChild(s); }); }
 async function LiveBackend(){
   await loadScript("vendor/supabase.js"); // supabase-js 2.45.4, hosted here so no CDN sees visitor IPs
-  const sb = window.supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey);
+  // On a train a request can hang for a minute on a dying connection; give up after 12 s so the app can retry
+  const timedFetch = (url, opts = {}) => {
+    if(!window.AbortSignal || !AbortSignal.timeout) return fetch(url, opts);
+    const t = AbortSignal.timeout(12000);
+    const signal = opts.signal && AbortSignal.any ? AbortSignal.any([opts.signal, t]) : opts.signal || t;
+    return fetch(url, { ...opts, signal });
+  };
+  const sb = window.supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey, { global: { fetch: timedFetch } });
   let { data:{ session } } = await sb.auth.getSession();
   if(!session){ const { data, error } = await sb.auth.signInAnonymously(); if(error) throw error; session = data.session; }
   const uid = session.user.id;
@@ -46,13 +53,15 @@ async function LiveBackend(){
       women_only:S.womenOnly && p.gender==="woman", chat_only:S.chatOnly, accept_photos:p.acceptPhotos !== false, practice:p.practice || null, coach:S.coach || null, is_open:S.open, lang:S.lang,
       expires_at:new Date(S.ride.expiresAt).toISOString(), updated_at:new Date().toISOString() })); },
     async visible(){ return ok(await sb.rpc("visible_riders")) || []; },
-    async wave(id){ ok(await sb.from("waves").upsert({from_id:uid, to_id:id, ride_key:S.ride.key})); poke(); },
-    async unwave(id){ ok(await sb.from("waves").delete().match({from_id:uid, to_id:id, ride_key:S.ride.key})); poke(); },
+    async wave(id, ride){ ok(await sb.from("waves").upsert({from_id:uid, to_id:id, ride_key:ride || S.ride.key})); poke(); },
+    async unwave(id, ride){ ok(await sb.from("waves").delete().match({from_id:uid, to_id:id, ride_key:ride || S.ride.key})); poke(); },
     async matches(){ return ok(await sb.rpc("my_matches")) || []; },
-    async messages(id){ const rows = ok(await sb.from("messages").select("from_id,body,created_at").eq("ride_key",S.ride.key)
+    async messages(id){ const rows = ok(await sb.from("messages").select("from_id,body,created_at,client_id").eq("ride_key",S.ride.key)
         .or(`and(from_id.eq.${uid},to_id.eq.${id}),and(from_id.eq.${id},to_id.eq.${uid})`).order("created_at"));
-      return (rows||[]).map(m=>({mine:m.from_id===uid, body:m.body, at:Date.parse(m.created_at)})); },
-    async send(id, body){ ok(await sb.from("messages").insert({ride_key:S.ride.key, to_id:id, body})); },
+      return (rows||[]).map(m=>({mine:m.from_id===uid, body:m.body, at:Date.parse(m.created_at), cid:m.client_id || null})); },
+    // client_id makes a retry safe: a second insert with the same id is ignored
+    async send(id, body, ride, cid){ ok(await sb.from("messages").upsert({ride_key:ride || S.ride.key, from_id:uid, to_id:id, body, client_id:cid || null},
+        { onConflict:"from_id,client_id", ignoreDuplicates:true })); },
     async block(id){ ok(await sb.from("blocks").upsert({blocker:uid, blocked:id})); },
     async report(id, reason){ ok(await sb.from("reports").insert({reported:id, ride_key:S.ride && S.ride.key, reason:reason || "reported in app"})); },
     async fileReport(id, reason, details){ return ok(await sb.rpc("file_report", {p_reported:id, p_ride:(S.ride && S.ride.key) || "", p_reason:reason, p_details:details || ""})); },

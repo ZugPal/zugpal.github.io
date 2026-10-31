@@ -19,6 +19,7 @@ import { chessActions } from "./chessui.js";
 import { damaActions } from "./damaui.js";
 import { tableActions } from "./tablekit.js";
 import { calendarFile } from "./talktrain.js";
+import { queue } from "./outbox.js";
 
 /* ---------------- Actions ---------------- */
 function selectInvite(){ const el = document.getElementById("inviteText"); if(!el) return; const r = document.createRange(); r.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
@@ -89,7 +90,7 @@ const actions = {
     const r = S.riders.find(x=>x.id===id); if(!r) return;
     if(!r.waved && S.riders.filter(x=>x.waved).length + S.matches.length >= MAX_WAVES) return toast(t("waveLimit"));
     r.waved = !r.waved; if(r.waved && !S.wavedOnce){ S.wavedOnce = true; save(); } render();
-    safe(async()=>{ r.waved ? await backend.wave(id) : await backend.unwave(id); });
+    queue({ kind: "wave", to: id, ride: S.ride.key, on: r.waved });         // sent when there is signal
   },
   // "Not now" to someone who waved: only remembered on this phone; the other person never finds out
   waveNo(id){ S.declined.add(id); render(); },

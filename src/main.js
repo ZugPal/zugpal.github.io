@@ -5,7 +5,8 @@ import { LiveBackend } from "./backend-live.js";
 import { growBox, resizeImage, resizeMax, sendChat, sendMedia } from "./chat.js";
 import { CONFIG } from "./config.js";
 import { navInit } from "./nav.js";
-import { refresh, startPolling } from "./polling.js";
+import { refresh, restoreRide, startPolling } from "./polling.js";
+import { flush } from "./outbox.js";
 import { loadNotices, render } from "./screens.js";
 import { S, backend, load, save, setBackend } from "./state.js";
 import { t, toast } from "./util.js";
@@ -79,7 +80,7 @@ window.addEventListener("offline", () => render());
   if(backend.amHost) backend.amHost().then(v => { S.isHost = v; render(); }).catch(() => {});
   if(!S.profile) openProfile();
   else if(S.autoRide && !(S.ride && S.ride.key === "TEST-" + S.autoRide.toUpperCase())){ const c = S.autoRide; S.autoRide = null; joinTest(c); return; }
-  else if(S.ride){ S.screen = "nearby"; safe(async()=>{ await backend.checkIn(); await refresh(); startPolling(); }); }
+  else if(S.ride){ S.screen = "nearby"; restoreRide(); startPolling(); safe(async()=>{ await backend.checkIn(); await refresh(); flush(); }); }
   else if(S.autoTalk){ S.autoTalk = false; actions.checkin("talk"); return; }
   else S.screen = "checkin";
   render();

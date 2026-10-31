@@ -34,16 +34,17 @@ function DemoBackend(){
       // Karim waves first, so you can try "Waved at you"
       after(6000, ()=>{ if(present.some(p=>p.id==="d-karim")) theirs.add("d-karim"); }); },
     async update(){},
-    async visible(){ if(!S.open) return []; return present.filter(visibleTo).map(p=>({id:p.id, first_name:p.name, ask_me:p.askMe ? (p.askMe[S.lang]||p.askMe.en) : null, age_range:p.age, languages:p.langs, topics:p.topics, moods:p.moods,
+    async visible(){ if(window.__demoOffline) throw new TypeError("Failed to fetch"); if(!S.open) return []; return present.filter(visibleTo).map(p=>({id:p.id, first_name:p.name, ask_me:p.askMe ? (p.askMe[S.lang]||p.askMe.en) : null, age_range:p.age, languages:p.langs, topics:p.topics, moods:p.moods,
       chat_only:p.chatOnly, same_coach:!!S.coach && S.coach===p.coach, waved:mine.has(p.id), waved_me:theirs.has(p.id), photo_small:p.photo, badges:p.badges, buddy:isBuddy(p), practice:p.practice || null})); },
     async wave(id){ mine.add(id); const p=people.find(x=>x.id===id); if(p && p.wavesBack) after(2500, ()=>theirs.add(id)); },
     async unwave(id){ mine.delete(id); },
     async matches(){ if(!S.open) return []; return present.filter(p=>visibleTo(p) && mine.has(p.id) && theirs.has(p.id)).map(p=>({id:p.id, first_name:p.name, age_range:p.age, languages:p.langs, moods:p.moods,
       chat_only:p.chatOnly || S.chatOnly, coach:(p.chatOnly || S.chatOnly) ? null : p.coach, photo:p.photo, accept_photos:true, seen_at:new Date().toISOString(), active_game:currentActivity() || "chat"})); },
     async presence(){},
-    async messages(id){ return (msgs[id]||[]).slice(); },
-    async send(id, body){
-      const list = msgs[id] = msgs[id] || []; list.push({mine:true, body, at:Date.now()});
+    async messages(id){ if(window.__demoOffline) throw new TypeError("Failed to fetch"); return (msgs[id]||[]).slice(); },
+    async send(id, body, ride, cid){
+      if(window.__demoOffline) throw new TypeError("Failed to fetch");      // tests: a tunnel
+      const list = msgs[id] = msgs[id] || []; if(cid && list.some(m=>m.cid===cid)) return; list.push({mine:true, body, at:Date.now(), cid});
       const p = people.find(x=>x.id===id); if(!p) return;
       const kind = parseMsg(body).type;
       if(kind==="chess" || kind==="dama") return;

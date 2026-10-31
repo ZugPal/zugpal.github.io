@@ -4,6 +4,7 @@ import { peerOf, unreadFrom } from "./games.js";
 import { render } from "./screens.js";
 import { S, backend } from "./state.js";
 import { hasContact, parseMsg, t, toast } from "./util.js";
+import { pendingFor, queue, setHooks } from "./outbox.js";
 
 /* ---------------- Photo handling ---------------- */
 function resizeImage(file, size, quality){
@@ -88,11 +89,19 @@ function stopRecording(send){
   if(!send || !r.chunks.length) return;
   blobToDataUrl(encodeWav(r.chunks, r.rate, 8000)).then(d=>{ if(d.length < 1450000) sendMedia("voice", d); else toast(t("voiceTooLong")); });
 }
+// Everything goes through the outbox: shown at once with a clock, sent when there is signal (see outbox.js)
 function sendBody(body){
   if(!S.chatWith) return;
-  S.messages.push({mine:true, body, at:Date.now()}); render({ soft: true });
-  safe(async()=>{ await backend.send(S.chatWith, body); await loadMessages(); });
+  if(!S.ride){ S.messages.push({ mine: true, body, at: Date.now() }); render({ soft: true }); return; }   // no ride: nothing to send to
+  const it = queue({ kind: "msg", to: S.chatWith, ride: S.ride.key, body });
+  S.messages.push({ mine: true, body, at: it.at, cid: it.cid, pending: true }); render({ soft: true });
 }
+setHooks(sent => { if(sent.some(x => x.kind === "msg" && x.to === S.chatWith)) loadMessages(); },
+  it => { if(it.kind === "msg"){ S.messages = S.messages.filter(m => m.cid !== it.cid); toast(t("notSent")); } });
+// the last messages of each chat stay on the phone, so a chat can be read in a tunnel
+const cacheKey = () => "zugpal.chat." + (S.ride ? S.ride.key : "") + "." + S.chatWith;
+function cacheSave(list){ try{ localStorage.setItem(cacheKey(), JSON.stringify(list.filter(m => !m.pending).slice(-60))); }catch(e){} }
+function cacheLoad(){ try{ return JSON.parse(localStorage.getItem(cacheKey()) || "[]"); }catch(e){ return []; } }
 function growBox(el){ el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight + 2, 132) + "px"; }
 function sendChat(){
   const box = document.getElementById("chatInput"); if(box) S.draft.chat = box.value;
@@ -102,7 +111,14 @@ function sendChat(){
 }
 async function loadMessages(){
   if(!S.chatWith) return;
-  S.messages = await backend.messages(S.chatWith);
+  const who = S.chatWith;
+  let list;
+  try{ list = await backend.messages(who); cacheSave(list); }
+  catch(e){ console.error(e); list = S.messages.filter(m => !m.pending).length ? S.messages.filter(m => !m.pending) : cacheLoad(); S.netDown = true; }
+  if(who !== S.chatWith) return;
+  const have = new Set(list.map(m => m.cid).filter(Boolean));
+  const waiting = S.ride ? pendingFor(S.ride.key, who).filter(x => !have.has(x.cid)).map(x => ({ mine: true, body: x.body, at: x.at, cid: x.cid, pending: true })) : [];
+  S.messages = list.concat(waiting);
   try{ S.mediaStatus = await backend.mediaStatus(); }catch(e){}
   if(S.screen==="chess" || S.screen==="dama" || S.screen==="table"){
     const un = unreadFrom(S.chatWith);

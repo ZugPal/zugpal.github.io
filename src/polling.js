@@ -6,6 +6,7 @@ import { currentActivity } from "./games.js";
 import { loadNotices, render } from "./screens.js";
 import { S, backend } from "./state.js";
 import { parseMsg, t, toast } from "./util.js";
+import { flush, pending } from "./outbox.js";
 
 /* ---------------- Polling ---------------- */
 let pollTimer = null, rtTimer = null, lastRefresh = 0;
@@ -24,7 +25,7 @@ async function refresh(){
     S.announcement = a;
     if(S.isHost) S.hostStats = await backend.hostStats().catch(() => S.hostStats);
   }
-  S.riders = riders || []; S.matches = matches || [];
+  S.riders = riders || []; S.matches = matches || []; cacheRide();
   // someone new waved at you: a vibration and a notice without a name (the card shows who)
   const newWave = S.riders.find(r => r.waved_me && !r.waved && !S.wavedMe.has(r.id));
   S.riders.forEach(r => { if(r.waved_me) S.wavedMe.add(r.id); });
@@ -46,9 +47,25 @@ async function refresh(){
 }
 // Background refresh: in a tunnel it fails quietly and shows "Reconnecting…" instead of an error every few seconds
 async function poll(){
-  try{ await refresh(); if(S.netDown){ S.netDown = false; render({ soft: true }); } }
-  catch(e){ console.error(e); if(!S.netDown){ S.netDown = true; render({ soft: true }); } }
+  try{
+    await refresh(); flush();
+    if(S.netDown || S.netPortal){ S.netDown = false; S.netPortal = false; render({ soft: true }); }
+  }catch(e){
+    console.error(e);
+    // a train Wi-Fi that wants a login answers with its own web page instead of our data
+    const portal = /Unexpected token|JSON|<!DOCTYPE|<html/i.test(String(e && (e.message || e)));
+    if(!S.netDown || portal !== !!S.netPortal){ S.netDown = true; S.netPortal = portal; render({ soft: true }); }
+  }
 }
+// the people list and matches of the current ride stay on the phone, so the app opens in a tunnel
+const RIDE_CACHE = "zugpal.ridecache";
+function cacheRide(){ try{ localStorage.setItem(RIDE_CACHE, JSON.stringify({ key: S.ride.key, riders: S.riders, matches: S.matches })); }catch(e){} }
+function restoreRide(){
+  try{ const c = JSON.parse(localStorage.getItem(RIDE_CACHE) || "null");
+    if(c && S.ride && c.key === S.ride.key){ S.riders = c.riders || []; S.matches = c.matches || []; S.matches.forEach(m => S.seen.add(m.id)); } }catch(e){}
+}
+document.addEventListener("visibilitychange", () => { if(!document.hidden && S.ride && pollTimer) poll(); });
+window.addEventListener("online", () => { if(S.ride && pollTimer) poll(); });
 // A new message from a match (via Realtime): a vibration, "new" on the match list, and a phone notice while Zugpal is in the background
 const MOVES = ["cm","cx","dm","dx","zg","lg","cgm","cgx","qa","slsub","slstop","slrej"];
 function messageAlert(row){
@@ -85,4 +102,4 @@ function startPolling(){
 }
 function stopPolling(){ clearInterval(pollTimer); pollTimer = null; clearTimeout(rtTimer); if(backend && backend.unlisten) backend.unlisten(); }
 
-export { messageAlert as messageAlertForTest, refresh, startPolling, stopPolling, updateBadge };
+export { messageAlert as messageAlertForTest, poll, refresh, restoreRide, startPolling, stopPolling, updateBadge };

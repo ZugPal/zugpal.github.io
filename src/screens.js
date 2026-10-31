@@ -21,6 +21,7 @@ import { mountTable, tableOverlay, tableScreen } from "./tablekit.js";
 import { googleLink, talkInfo } from "./talktrain.js";
 import { navSync } from "./nav.js";
 import { paintQrs } from "./qr.js";
+import { pending } from "./outbox.js";
 
 /* ---------------- Screens ---------------- */
 function header(){
@@ -32,7 +33,8 @@ function header(){
     </select></div>
     ${backend && backend.mode==="demo" ? `<div class="banner info">${t("demoBanner")}</div>` : ""}
     ${S.updateReady ? `<div class="banner info action"><span>${t("updateReady")}</span><button class="btn small" data-act="reloadApp">${t("updateBtn")}</button></div>` : ""}
-    ${navigator.onLine === false ? `<div class="banner info">${t("offlineBanner")}</div>` : S.netDown && S.ride ? `<div class="banner info reconnect" role="status"><span class="dot"></span>${t("reconnecting")}</div>` : ""}`;
+    <div id="netBanner" data-soft>${S.netPortal && S.ride ? `<div class="banner info reconnect" role="status"><span class="dot"></span>${t("netPortal")}</div>`
+      : navigator.onLine === false || (S.netDown && S.ride) ? `<div class="banner info reconnect" role="status"><span class="dot"></span>${S.ride ? t("reconnecting") : t("offlineBanner")}${pending() ? ` <b>${t("waitingN",{n:pending()})}</b>` : ""}</div>` : ""}</div>`;
 }
 const trustStrip = () => `<ul class="trust" aria-label="Zugpal">${[1,2,3,4].map(i=>`<li>${ICON.shield}${t("trust"+i)}</li>`).join("")}</ul>`;
 function legalFooter(){
@@ -393,7 +395,7 @@ const screens = {
       const p = parseMsg(x.body);
       if(p.type==="text"){
         if(!x.mine && hasContact(x.body)) return `<div class="banner">${t("noContact")}</div>`;
-        return `<div class="msg${x.mine?" mine":""}" dir="auto">${esc(x.body)}</div>` + (!x.mine && MONEY_RE.test(x.body) ? `<div class="banner">${t("moneyWarn")}</div>` : "");
+        return `<div class="msg${x.mine?" mine":""}${x.pending?" pending":""}" dir="auto">${esc(x.body)}${x.mine ? `<span class="tick" aria-label="${x.pending ? t("waitingOne") : t("sentOne")}">${x.pending ? ICON.clock : "✓"}</span>` : ""}</div>` + (!x.mine && MONEY_RE.test(x.body) ? `<div class="banner">${t("moneyWarn")}</div>` : "");
       }
       if(p.type==="word"){ const wd = WORDS[Math.abs(parseInt(p.val,10)||0) % WORDS.length];
         return `<div class="gamecard"><span class="lbl">${t("wordTitle")}</span><span class="big" lang="de">${esc(wd[0])}</span><span>${esc(S.lang==="de"?wd[1]:S.lang==="ar"?wd[3]:wd[2])}</span><span class="small" style="color:inherit">${t("wordTask")}</span></div>`; }
@@ -532,7 +534,7 @@ function typing(){
 // the screen (that lost letters and broke Android autocorrect); it only updates the parts marked data-soft (chat log, header).
 function render(opts){
   if(opts && opts.soft && typing() && S.screen === S.rendered){
-    const tpl = document.createElement("template"); tpl.innerHTML = (screens[S.screen] || screens.welcome)();
+    const tpl = document.createElement("template"); tpl.innerHTML = header() + (screens[S.screen] || screens.welcome)();
     const log = document.getElementById("chatLog"), atEnd = log && log.scrollHeight - log.scrollTop - log.clientHeight < 80;
     document.querySelectorAll("#app [data-soft][id]").forEach(el => { const n = tpl.content.getElementById(el.id); if(n && n.innerHTML !== el.innerHTML) el.innerHTML = n.innerHTML; });
     if(log && atEnd) log.scrollTop = log.scrollHeight;

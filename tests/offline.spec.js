@@ -30,3 +30,24 @@ test("works offline after the first visit", async ({ page, context }) => {
   await expect(page.locator(".f4layer .f4d:not(.ghost)")).toHaveCount(2, { timeout: 8000 });   // the computer (Web Worker) answered offline
   await context.setOffline(false);
 });
+
+test("every game against the computer opens without internet", async ({ page, context }) => {
+  const errors = []; page.on("pageerror", e => errors.push(String(e)));
+  await page.goto("/?demo&sw");
+  await page.fill("#name", "Offline"); await page.click('[data-act="gender"][data-arg="other"]'); await page.click('[data-act="topic"] >> nth=0'); await page.check("#agree"); await page.click('[data-act="saveProfile"]');
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  await page.reload(); await page.evaluate(() => navigator.serviceWorker.ready);
+  await context.setOffline(true);
+  await page.reload();
+  const games = [["chessCpu"], ["cgCpu", "mau"], ["qzCpu"], ["damaCpuNew"], ["solNew"], ["zwCpu"], ["ltCpu"], ["cgCpu", "four"], ["cgCpu", "muehle"], ["slSolo"]];
+  for(const [act, arg] of games){
+    await page.click('[data-act="openGames"] >> nth=0');
+    await page.click(`[data-act="${act}"]${arg ? `[data-arg="${arg}"]` : ""}`);
+    await page.waitForTimeout(400);
+    const screen = await page.evaluate(async () => (await import("/src/state.js")).S.screen);
+    expect(screen, act + " " + (arg || "")).not.toBe("games");
+    await page.evaluate(async () => { const S = (await import("/src/state.js")).S; S.screen = "checkin"; S.tkEnd = false; S.solDialog = null; (await import("/src/screens.js")).render(); });
+  }
+  expect(errors).toEqual([]);
+  await context.setOffline(false);
+});

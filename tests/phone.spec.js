@@ -133,3 +133,26 @@ test("you see who waved at you: wave back, or 'not now' that nobody learns about
   await page.click('.person [data-act="wave"][data-arg="d-karim"]');
   await expect(page.locator('[data-act="sayHi"], .match')).toBeVisible({ timeout: 8000 });  // a match
 });
+
+test("in a tunnel: messages wait on the phone with a clock and go out when the signal is back", async ({ page }) => {
+  const errors = []; page.on("pageerror", e => errors.push(String(e)));
+  await page.addInitScript(() => { window.__demoOffline = sessionStorage.getItem("tunnel") === "1"; });
+  await signUp(page);
+  await toChat(page);
+  await page.evaluate(() => { window.__demoOffline = true; sessionStorage.setItem("tunnel", "1"); });
+  await page.fill("#chatInput", "Bin gerade im Tunnel");
+  await page.click("#chatSend");
+  await expect(page.locator(".msg.mine.pending")).toContainText("Tunnel");
+  await expect(page.locator(".reconnect")).toBeVisible({ timeout: 8000 });
+  await page.screenshot({ path: path.join(SHOTS, "phone-6-tunnel.png") });
+  // close and reopen the app while still in the tunnel: the message is still there, still waiting
+  await page.reload();
+  await page.click('[data-act="chat"] >> nth=0');
+  await expect(page.locator(".msg.mine.pending")).toContainText("Tunnel");
+  // signal is back
+  await page.evaluate(() => { window.__demoOffline = false; sessionStorage.removeItem("tunnel"); window.dispatchEvent(new Event("online")); });
+  await expect(page.locator(".msg.mine.pending")).toHaveCount(0, { timeout: 10000 });
+  await expect(page.locator(".msg.mine").last()).toContainText("Tunnel");
+  expect(await page.locator(".msg.mine", { hasText: "Tunnel" }).count()).toBe(1);   // sent once, no duplicate
+  expect(errors).toEqual([]);
+});

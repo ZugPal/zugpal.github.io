@@ -607,3 +607,7 @@ language sql stable security definer set search_path = public as $$
 $$;
 revoke all on function public.visible_riders() from public, anon;
 grant execute on function public.visible_riders() to authenticated;
+
+-- ===== 2026-10-31: outbox on the phone, duplicate-safe resending (migration message_client_id) =====
+alter table public.messages add column if not exists client_id text check (client_id is null or char_length(client_id) <= 40);
+create unique index if not exists messages_from_client_uniq on public.messages (from_id, client_id);
