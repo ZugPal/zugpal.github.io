@@ -10,7 +10,8 @@ import { lettersScreen, ltOverlay } from "./letters.js";
 import { zugwortScreen, zwOverlay } from "./zugwort.js";
 import { cgCard, cgSheet } from "./classic.js";
 import { bookCard, bookScreen, creditsScreen, libraryScreen } from "./library.js";
-import { partyCard, slfScreen } from "./party.js";
+import { partyCard } from "./party.js";
+import { slfScreen } from "./slf.js";
 import { quizScreen } from "./quiz.js";
 import { sponsorSlot, supporterScreen } from "./sponsor.js";
 import { mountSolitaire, solDialogHtml, solitaireScreen } from "./solitaire.js";
@@ -392,7 +393,8 @@ const screens = {
         <button class="btn" data-act="cgCpu" data-arg="mau">${t("play")}</button></div>
       <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">?</span><div class="grow"><div class="pname">${t("qzName")}</div><div class="small">${t("qzBody")}</div></div></div>
         <button class="btn" data-act="qzCpu">${t("play")}</button></div>
-      <div class="card"><div class="gamecard2"><span class="tile g" style="width:34px;height:34px;font-size:18px;flex-shrink:0">S</span><div class="grow"><div class="pname">${t("slName")}</div><div class="small">${t("slBody")}</div></div></div></div>
+      <div class="card"><div class="gamecard2"><span class="tile g" style="width:34px;height:34px;font-size:18px;flex-shrink:0">S</span><div class="grow"><div class="pname">${t("slName")}</div><div class="small">${t("slBody")}</div></div></div>
+        <button class="btn" data-act="slSolo">${t("play")}</button></div>
       <div class="card"><div class="gamecard2"><span class="gicon-train" aria-hidden="true"><span class="lcoach c1"></span><span class="lcoach"></span><span class="lloco"></span></span><div class="grow"><div class="pname">${t("ltName")}</div><div class="small">${t("ltBody")}</div></div></div>
         <button class="btn" data-act="ltCpu">${t("play")}</button></div>
     </div>`;

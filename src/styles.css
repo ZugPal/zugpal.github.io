@@ -299,6 +299,24 @@ canvas.confetti{position:fixed;inset:0;z-index:70;pointer-events:none}
 .tkmount{display:flex;justify-content:center;width:100%}
 .tkrules summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;align-items:center}
 .tkfinal{display:flex;justify-content:center;align-items:center;gap:10px}.tkfinal b{font-family:var(--f-display);font-size:28px}
+/* Stadt-Land-Fluss */
+.slroll{display:inline-block;height:44px;overflow:hidden;vertical-align:middle}
+.slstrip{display:flex;flex-direction:column;animation:slroll 1.6s cubic-bezier(.2,.6,.3,1) both}
+.slstrip b{height:44px;line-height:44px;text-align:center}
+@keyframes slroll{from{transform:translateY(0)}to{transform:translateY(calc(-100% + 44px))}}
+.slletter.landed{animation:slland .4s ease-out}
+@keyframes slland{0%{transform:scale(1.5)}100%{transform:none}}
+.slin{position:relative;display:flex;align-items:center}
+.slin input{flex:1;padding-inline-end:34px}
+.slmark{position:absolute;inset-inline-end:10px;width:20px;height:20px;border-radius:50%;display:none;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff}
+.slmark.ok{display:flex;background:var(--accent)}.slmark.ok::after{content:"✓"}
+.slmark.bad{display:flex;background:#E0A526;color:#1A1405}.slmark.bad::after{content:"!"}
+.slstopbanner{display:flex;flex-direction:column;gap:6px;font-weight:700}
+.qtimer.hot i{animation-name:qtimehot}
+@keyframes qtimehot{from{width:100%;background:#E0A526}to{width:0;background:#C0262D}}
+.slp{display:inline-block;min-width:24px;padding:1px 6px;border-radius:8px;font-size:12px;text-align:center;background:var(--line);color:var(--ink)}
+.slp.p20{background:#E0A526;color:#1A1405}.slp.p10{background:var(--accent);color:var(--accent-ink)}.slp.p5{background:var(--soft);color:var(--soft-ink)}.slp.p0{background:var(--warn-bg);color:var(--danger)}
+@media (prefers-reduced-motion: reduce){.slstrip,.slletter.landed{animation:none}}
 /* Quizfahrt */
 .qzscreen .quizq .lbl,.qbcat{color:var(--c,var(--accent));font-weight:700}
 button.qopt{animation:qin .3s ease-out both}
