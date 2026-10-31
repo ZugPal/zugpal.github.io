@@ -119,3 +119,17 @@ test("QR code: on the phone for the person next to you, and the poster to print"
   await expect(page.locator("#train")).toHaveText("RE 1 · 07:42");
   expect(errors).toEqual([]);
 });
+
+test("you see who waved at you: wave back, or 'not now' that nobody learns about", async ({ page }) => {
+  await signUp(page, "en");
+  await page.click('[data-act="checkin"][data-arg="talk"]');
+  await page.click('[data-act="goOpen"]');
+  await expect(page.locator(".wavedme")).toBeVisible({ timeout: 15000 });     // Karim waves first in the demo
+  await expect(page.locator(".wavedme .pname").nth(1)).toContainText("Karim");
+  await page.screenshot({ path: path.join(SHOTS, "phone-5-wavedme.png") });
+  await page.click('.wavedme [data-act="waveNo"]');
+  await expect(page.locator(".wavedme")).toHaveCount(0);
+  await expect(page.locator('.person [data-act="wave"][data-arg="d-karim"]')).toBeVisible(); // still in the list, without the mark
+  await page.click('.person [data-act="wave"][data-arg="d-karim"]');
+  await expect(page.locator('[data-act="sayHi"], .match')).toBeVisible({ timeout: 8000 });  // a match
+});

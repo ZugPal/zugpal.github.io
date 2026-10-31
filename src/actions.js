@@ -27,7 +27,7 @@ const inviteLink = () => location.href.split("#")[0] + "#ride-" + S.ride.key.sli
 function joinTest(code){
   code = String(code).toUpperCase().replace(/[^A-Z0-9]/g,"").slice(0,8);
   S.ride = {key:"TEST-" + code, label:t("testRide",{c:code}), expiresAt: Date.now() + 120*60000};
-  S.seen = new Set(); S.buddySeen = new Set(); S.riders = []; S.matches = []; S.warnedEnd = false;
+  S.seen = new Set(); S.buddySeen = new Set(); S.riders = []; S.matches = []; S.warnedEnd = false; S.declined = new Set(); S.wavedMe = new Set();
   save(); S.screen = "mood"; render();
 }
 function openProfile(){
@@ -71,7 +71,7 @@ const actions = {
       key = norm(line) + "-" + norm(num) + "-" + berlinDate(); label = line.toUpperCase() + " · " + num;
     }
     S.ride = {key, label, expiresAt: Date.now() + minutes*60000};
-    S.seen = new Set(); S.buddySeen = new Set(); S.riders = []; S.matches = []; S.warnedEnd = false;
+    S.seen = new Set(); S.buddySeen = new Set(); S.riders = []; S.matches = []; S.warnedEnd = false; S.declined = new Set(); S.wavedMe = new Set();
     save(); S.screen = "mood"; render();
   },
   mood(id){ S.moods.has(id) ? S.moods.delete(id) : S.moods.add(id); if(!S.moods.size) S.moods.add(id); save(); render(); },
@@ -91,6 +91,8 @@ const actions = {
     r.waved = !r.waved; if(r.waved && !S.wavedOnce){ S.wavedOnce = true; save(); } render();
     safe(async()=>{ r.waved ? await backend.wave(id) : await backend.unwave(id); });
   },
+  // "Not now" to someone who waved: only remembered on this phone; the other person never finds out
+  waveNo(id){ S.declined.add(id); render(); },
   nextIce(){ S.iceIndex++; render(); },
   // Talk Train in your calendar: a weekly .ics made on the phone (opens the calendar app), nothing is sent anywhere
   calAdd(){

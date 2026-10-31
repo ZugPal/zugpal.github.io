@@ -7,7 +7,7 @@ const S = {
   lang:"de", profile:null, agreed:false, edit:null,
   ride:null, moods:new Set(["small"]), coach:"", womenOnly:false, chatOnly:true, open:true, moodBefore:null, moodAfter:null, autoTalk:false,
   screen:"welcome", riders:[], matches:[], seen:new Set(), buddySeen:new Set(), buddies:new Set(),
-  current:null, chatWith:null, unread:{}, netDown:false, messages:[], mediaDone:new Set(), mediaStatus:{}, mediaCache:{}, photoSheet:false, readCount:{}, lastUnread:0, presAct:null, presAt:0, chess:null, dama:null, sol:null, gamesBack:"checkin", playing:null, viewer:null, reportSheet:null, reportDone:null, notices:[], noticesAt:0, recording:null, iceIndex:0, draft:{}, fb:{}, toast:"", warnedEnd:false
+  declined:new Set(), wavedMe:new Set(), current:null, chatWith:null, unread:{}, netDown:false, messages:[], mediaDone:new Set(), mediaStatus:{}, mediaCache:{}, photoSheet:false, readCount:{}, lastUnread:0, presAct:null, presAt:0, chess:null, dama:null, sol:null, gamesBack:"checkin", playing:null, viewer:null, reportSheet:null, reportDone:null, notices:[], noticesAt:0, recording:null, iceIndex:0, draft:{}, fb:{}, toast:"", warnedEnd:false
 };
 let backend = null;
 function setBackend(b){ backend = b; }

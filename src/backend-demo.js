@@ -30,10 +30,12 @@ function DemoBackend(){
   return {
     mode:"demo",
     async checkIn(){ timers.forEach(clearTimeout); timers=[]; present=[]; mine.clear(); theirs.clear(); msgs={}; reacted={};
-      people.forEach((p,i)=>after(700 + i*1500, ()=>present.push(p))); },
+      people.forEach((p,i)=>after(700 + i*1500, ()=>present.push(p)));
+      // Karim waves first, so you can try "Waved at you"
+      after(6000, ()=>{ if(present.some(p=>p.id==="d-karim")) theirs.add("d-karim"); }); },
     async update(){},
     async visible(){ if(!S.open) return []; return present.filter(visibleTo).map(p=>({id:p.id, first_name:p.name, ask_me:p.askMe ? (p.askMe[S.lang]||p.askMe.en) : null, age_range:p.age, languages:p.langs, topics:p.topics, moods:p.moods,
-      chat_only:p.chatOnly, same_coach:!!S.coach && S.coach===p.coach, waved:mine.has(p.id), photo_small:p.photo, badges:p.badges, buddy:isBuddy(p), practice:p.practice || null})); },
+      chat_only:p.chatOnly, same_coach:!!S.coach && S.coach===p.coach, waved:mine.has(p.id), waved_me:theirs.has(p.id), photo_small:p.photo, badges:p.badges, buddy:isBuddy(p), practice:p.practice || null})); },
     async wave(id){ mine.add(id); const p=people.find(x=>x.id===id); if(p && p.wavesBack) after(2500, ()=>theirs.add(id)); },
     async unwave(id){ mine.delete(id); },
     async matches(){ if(!S.open) return []; return present.filter(p=>visibleTo(p) && mine.has(p.id) && theirs.has(p.id)).map(p=>({id:p.id, first_name:p.name, age_range:p.age, languages:p.langs, moods:p.moods,

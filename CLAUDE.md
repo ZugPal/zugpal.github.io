@@ -16,7 +16,7 @@ Zugpal ("Zug" = train, "pal" = friend) is a **non-dating** app that helps shy tr
 ## 2. Product principles (do not break these)
 
 - Not dating: no swiping, no hearts, no "singles" language, no star ratings of people.
-- Mutual opt-in only: waves are private; matches only when both wave. Max **5 waves per ride**.
+- Mutual opt-in only: matches only when both wave. Max **5 waves per ride**. **Changed 2026-10-31 (Husam's decision):** the receiver sees who waved at them ("Waved at you": Wave back / Not now, `visible_riders().waved_me`); "Not now" stays on the receiver's phone (`S.declined`), so the waver never gets a "no".
 - Photos are **blurred until a match** (others only receive a 24 px thumbnail; the full photo is only returned to matches by the database).
 - **Chat-only is the default** for first contacts; the coach number is only shown after a match and only if neither person chose chat-only.
 - **Women-only** option (women see only women, only women see them).
@@ -94,7 +94,7 @@ Modules only reassign their own top-level variables (ES imports are read-only), 
 - Functions the app calls: `visible_riders()`, `my_matches()`, `send_media()`, `open_media()` (returns data once), `my_media_status()`, `report_media()`. Only the `authenticated` role may execute them (the app always signs in anonymously); they are revoked from `PUBLIC` and `anon`.
 - Helpers `private.can_see()`, `private.is_match()`, `private.had_match()` live in the **`private` schema**, which the API does not expose. They are security definer, so in `public` anyone could have asked "did X and Y match / block each other?". Keep new security definer helpers in `private`, and revoke every new function from `PUBLIC`.
 - Reports: `file_report()` (keeps the last 20 messages as evidence), `my_notices()`, `notices_seen()`; tables `notices`, `suspensions`. Moderators decide with `private.decide_report(id, action, reason)`; open cases in `private.open_reports`. See `docs/MODERATION.md`. Paused users can't check in or write (`private.is_suspended`).
-- Migrations live in `supabase/migrations/` (applied: `presence_and_wav_voice`, `private_helper_functions` on 2026-10-26; `reports_notices_suspensions`, `auto_cleanup`, `language_practice`, `realtime_messages`, `profiles`, `host_and_partner` on 2026-10-28). `auto_cleanup` (2026-10-28): hourly pg_cron job `zugpal-cleanup` runs `private.cleanup()`; data from before 2026-10-28 is kept until Husam says to delete old test data. `schema.sql` is the full current state for a fresh project. Test a migration first with a dry run (`execute_sql` ending in `raise exception`, so everything rolls back), then apply it with `apply_migration`.
+- Migrations live in `supabase/migrations/` (applied: `see_who_waved` on 2026-10-31; `presence_and_wav_voice`, `private_helper_functions` on 2026-10-26; `reports_notices_suspensions`, `auto_cleanup`, `language_practice`, `realtime_messages`, `profiles`, `host_and_partner` on 2026-10-28). `auto_cleanup` (2026-10-28): hourly pg_cron job `zugpal-cleanup` runs `private.cleanup()`; data from before 2026-10-28 is kept until Husam says to delete old test data. `schema.sql` is the full current state for a fresh project. Test a migration first with a dry run (`execute_sql` ending in `raise exception`, so everything rolls back), then apply it with `apply_migration`.
 - Never put the `service_role` key or the database password into code, commits or chat.
 
 ## 6. Known issues and gaps

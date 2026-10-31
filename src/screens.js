@@ -159,7 +159,7 @@ function practicePair(p){
   const mine = S.profile && S.profile.practice; if(!mine || !p) return false;
   return (mine === "helper" && p.startsWith("learner-")) || (mine.startsWith("learner-") && p === "helper");
 }
-function personCard(r){
+function personCard(r, asking){
   const tags = [];
   if(r.buddy) tags.push(`<span class="tag gold">${t("buddyTag")}</span>`);
   if(r.same_coach && !r.chat_only) tags.push(`<span class="tag">${t("sameCoach")}</span>`);
@@ -178,7 +178,8 @@ function personCard(r){
       ${r.ask_me && !hasContact(r.ask_me) ? `<div class="small" style="color:var(--ink)" dir="auto">“${esc(t("askMeShown",{x:String(r.ask_me).slice(0,60)}))}”</div>` : ""}
       ${tags.length ? `<div class="tags">${tags.join("")}</div>` : ""}
       <button class="link quiet" data-act="reportOpen" data-arg="${esc(r.id)}">${ICON.shield}${t("reportShort")}</button></div>
-    <button class="btn wave${r.waved?" done":""}" data-act="wave" data-arg="${esc(r.id)}" aria-pressed="${!!r.waved}">${r.waved?t("waved"):t("wave")}</button></div>`;
+    ${asking ? `<div class="askbtns"><button class="btn wave" data-act="wave" data-arg="${esc(r.id)}" aria-pressed="false">${t("waveBack")}</button><button class="link" data-act="waveNo" data-arg="${esc(r.id)}">${t("waveNo")}</button></div>`
+      : `<button class="btn wave${r.waved?" done":""}" data-act="wave" data-arg="${esc(r.id)}" aria-pressed="${!!r.waved}">${r.waved?t("waved"):t("wave")}</button>`}</div>`;
 }
 // Sprachpraxis chips, used on the profile (edits S.edit) and on the mood screen at check-in (edits the profile directly)
 function practiceField(cur, act, levelAct){
@@ -326,7 +327,12 @@ const screens = {
       <div class="person">${photo(m.id, m.first_name, m.photo, 56, false)}<div class="grow"><div class="pname">${esc(m.first_name)}</div><div class="small">${esc((m.moods||[]).map(moodName).join(" · "))}</div>
       ${m.chat_only || S.unread[m.id] ? `<div class="tags">${S.unread[m.id] ? `<span class="tag new">${t("unreadTag",{n:S.unread[m.id]})}</span>` : ""}${m.chat_only ? `<span class="tag">${t("chatOnlyTag")}</span>` : ""}</div>` : ""}</div>
       <button class="btn wave" data-act="chat" data-arg="${esc(m.id)}">${t("openChat")}</button></div>`).join("") : "";
-    const others = S.riders.filter(r=>!matchIds.has(r.id)).sort((a,b)=>((b.buddy?2:0)+(practicePair(b.practice)?1:0))-((a.buddy?2:0)+(practicePair(a.practice)?1:0)));
+    // people who waved at you and wait for your answer: "Wave back" or "Not now" (they never learn about a "not now")
+    const asking = S.open ? S.riders.filter(r=>r.waved_me && !r.waved && !matchIds.has(r.id) && !S.declined.has(r.id)) : [];
+    const askIds = new Set(asking.map(r=>r.id));
+    const wavedMe = asking.length ? `<div class="card wavedme"><div class="pname">${t("wavedAtYou")}</div><div class="small">${t("wavedAtYouHint")}</div>
+      ${asking.map(r=>personCard(r, true)).join("")}</div>` : "";
+    const others = S.riders.filter(r=>!matchIds.has(r.id) && !askIds.has(r.id)).sort((a,b)=>((b.buddy?2:0)+(practicePair(b.practice)?1:0))-((a.buddy?2:0)+(practicePair(a.practice)?1:0)));
     const [w, de, en, ar] = todaysWord();
     return `<div class="screen">
       <div class="row" style="justify-content:space-between;flex-wrap:wrap">
@@ -341,6 +347,7 @@ const screens = {
       ${hostCard()}
       <h1>${title}</h1>
       ${waveHelp()}
+      ${wavedMe}
       ${matchList}
       ${profileNudge()}
       ${S.open ? (others.map(personCard).join("") || (S.matches.length ? "" : `<div class="empty"><div class="muted">${t("emptyBody")}</div></div>`)) : ""}

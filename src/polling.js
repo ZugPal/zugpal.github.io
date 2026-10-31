@@ -25,6 +25,11 @@ async function refresh(){
     if(S.isHost) S.hostStats = await backend.hostStats().catch(() => S.hostStats);
   }
   S.riders = riders || []; S.matches = matches || [];
+  // someone new waved at you: a vibration and a notice without a name (the card shows who)
+  const newWave = S.riders.find(r => r.waved_me && !r.waved && !S.wavedMe.has(r.id));
+  S.riders.forEach(r => { if(r.waved_me) S.wavedMe.add(r.id); });
+  if(newWave){ try{ navigator.vibrate && navigator.vibrate([40, 30, 40]); }catch(e){}
+    if(document.hidden) notify(t("wavedNotice")); else if(S.screen !== "nearby") toast(t("wavedNotice")); }
   const buddy = S.riders.find(r=>r.buddy && !S.buddySeen.has(r.id) && !S.seen.has(r.id));
   if(buddy){ S.buddySeen.add(buddy.id); toast(t("buddyHere",{name:buddy.first_name})); }
   const fresh = S.matches.find(m=>!S.seen.has(m.id));
@@ -54,7 +59,7 @@ function messageAlert(row){
   const m = S.matches.find(x => x.id === from), name = m ? m.first_name : "";
   try{ navigator.vibrate && navigator.vibrate([60, 40, 60]); }catch(e){}
   updateBadge();
-  if(document.hidden) return notify();
+  if(document.hidden) return notify(unreadTotal() > 1 ? t("newMsgsN", { n: unreadTotal() }) : t("newMsg1"));
   // games already show their own notice for the person you are playing with
   if(!(S.chatWith === from && ["chess","dama","table"].includes(S.screen))) toast(t("newMsgFrom",{name}));
 }
@@ -64,10 +69,9 @@ function updateBadge(){
   try{ const n = unreadTotal(); if(navigator.setAppBadge) n ? navigator.setAppBadge(n) : navigator.clearAppBadge(); }catch(e){}
 }
 // The phone notice never shows a name or the message: just "Zugpal" and how many new messages there are
-function notify(){
+function notify(body){
   if(S.notifyOff || !("Notification" in window) || Notification.permission !== "granted") return;
-  const n = unreadTotal();
-  const opts = { body: n > 1 ? t("newMsgsN", { n }) : t("newMsg1"), icon: "icons/icon-192.png", badge: "icons/badge-96.png", tag: "zugpal-msg", renotify: true, data: { n } };
+  const opts = { body, icon: "icons/icon-192.png", badge: "icons/badge-96.png", tag: "zugpal-msg", renotify: true };
   const title = "Zugpal";
   (navigator.serviceWorker ? navigator.serviceWorker.getRegistration() : Promise.resolve(null))
     .then(reg => reg ? reg.showNotification(title, opts) : new Notification(title, opts)).catch(e => console.error(e));
