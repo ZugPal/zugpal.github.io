@@ -13,6 +13,7 @@ import { partyActions } from "./party.js";
 import { sponsorActions } from "./sponsor.js";
 import { solitaireActions } from "./solitaire.js";
 import { chessActions } from "./chessui.js";
+import { damaActions } from "./damaui.js";
 
 /* ---------------- Actions ---------------- */
 function selectInvite(){ const el = document.getElementById("inviteText"); if(!el) return; const r = document.createRange(); r.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
@@ -288,6 +289,6 @@ async function finishRide(){
   save(); S.screen = "checkin"; toast(before && after && after > before ? t("moodUp") : t("endedToast"));
 }
 
-Object.assign(actions, wordActions, classicActions, libraryActions, partyActions, sponsorActions, solitaireActions, chessActions);
+Object.assign(actions, wordActions, classicActions, libraryActions, partyActions, sponsorActions, solitaireActions, chessActions, damaActions);
 
 export { actions, inviteLink, joinTest, openProfile, safe, startFeedback };

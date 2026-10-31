@@ -112,6 +112,16 @@ for (const lang of ["de", "en", "ar"]) {
       await expect(page.locator(".cmoves .mv")).toHaveCount(2, { timeout: 10000 });
     }
     await shot("7-chess-online");
+    { // online Dama with the match: drag a3-a4, the (simulated) match answers
+      await page.click('[data-act="chessBack"][data-arg="chat"] >> nth=0');
+      await page.click('.games [data-act="damaInvite"]');
+      await expect(page.locator(".dboard .dpiece")).toHaveCount(32);
+      const r = await page.locator(".dboard").boundingBox(), sq = r.width / 8;
+      await page.mouse.move(r.x + .5 * sq, r.y + 5.5 * sq); await page.mouse.down();
+      await page.mouse.move(r.x + .5 * sq, r.y + 5 * sq, { steps: 3 }); await page.mouse.move(r.x + .5 * sq, r.y + 4.5 * sq, { steps: 3 }); await page.mouse.up();
+      await expect(page.locator("#dmoves .mv")).toHaveCount(2, { timeout: 10000 });
+      await shot("7b-dama-online");
+    }
 
     // Games screen: chess vs computer makes a move, solitaire deals
     await page.goto("/?demo");

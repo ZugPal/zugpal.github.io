@@ -118,6 +118,63 @@ const ZDama = (function(){
     return best;
   }
 
-  return { newGame, legal, apply, status, key, fromKey, bestMove, isKing, color };
+  /* Notation: squares a1..h8 (a1 = white's left corner), "c3-c4" for a step, "c3xc5xe5" for captures */
+  const sqName = i => "abcdefgh"[i % 8] + (Math.floor(i / 8) + 1);
+  const notation = m => m.path.map(sqName).join(m.taken.length ? "x" : "-");
+  const posKey = st => st.b.map(p => p || "-").join("") + st.turn;
+
+  /* Stronger opponent: negamax + alpha-beta, captures first, iterative deepening with a time limit.
+     Levels: easy (2 plies, noisy), medium (3), hard (5), expert (up to 1.5 s). */
+  function evaluate2(st){
+    let s = 0, wk = 0, bk = 0, wm = 0, bm = 0;
+    for(let i = 0; i < 64; i++){ const p = st.b[i]; if(!p) continue;
+      const row = Math.floor(i / 8), col = i % 8, w = color(p) === "w";
+      let v;
+      if(isKing(p)){ v = 300; w ? wk++ : bk++; }
+      else { const adv = w ? row : 7 - row; v = 100 + adv * adv * 1.5 + (col > 1 && col < 6 ? 4 : 0) + ((w ? row === 1 : row === 6) ? 6 : 0); w ? wm++ : bm++; }
+      s += w ? v : -v; }
+    const total = wk + bk + wm + bm, lead = (wk * 3 + wm) - (bk * 3 + bm);
+    if(total < 10) s += lead * 15;       // trade down when ahead
+    return st.turn === "w" ? s : -s;
+  }
+  class Timeout {}
+  function think(st, level, rnd){
+    rnd = rnd || Math.random;
+    const moves = legal(st); if(!moves.length) return null;
+    if(moves.length === 1) return moves[0];
+    const lim = { easy: [2, 0], medium: [3, 0], hard: [5, 0], expert: [12, 1500] }[level] || [3, 0];
+    const deadline = lim[1] ? Date.now() + lim[1] : Infinity, noisy = level === "easy" || level === "medium"; let nodes = 0;
+    function nega(s, depth, alpha, beta, ply){
+      if((++nodes & 511) === 0 && Date.now() > deadline) throw new Timeout();
+      const ms = legal(s);
+      if(!ms.length) return -100000 + ply;
+      if(s.quiet >= 80) return 0;
+      if(depth <= 0 && !ms[0].taken.length) return evaluate2(s);   // keep looking while captures are forced
+      if(depth <= -6) return evaluate2(s);
+      let best = -Infinity;
+      for(const m of ms){
+        const v = -nega(apply(s, m), depth - 1, -beta, -alpha, ply + 1);
+        if(v > best) best = v; if(v > alpha) alpha = v; if(alpha >= beta) break;
+      }
+      return best;
+    }
+    let bestMove = moves[Math.floor(rnd() * moves.length)], prev = null;
+    for(let d = 1; d <= lim[0]; d++){
+      try{
+        let alpha = -Infinity, bm = null, bv = -Infinity;
+        const ms = moves.slice(); if(prev){ ms.splice(ms.indexOf(prev), 1); ms.unshift(prev); }
+        for(const m of ms){
+          let v = -nega(apply(st, m), d - 1, -Infinity, noisy ? Infinity : -alpha, 1);
+          if(level === "easy") v += (rnd() - 0.5) * 160; else if(level === "medium") v += (rnd() - 0.5) * 30;
+          if(v > bv){ bv = v; bm = m; } if(v > alpha) alpha = v;
+        }
+        bestMove = prev = bm;
+        if(bv > 90000) break;
+      }catch(e){ if(e instanceof Timeout) break; throw e; }
+    }
+    return bestMove;
+  }
+
+  return { newGame, legal, apply, status, key, fromKey, bestMove, isKing, color, sqName, notation, posKey, think };
 })();
 if(typeof module !== "undefined") module.exports = ZDama;

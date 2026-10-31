@@ -80,7 +80,7 @@ function damaCpu(){
   }, 60);
 }
 const peerOf = id => S.matches.find(x=>x.id===id);
-const COUNTED = m => !["cm","cx","dm","chess","dama","zw","zg","lt","lg","cg","cgm","qz","qa","sl","slsub","slstop","slrej"].includes(parseMsg(m.body).type);
+const COUNTED = m => !["cm","cx","dm","dx","chess","dama","zw","zg","lt","lg","cg","cgm","qz","qa","sl","slsub","slstop","slrej"].includes(parseMsg(m.body).type);
 function presenceOf(m, gid){
   if(!m || !m.seen_at) return null;
   const age = Date.now() - Date.parse(m.seen_at);

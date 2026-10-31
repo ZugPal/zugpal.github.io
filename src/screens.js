@@ -12,6 +12,7 @@ import { partyCard, quizScreen, slfScreen } from "./party.js";
 import { sponsorSlot, supporterScreen } from "./sponsor.js";
 import { mountSolitaire, solDialogHtml, solitaireScreen } from "./solitaire.js";
 import { chessOverlay, chessScreen, mountChess } from "./chessui.js";
+import { damaOverlay, damaScreen, mountDama } from "./damaui.js";
 
 /* ---------------- Screens ---------------- */
 function header(){
@@ -96,6 +97,7 @@ function overlays(){
   if(S.hostSheet) return hostSheet();
   if(S.screen==="solitaire" && (S.solSheet || S.solDialog)) return solDialogHtml();
   if(S.screen==="chess"){ const o = chessOverlay(); if(o) return o; }
+  if(S.screen==="dama"){ const o = damaOverlay(); if(o) return o; }
   if(S.reportDone) return `<div class="sheet" role="dialog" aria-modal="true"><div class="panel">
     <h2>${ICON.shield} ${t("reportThanksTitle")}</h2><p>${t("reportThanks",{n:Number(S.reportDone.n)||""})}</p>
     <div class="banner">${t("emergency")}</div>
@@ -305,7 +307,7 @@ const screens = {
       if(p.type==="spin"){ const meAsks = (x.mine && p.val==="me") || (!x.mine && p.val==="you"); return `<div class="gamecard"><span class="lbl">${t("spin")}</span><span class="big">${meAsks ? t("spinYou") : t("spinThem",{name})}</span></div>`; }
       if(p.type==="ttl") return `<div class="gamecard"><span class="lbl">${t("ttl")}</span><span>${x.mine ? t("ttlYou",{name}) : t("ttlThem",{name})}</span></div>`;
       if(p.type==="bye") return `<div class="msg${x.mine?" mine":""}">${t("bye")}</div>`;
-      if(["cm","cx","dm","zg","lg","cgm","qa","slsub","slstop","slrej"].includes(p.type)) return "";
+      if(["cm","cx","dm","dx","zg","lg","cgm","qa","slsub","slstop","slrej"].includes(p.type)) return "";
       if(p.type==="qz" || p.type==="sl") return partyCard(p, x, name);
       if(p.type==="cg") return cgCard(p, x, name);
       if(p.type==="book") return bookCard(p, x, name);
@@ -369,7 +371,7 @@ const screens = {
       <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">${GLYPH.N}\uFE0E</span><div class="grow"><div class="pname">${t("vsComputer")}</div><div class="small">${t("vsComputerBody")}</div></div></div>
         <button class="btn" data-act="chessCpu">${t("play")}</button></div>
       <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">${GLYPH.K}\uFE0E</span><div class="grow"><div class="pname">${t("withMatch")}</div><div class="small">${t("withMatchBody")}</div></div></div></div>
-      <div class="card"><div class="gamecard2"><span class="dm b" style="width:34px;height:34px;flex-shrink:0"></span><div class="grow"><div class="pname">${t("damaVs")}</div><div class="small">${t("vsComputerBody")}</div><div class="small">${t("damaWith")}</div></div></div>
+      <div class="card"><div class="gamecard2"><span class="dm b" style="width:34px;height:34px;flex-shrink:0"></span><div class="grow"><div class="pname">${t("damaT")}</div><div class="small">${t("daBody")}</div></div></div>
         <button class="btn" data-act="damaCpuNew">${t("play")}</button></div>
       <div class="card"><div class="gamecard2"><span class="pc b" style="font-size:34px">♠\uFE0E</span><div class="grow"><div class="pname">${t("solVs")}</div><div class="small">${t("solBody2")}</div></div></div>
         <button class="btn" data-act="solNew">${t("play")}</button></div>
@@ -403,28 +405,7 @@ const screens = {
 
   chess(){ return chessScreen(); },
 
-  dama(){
-    const d = S.dama, ds = damaState(); if(!d || !ds) return screens.games();
-    const {st, myColor, last} = ds, status = ZDama.status(st);
-    const m = d.mode==="online" ? (S.matches.find(x=>x.id===d.peerId) || {first_name:d.peerName||""}) : null;
-    const name = m ? esc(m.first_name) : t("computer");
-    let line;
-    if(status.over) line = status.draw ? t("drawT") : (status.winner===myColor ? t("winD") : (d.mode==="cpu" ? t("cpuWinD") : t("loseD",{name})));
-    else if(d.thinking) line = t("thinking");
-    else line = (st.turn===myColor ? t("yourMove") : (d.mode==="cpu" ? t("thinking") : t("peerMove",{name}))) + (status.mustCapture && st.turn===myColor ? " · " + t("mustCapture") : "");
-    const back = d.mode==="online" ? "chat" : "games";
-    return `<div class="screen">
-      <div class="row"><button class="iconbtn flip" data-act="chessBack" data-arg="${back}" aria-label="${t("back")}">${ICON.back}</button>
-        <div class="grow"><div class="pname">${t("damaT")}</div><div class="small">${d.mode==="cpu" ? t("damaVs") : name}</div></div></div>
-      <span class="pill${status.over?"":" off"}" style="align-self:flex-start">${line}</span>
-      ${d.mode==="online" ? onlineInfo("dama", d) : ""}
-      ${damaBoard(st, myColor, d.sel, last)}
-      <div class="small">${t("damaRules")}</div>
-      ${d.mode==="cpu" ? `<div class="row" style="flex-wrap:wrap">
-        <div class="seg"><button class="chip" data-act="damaLevel" data-arg="easy" aria-pressed="${d.level==="easy"}">${t("easy")}</button><button class="chip" data-act="damaLevel" data-arg="normal" aria-pressed="${d.level!=="easy"}">${t("normal")}</button></div>
-        <button class="btn ghost small" data-act="damaCpuNew">${t("newGame")}</button></div>` : `<div class="row" style="flex-wrap:wrap"><button class="btn ghost small" data-act="damaInvite">${t("newGame")}</button><button class="btn ghost small" data-act="chessBack" data-arg="chat">${t("backChat")}</button></div>`}
-    </div>`;
-  },
+  dama(){ return damaScreen(); },
 
   solitaire(){ return solitaireScreen(); },
 
@@ -461,6 +442,7 @@ function render(){
   const log = document.getElementById("chatLog"); if(log) log.scrollTop = log.scrollHeight;
   if(S.screen==="solitaire") mountSolitaire();
   if(S.screen==="chess") mountChess();
+  if(S.screen==="dama") mountDama();
 }
 
 export { REPORT_REASONS, loadNotices, render };
