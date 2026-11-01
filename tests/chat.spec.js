@@ -18,7 +18,7 @@ async function toChat(page, lang = "de"){
   const chatBtn = page.locator('[data-act="chat"][data-arg="d-lena"]');
   for(let i = 0; i < 25 && !(await chatBtn.isVisible()); i++){
     const wave = page.locator('.person [data-act="wave"][data-arg="d-lena"][aria-pressed="false"]');
-    if(await wave.isVisible()) await wave.click();
+    if(await wave.isVisible()) await wave.click({ timeout: 3000 }).catch(() => {});   // the list redraws often; just try again
     await page.waitForTimeout(700);
   }
   await chatBtn.click();
