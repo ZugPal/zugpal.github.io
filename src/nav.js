@@ -9,6 +9,7 @@ const PASS = new Set(["match", "mood", "loading"]);
 // sheets and dialogs that back closes first: [is it open, close it]
 const SHEETS = [
   [() => S.viewer, () => { S.viewer = null; }],
+  [() => S.installSheet, () => { S.installSheet = null; }],
   [() => S.qrSheet, () => { S.qrSheet = null; }],
   [() => S.groupSheet, () => { S.groupSheet = null; }],
   [() => S.reportSheet, () => { S.reportSheet = null; }],

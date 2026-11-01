@@ -24,6 +24,7 @@ import { paintQrs } from "./qr.js";
 import { pending } from "./outbox.js";
 import { groupScreen, groupSheet, trainNewScreen, trainsSection } from "./trains.js";
 import { chatScreen, gameChat, plusSheet } from "./chatui.js";
+import { installBar, installLink, installSheet } from "./install.js";
 
 /* ---------------- Screens ---------------- */
 function header(){
@@ -133,6 +134,7 @@ function wordMeaningSheet(){
     <div class="row" style="justify-content:flex-end"><button class="btn" data-act="wordClose">${t("close")}</button></div></div></div>`;
 }
 function overlays(){
+  if(S.installSheet) return installSheet();
   if(S.qrSheet) return qrSheet();
   if(S.groupSheet) return groupSheet();
   if(S.wordFlip !== null && S.wordFlip !== undefined) return wordMeaningSheet();
@@ -275,6 +277,7 @@ const screens = {
       <label class="check" for="acceptPhotos"><input type="checkbox" id="acceptPhotos" data-bind="edit.acceptPhotos"${e.acceptPhotos!==false?" checked":""}> ${t("acceptPhotos")}</label>`;
     return `<div class="screen">
       ${first && S.autoTalk ? `<div class="banner info talkbanner"><b>${t("talkOnBoard")}</b><span>${esc(talkInfo().route)}</span></div>` : ""}
+      ${first ? installBar() : ""}
       ${first ? `<div class="muted">${t("tagline")}</div><h1>${t("welcomeTitle")}</h1><p class="muted" style="margin:0">${t("welcomeBody")}</p>${trustStrip()}` : `<h1>${t("profileTitle")}</h1>`}
       <div class="field"><label for="name">${t("firstName")}</label>
         <input type="text" id="name" data-bind="edit.name" maxlength="30" autocomplete="given-name" value="${esc(e.name)}">
@@ -296,6 +299,7 @@ const screens = {
     const opts = ["15","30","45","60","90","120"].map(v=>`<option value="${v}"${v===dur?" selected":""}>${v} ${t("min")}</option>`).join("");
     return `<div class="screen">
       <div class="row">${photo("me", S.profile.name, S.profile.photo, 40, false)}<div class="grow muted">${esc(S.profile.name)}</div><button class="link" data-act="editProfile">${t("editProfile")}</button></div>
+      ${installBar()}
       <h1>${t("checkinTitle")}</h1>
       ${S.ride ? `<div class="banner info action"><span>${t("stillOn",{r:esc(S.ride.label)})}</span><button class="btn small" data-act="go" data-arg="nearby">${t("toPeople")}</button></div>` : ""}
       ${talkHero()}
@@ -310,11 +314,11 @@ const screens = {
         <button class="btn" data-act="checkin" data-arg="train">${t("checkin")}</button></div>
       <div class="row twobtn"><button class="btn ghost" data-act="openGames">${t("games")}</button>
         <button class="btn ghost" data-act="openLibrary">${ICON.book}${t("libTitle")}</button></div>
-      ${S.installPrompt ? `<div class="card"><div class="pname">${t("installTitle")}</div><div class="small">${t("installBody")}</div><button class="btn ghost" data-act="install">${t("installBtn")}</button></div>` : ""}
       <div class="card"><div class="pname">${t("testTitle")}</div><div class="small">${t("testBody")}</div>
         <button class="btn ghost" data-act="startTest">${t("testBtn")}</button></div>
       <div class="card" style="flex-direction:row;align-items:flex-start;color:var(--muted)">${ICON.shield}<div style="font-size:14px">${t("nobodySees")}</div></div>
       ${trustStrip()}
+      ${installLink()}
       <button class="link quiet" data-act="openSupport">${t("supLink")}</button>
       ${backend && backend.mode === "live" ? `<button class="link quiet" data-act="hostOpen">${S.isHost ? t("hostActive") : t("hostLink")}</button>` : ""}
     </div>`;

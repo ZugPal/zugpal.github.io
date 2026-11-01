@@ -690,3 +690,16 @@ button.word{font:inherit;color:inherit;background:var(--surface);text-align:star
 .callbtn.red{background:#E5484D}.callbtn.green{background:#2FB872}
 .callsafe{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:13px;color:#C9D8E4;text-align:center}
 .callsafe .link{color:#fff;display:inline-flex;gap:6px;align-items:center}
+/* Install Zugpal: bar on sign-up / check-in, sheet with the steps for each phone */
+.installbar{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:10px 4px 10px 12px}
+.installbar img{border-radius:10px;flex-shrink:0}
+.installbar .small{margin-top:2px}
+.installbar .btn{white-space:nowrap}
+.installbar .iconbtn{width:40px;height:40px;font-size:22px;color:var(--muted)}
+.installsheet h2{margin:0;font-size:20px}
+.installsheet .row img{border-radius:12px}
+.isteps{margin:0;padding-inline-start:22px;display:flex;flex-direction:column;gap:10px;line-height:1.45}
+.isteps li::marker{font-weight:700;color:var(--accent)}
+.ii{width:20px;height:20px;vertical-align:-4px;margin:0 2px;color:var(--accent)}
+.iother summary{cursor:pointer;color:var(--accent);font-weight:600;padding:6px 0}
+.iother .ihead{font-weight:700;margin:12px 0 6px}

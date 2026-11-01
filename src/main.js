@@ -78,6 +78,7 @@ window.addEventListener("offline", () => render());
   });
   load();
   S.autoTalk = location.hash === "#talk";
+  if(location.hash === "#install") S.installSheet = true;
   const m = location.hash.match(/^#ride-([A-Za-z0-9]{4,8})$/); S.autoRide = m ? m[1] : null;
   const tm = location.hash.match(/^#train-([A-Za-z0-9]{6})$/); S.autoTrain = tm ? tm[1].toUpperCase() : null;
   navInit(render);

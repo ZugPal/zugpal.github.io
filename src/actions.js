@@ -24,6 +24,7 @@ import { tableActions } from "./tablekit.js";
 import { calendarFile } from "./talktrain.js";
 import { queue } from "./outbox.js";
 import { openTrainLink, trainActions } from "./trains.js";
+import { installActions } from "./install.js";
 
 /* ---------------- Actions ---------------- */
 function selectInvite(){ const el = document.getElementById("inviteText"); if(!el) return; const r = document.createRange(); r.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
@@ -272,7 +273,7 @@ const actions = {
     safe(async()=>{ await backend.hostAnnounce(body.slice(0,280)); S.draft.hostMsg = ""; S.hostStats = await backend.hostStats(); S.announcement = body.slice(0,280); toast(t("hostSent")); render(); });
   },
   reloadApp(){ location.reload(); },
-  install(){ const p = S.installPrompt; if(!p) return; S.installPrompt = null; p.prompt(); p.userChoice.finally(() => render()); },
+  install(){ const p = S.installPrompt; if(!p) return; S.installPrompt = null; p.prompt(); p.userChoice.finally(() => { S.installSheet = null; render(); }); },
   practice(v){ if(S.edit){ S.edit.practice = v === "none" || S.edit.practice === v ? "" : v; render(); } },
   // the same choice on the mood screen at check-in: saved straight into the profile
   mpractice(v){ if(!S.profile) return; S.profile.practice = v === "none" || S.profile.practice === v ? "" : v; save(); render(); },
@@ -352,6 +353,6 @@ async function finishRide(){
   save(); S.screen = "checkin"; toast(before && after && after > before ? t("moodUp") : t("endedToast"));
 }
 
-Object.assign(actions, callActions, trainActions, wordActions, classicActions, libraryActions, slActions, sponsorActions, solitaireActions, chessActions, damaActions, tableActions, zugwortActions, lettersActions, quizActions);
+Object.assign(actions, callActions, trainActions, installActions, wordActions, classicActions, libraryActions, slActions, sponsorActions, solitaireActions, chessActions, damaActions, tableActions, zugwortActions, lettersActions, quizActions);
 
 export { actions, inviteLink, joinTest, openProfile, safe, startFeedback };
