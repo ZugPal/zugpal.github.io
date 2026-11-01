@@ -25,6 +25,7 @@ import { calendarFile } from "./talktrain.js";
 import { queue } from "./outbox.js";
 import { openTrainLink, trainActions } from "./trains.js";
 import { installActions } from "./install.js";
+import { practiceActions } from "./practice.js";
 
 /* ---------------- Actions ---------------- */
 function selectInvite(){ const el = document.getElementById("inviteText"); if(!el) return; const r = document.createRange(); r.selectNodeContents(el); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); }
@@ -353,6 +354,6 @@ async function finishRide(){
   save(); S.screen = "checkin"; toast(before && after && after > before ? t("moodUp") : t("endedToast"));
 }
 
-Object.assign(actions, callActions, trainActions, installActions, wordActions, classicActions, libraryActions, slActions, sponsorActions, solitaireActions, chessActions, damaActions, tableActions, zugwortActions, lettersActions, quizActions);
+Object.assign(actions, callActions, trainActions, installActions, practiceActions, wordActions, classicActions, libraryActions, slActions, sponsorActions, solitaireActions, chessActions, damaActions, tableActions, zugwortActions, lettersActions, quizActions);
 
 export { actions, inviteLink, joinTest, openProfile, safe, startFeedback };

@@ -8,6 +8,7 @@ import { navInit } from "./nav.js";
 import { refresh, restoreRide, startPolling } from "./polling.js";
 import { flush } from "./outbox.js";
 import { openTrainLink, sendGroup } from "./trains.js";
+import { PracticeBackend } from "./practice.js";
 import { loadNotices, render } from "./screens.js";
 import { S, backend, load, save, setBackend } from "./state.js";
 import { t, toast } from "./util.js";
@@ -83,8 +84,9 @@ window.addEventListener("offline", () => render());
   const tm = location.hash.match(/^#train-([A-Za-z0-9]{6})$/); S.autoTrain = tm ? tm[1].toUpperCase() : null;
   navInit(render);
   S.screen = "loading"; render();
-  // ?demo forces the simulated riders (for testing without touching the live database)
-  try{ setBackend(CONFIG.supabaseUrl && !/[?&]demo\b/.test(location.search) ? await LiveBackend() : DemoBackend()); }
+  // ?demo forces the simulated riders (for testing without touching the live database);
+  // the live backend is wrapped so a practice ride (simulated people inside the live app) never reaches Supabase
+  try{ setBackend(CONFIG.supabaseUrl && !/[?&]demo\b/.test(location.search) ? PracticeBackend(await LiveBackend()) : DemoBackend()); }
   catch(e){ console.error(e); setBackend(DemoBackend()); toast(t("netError")); }
   loadNotices(true);
   // Email account: after a login link on a new phone, bring the saved profile back

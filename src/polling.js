@@ -4,7 +4,7 @@ import { startFeedback } from "./actions.js";
 import { loadMessages } from "./chat.js";
 import { currentActivity } from "./games.js";
 import { loadNotices, render } from "./screens.js";
-import { S, backend } from "./state.js";
+import { S, backend, isPractice } from "./state.js";
 import { parseMsg, t, toast } from "./util.js";
 import { flush, pending } from "./outbox.js";
 import { groupArrived, loadGroup } from "./trains.js";
@@ -103,7 +103,7 @@ function tick(){ if(backend.realtime && Date.now() - lastRefresh < 20000) return
 function startPolling(){
   stopPolling();
   if(backend.listen) backend.listen(onRealtime);
-  pollTimer = setInterval(tick, backend.mode==="demo" ? 1500 : 6000);
+  pollTimer = setInterval(tick, backend.mode==="demo" || isPractice() ? 1500 : 6000);   // simulated people answer fast
 }
 function stopPolling(){ clearInterval(pollTimer); pollTimer = null; clearTimeout(rtTimer); if(backend && backend.unlisten) backend.unlisten(); }
 

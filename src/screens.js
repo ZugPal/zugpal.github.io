@@ -25,6 +25,7 @@ import { pending } from "./outbox.js";
 import { groupScreen, groupSheet, trainNewScreen, trainsSection } from "./trains.js";
 import { chatScreen, gameChat, plusSheet } from "./chatui.js";
 import { installBar, installLink, installSheet } from "./install.js";
+import { practiceBanner, practiceCard, practiceEmpty } from "./practice.js";
 
 /* ---------------- Screens ---------------- */
 function header(){
@@ -35,6 +36,7 @@ function header(){
       <option value="ar"${S.lang==="ar"?" selected":""}>العربية</option>
     </select></div>
     ${backend && backend.mode==="demo" ? `<div class="banner info">${t("demoBanner")}</div>` : ""}
+    ${practiceBanner()}
     ${S.updateReady ? `<div class="banner info action"><span>${t("updateReady")}</span><button class="btn small" data-act="reloadApp">${t("updateBtn")}</button></div>` : ""}
     <div id="netBanner" data-soft>${S.netPortal && S.ride ? `<div class="banner info reconnect" role="status"><span class="dot"></span>${t("netPortal")}</div>`
       : navigator.onLine === false || (S.netDown && S.ride) ? `<div class="banner info reconnect" role="status"><span class="dot"></span>${S.ride ? t("reconnecting") : t("offlineBanner")}${pending() ? ` <b>${t("waitingN",{n:pending()})}</b>` : ""}</div>` : ""}</div>`;
@@ -312,6 +314,7 @@ const screens = {
         <div class="small" style="margin-top:-6px">${t("numberHint")}</div>
         <div class="field"><label for="duration">${t("duration")}</label><select id="duration" data-bind="duration">${opts}</select></div>
         <button class="btn" data-act="checkin" data-arg="train">${t("checkin")}</button></div>
+      ${practiceCard()}
       <div class="row twobtn"><button class="btn ghost" data-act="openGames">${t("games")}</button>
         <button class="btn ghost" data-act="openLibrary">${ICON.book}${t("libTitle")}</button></div>
       <div class="card"><div class="pname">${t("testTitle")}</div><div class="small">${t("testBody")}</div>
@@ -376,7 +379,7 @@ const screens = {
       ${wavedMe}
       ${matchList}
       ${profileNudge()}
-      ${S.open ? (others.map(personCard).join("") || (S.matches.length ? "" : `<div class="empty"><div class="muted">${t("emptyBody")}</div></div>`)) : ""}
+      ${S.open ? (others.map(personCard).join("") || (S.matches.length ? "" : `<div class="empty"><div class="muted">${t("emptyBody")}</div>${practiceEmpty()}</div>`)) : ""}
       <button class="word" data-act="wordMeaning" data-arg="${todaysWordIndex()}"><span class="lbl" style="color:var(--muted)">${t("wordTitle")}</span><span class="w" lang="de">${esc(w)}</span>
         <span class="muted">${esc(S.lang==="de"?de:S.lang==="ar"?ar:en)}</span><span class="small wtap">${t("wordTapHint")}</span></button>
       <div class="end"><button class="btn ghost" data-act="openGames">${t("games")}</button><button class="btn ghost" data-act="openLibrary">${ICON.book}${t("libTitle")}</button><button class="btn ghost" data-act="go" data-arg="mood">${t("moodTitle")}</button><button class="link danger" data-act="endRide">${t("endRide")}</button></div>

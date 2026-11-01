@@ -11,6 +11,9 @@ const S = {
 };
 let backend = null;
 function setBackend(b){ backend = b; }
+// the practice ride with simulated people (see practice.js): its ride key, and whether you are on it right now
+const PRACTICE_KEY = "PRACTICE";
+const isPractice = () => !!S.ride && S.ride.key === PRACTICE_KEY;
 function load(){
   try{
     const d = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
@@ -28,4 +31,4 @@ function save(){
   try{ localStorage.setItem(STORE_KEY, JSON.stringify({lang:S.lang, profile:S.profile, moods:[...S.moods], coach:S.coach, womenOnly:S.womenOnly, chatOnly:S.chatOnly, buddies:[...S.buddies], ride:S.ride, wavedOnce:S.wavedOnce, nudgeOff:S.nudgeOff, notifyOff:S.notifyOff})); }catch(e){}
 }
 
-export { S, backend, load, save, setBackend };
+export { PRACTICE_KEY, S, backend, isPractice, load, save, setBackend };
