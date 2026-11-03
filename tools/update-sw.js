@@ -12,9 +12,11 @@ const hash = crypto.createHash("sha256");
 const TEXT = /\.(html|js|css|json|webmanifest|svg|txt)$/;
 for(const f of files){ const p = path.join(ROOT, f === "./" ? "index.html" : f); const buf = fs.readFileSync(p);
   hash.update(f); hash.update(TEXT.test(p) ? buf.toString("utf8").replace(/\r\n/g, "\n") : buf); }
-const version = hash.digest("hex").slice(0, 12);
 const swPath = path.join(ROOT, "sw.js");
 const sw = fs.readFileSync(swPath, "utf8");
+// the worker's own code counts too (without its VERSION and FILES lines), so a change to how it updates reaches every phone
+hash.update(sw.replace(/\r\n/g, "\n").replace(/const VERSION = "[^"]*";/, "").replace(/const FILES = \[[\s\S]*?\];/, ""));
+const version = hash.digest("hex").slice(0, 12);
 const next = sw.replace(/const VERSION = "[^"]*";/, `const VERSION = "${version}";`)
   .replace(/const FILES = \[[\s\S]*?\];/, `const FILES = [\n${files.map(f => `  "${f}"`).join(",\n")}\n];`);
 if(process.argv.includes("--check")){

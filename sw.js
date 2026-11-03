@@ -2,7 +2,7 @@
 // The app files are cached as one versioned set, so a phone never mixes old and new files.
 // Supabase (chat, waves, check-in) always goes to the network. Downloaded books live in IndexedDB, not here.
 // VERSION and FILES are written by tools/update-sw.js; do not edit them by hand.
-const VERSION = "3514d4e3681b";
+const VERSION = "4732d1f7b74c";
 const FILES = [
   "./",
   "index.html",
@@ -111,7 +111,9 @@ const FILES = [
 const CACHE = "zugpal-" + VERSION;
 
 self.addEventListener("install", event => {
-  event.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
+  // cache: "reload" skips the browser's own short-term copy (GitHub Pages lets it keep files 10 minutes),
+  // otherwise a quick update could store a stale file inside the new version and keep it until the next one
+  event.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES.map(f => new Request(f, { cache: "reload" })))).then(() => self.skipWaiting()));
 });
 self.addEventListener("activate", event => {
   event.waitUntil(caches.keys()
