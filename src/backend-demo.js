@@ -1,25 +1,25 @@
 // Demo backend: simulated riders, used when there is no Supabase URL or with ?demo.
-import { DEMO_PHOTO, FOLLOW, REACT } from "./data.js";
+import { DEMO_PHOTO, REACT } from "./data.js";
 import { currentActivity } from "./games.js";
+import { aiHistory, scriptReply } from "./practice-talk.js";
 import { S } from "./state.js";
 import { CARD, parseMsg, portrait } from "./util.js";
 
 /* ---------------- Demo backend (simulated riders) ---------------- */
-function DemoBackend(){
+// opts.ai (practice ride in the live app): asks the server function for a real-sounding reply; without it, or when it
+// fails, the scripts in practice-talk.js answer
+function DemoBackend(opts = {}){
   const people = [
     {id:"d-lena", practice:"helper", askMe:{de:"meinem Jahr in Valencia",en:"my year in Valencia",ar:"السنة التي قضيتها في فالنسيا"}, name:"Lena", gender:"woman", age:"25–29", langs:["Deutsch","English","Español"], topics:["books","travel","films"], moods:["german","books"], coach:"5", womenOnly:false, chatOnly:false, wavesBack:true, buddyBack:true,
-     badges:{listener:4, german:7}, photo:portrait("#D9E6FB","#F1C9A5","#C8963E","#2D5BD0","long"),
-     reply:{de:"Hallo! Ich sitze in Wagen 5, beim mittleren Eingang.",en:"Hi! I'm in coach 5, by the middle doors.",ar:"مرحباً! أنا في العربة 5 بجانب الباب الأوسط."}},
+     badges:{listener:4, german:7}, photo:portrait("#D9E6FB","#F1C9A5","#C8963E","#2D5BD0","long")},
     {id:"d-karim", practice:"learner-B1", askMe:{de:"dem besten Falafel in Köln",en:"the best falafel in Cologne",ar:"أفضل فلافل في كولونيا"}, name:"Karim", gender:"man", age:"30–39", langs:["العربية","Deutsch","Français"], topics:["football","tech","family"], moods:["small","football"], coach:"3", womenOnly:false, chatOnly:false, wavesBack:true, buddyBack:true,
-     badges:{funny:5, kind:2}, photo:portrait("#F5DFD0","#C68B5E","#2B2018","#1F6B50","short"),
-     reply:{de:"Hey! Gerne, ich steige in Horrem aus.",en:"Hey! Sure, I get off at Horrem.",ar:"أهلاً! بكل سرور، سأنزل في محطة هورم."}},
+     badges:{funny:5, kind:2}, photo:portrait("#F5DFD0","#C68B5E","#2B2018","#1F6B50","short")},
     {id:"d-aylin", name:"Aylin", gender:"woman", age:"25–29", langs:["Türkçe","Deutsch","English"], topics:["psychology","music"], moods:["small","music"], coach:"", womenOnly:false, chatOnly:true, wavesBack:true, buddyBack:false,
-     badges:{stories:3}, photo:portrait("#E6DCF2","#E2B48C","#3A2418","#B4531E","long"),
-     reply:{de:"Hi! Ich schreibe lieber, bin noch etwas müde.",en:"Hi! I prefer to chat, still a bit sleepy.",ar:"مرحباً! أفضّل الكتابة، ما زلت نعسانة قليلاً."}},
+     badges:{stories:3}, photo:portrait("#E6DCF2","#E2B48C","#3A2418","#B4531E","long")},
     {id:"d-mira", name:"Mira", gender:"woman", age:"40–49", langs:["Deutsch","Türkçe"], topics:["nature","books"], moods:["quiet","travel"], coach:"5", womenOnly:true, chatOnly:true, wavesBack:false,
-     badges:{kind:3}, photo:portrait("#DCEFE6","#D9A77E","#7A3FA0","#2E3B36","scarf"), reply:{}},
+     badges:{kind:3}, photo:portrait("#DCEFE6","#D9A77E","#7A3FA0","#2E3B36","scarf")},
     {id:"d-jonas", name:"Jonas", gender:"man", age:"18–24", langs:["Deutsch","English"], topics:["music","games","tech"], moods:["work","music"], coach:"7", womenOnly:false, chatOnly:true, wavesBack:false,
-     badges:{}, photo:portrait("#F7E7B4","#F3D2B5","#9A5A2B","#15211D","short"), reply:{}}
+     badges:{}, photo:portrait("#F7E7B4","#F3D2B5","#9A5A2B","#15211D","short")}
   ];
   let present=[], mine=new Set(), theirs=new Set(), blocked=new Set(), msgs={}, timers=[], reacted={}, media={};
   let demoReports = 0; const demoNotices = [];
@@ -34,6 +34,35 @@ function DemoBackend(){
   const visibleTo = p => !blocked.has(p.id) && (!S.womenOnly || p.gender==="woman") && (!p.womenOnly || S.profile.gender==="woman");
   const isBuddy = p => savedBuddies.has(p.id) && S.buddies.has(p.id);
   const after = (ms, fn) => timers.push(setTimeout(fn, ms));
+  // talking like a person: read your message, show "typing…", answer after a time that fits the length
+  const ai = opts.ai || null; let aiOff = false;
+  const typing = new Set(), busy = {}, memory = {};
+  const typeTime = s => Math.min(4500, 400 + String(s || "").length * 35);
+  const TALK = new Set(["text", "dice", "ttl", "bye", "word", "spin", "book"]);
+  async function replyFor(p, list){
+    if(ai && !aiOff){
+      try{
+        const r = await ai({ persona: p.id, lang: S.lang, name: S.profile && S.profile.name, practice: S.profile && S.profile.practice, history: aiHistory(list) });
+        if(r && Array.isArray(r.reply) && r.reply.length) return r.reply;
+      }catch(e){ if(["no_key", "limit", "auth"].includes(e && e.code)) aiOff = true; }   // no key yet / limit reached: scripts for the rest of the ride
+    }
+    const last = list.filter(m => m.mine).pop();
+    return scriptReply(p.id, last ? last.body : "", memory[p.id] = memory[p.id] || {});
+  }
+  function talk(p, list){
+    if(busy[p.id]){ busy[p.id].again = true; return; }              // still answering: answer the newest message next
+    const job = busy[p.id] = { again: false }, t0 = Date.now(), read = 700 + Math.random() * 900;
+    after(read, () => typing.add(p.id));
+    const done = () => { typing.delete(p.id); delete busy[p.id]; if(job.again) talk(p, list); };
+    replyFor(p, list).then(parts => {
+      if(!parts.length) return after(read + 300, done);
+      let wait = Math.max(250, t0 + read + typeTime(parts[0]) - Date.now());
+      parts.forEach((text, i) => {
+        after(wait, () => { list.push({ mine: false, body: text, at: Date.now() }); if(i === parts.length - 1) done(); });
+        wait += 600 + typeTime(parts[i + 1]);
+      });
+    });
+  }
   return {
     mode:"demo", uid:"me",
     async trains(){ return trains.map(x => ({ ...x })); },
@@ -59,7 +88,7 @@ function DemoBackend(){
     async wave(id){ mine.add(id); const p=people.find(x=>x.id===id); if(p && p.wavesBack) after(2500, ()=>theirs.add(id)); },
     async unwave(id){ mine.delete(id); },
     async matches(){ if(!S.open) return []; return present.filter(p=>visibleTo(p) && mine.has(p.id) && theirs.has(p.id)).map(p=>({id:p.id, first_name:p.name, age_range:p.age, languages:p.langs, moods:p.moods,
-      chat_only:p.chatOnly || S.chatOnly, coach:(p.chatOnly || S.chatOnly) ? null : p.coach, photo:p.photo, accept_photos:true, seen_at:new Date().toISOString(), active_game:currentActivity() || "chat"})); },
+      chat_only:p.chatOnly || S.chatOnly, coach:(p.chatOnly || S.chatOnly) ? null : p.coach, photo:p.photo, accept_photos:true, seen_at:new Date().toISOString(), active_game:currentActivity() || "chat", typing:typing.has(p.id)})); },
     async presence(){},
     async messages(id){ if(window.__demoOffline) throw new TypeError("Failed to fetch"); return (msgs[id]||[]).slice(); },
     async send(id, body, ride, cid){
@@ -80,12 +109,8 @@ function DemoBackend(){
         if(st.turn==="b"){ const bm = ZChess.bestMove(st, 2); if(bm) after(1200, ()=>list.push({mine:false, body:CARD+"cm:"+gid+":"+ZChess.uci(bm), at:Date.now()})); }
         return;
       }
-      if(kind==="text"){
-        const n = list.filter(m=>!m.mine && parseMsg(m.body).type==="text").length;
-        if(n >= 5 || !p.reply.en) return;
-        const text = n===0 ? (p.reply[S.lang]||p.reply.en) : FOLLOW[S.lang][(n-1) % FOLLOW[S.lang].length];
-        after(1500, ()=>list.push({mine:false, body:text, at:Date.now()})); return;
-      }
+      if(!p.wavesBack) return;                                            // Mira and Jonas never get this far
+      if(kind==="text" || (TALK.has(kind) && ai && !aiOff)){ talk(p, list); return; }
       const key = id + ":" + kind; if(reacted[key]) return; reacted[key] = true;
       const text = REACT[kind] && (REACT[kind][S.lang]||REACT[kind].en);
       if(text) after(1800, ()=>list.push({mine:false, body:text, at:Date.now()}));

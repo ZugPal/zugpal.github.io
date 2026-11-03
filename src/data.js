@@ -74,11 +74,6 @@ const WORDS = [
   ["Torschlusspanik","Angst, Chancen im Leben zu verpassen","Fear of missing life's chances","الخوف من فوات فرص الحياة"],
   ["Weltschmerz","Traurigkeit über den Zustand der Welt","Sadness about the state of the world","الحزن على حال العالم"]
 ];
-const FOLLOW = {
-  de:["Haha, stimmt!","Erzähl mehr davon.","Das kenne ich gut.","Spannend!"],
-  en:["Haha, true!","Tell me more about that.","I know that feeling.","Interesting!"],
-  ar:["هههه، صحيح!","أخبرني المزيد عن ذلك.","أعرف هذا الشعور جيداً.","مثير للاهتمام!"]
-};
 const DEMO_PHOTO = "data:image/svg+xml;charset=utf-8," + encodeURIComponent("<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'><rect width='400' height='300' fill='#9FC9E8'/><circle cx='320' cy='70' r='34' fill='#F7E7B4'/><path d='M0 220 L90 140 L170 200 L260 120 L400 210 L400 300 L0 300 Z' fill='#1F6B50'/><rect x='0' y='250' width='400' height='14' fill='#4A5A54'/><rect x='60' y='226' width='150' height='28' rx='6' fill='#B4531E'/><rect x='72' y='232' width='22' height='12' fill='#F2F4F3'/><rect x='104' y='232' width='22' height='12' fill='#F2F4F3'/><rect x='136' y='232' width='22' height='12' fill='#F2F4F3'/><rect x='168' y='232' width='22' height='12' fill='#F2F4F3'/></svg>");
 const REACT = {
   text:null,
@@ -87,4 +82,4 @@ const REACT = {
   bye:{de:"Danke, gleichfalls! Vielleicht bis morgen.",en:"Thanks, you too! Maybe see you tomorrow.",ar:"شكراً، وأنت أيضاً! ربما نلتقي غداً."}
 };
 
-export { AGES, BADGES, DEMO_PHOTO, DICE, FOLLOW, ICE, LANGS, MOODS, REACT, TOPICS, WORDS };
+export { AGES, BADGES, DEMO_PHOTO, DICE, ICE, LANGS, MOODS, REACT, TOPICS, WORDS };

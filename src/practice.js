@@ -14,7 +14,9 @@ const RIDE = ["checkIn", "update", "visible", "wave", "unwave", "matches", "pres
   "hostStats", "hostAnnounce", "announcement", "callSignal"];
 function PracticeBackend(live){
   let demo = null;
-  const sim = () => demo || (demo = DemoBackend());
+  // the simulated people answer with the AI where it is set up (see supabase/functions/practice-chat), else with scripts
+  const fresh = () => DemoBackend({ ai: live.practiceReply });
+  const sim = () => demo || (demo = fresh());
   const api = {
     get mode(){ return live.mode; },
     get uid(){ return live.uid; },
@@ -38,7 +40,7 @@ function PracticeBackend(live){
   };
   for(const name of RIDE) api[name] = function(...a){
     if(!isPractice()) return live[name](...a);
-    if(name === "checkIn") demo = DemoBackend();                 // every practice ride starts fresh
+    if(name === "checkIn") demo = fresh();                       // every practice ride starts fresh
     const b = sim(); return b[name] ? b[name](...a) : undefined;  // calls the demo doesn't know (calls) do nothing
   };
   for(const name of Object.keys(live)) if(!(name in api)) api[name] = (...a) => live[name](...a);

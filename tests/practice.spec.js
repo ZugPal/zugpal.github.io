@@ -13,9 +13,12 @@ const JWT = b64(JSON.stringify({ alg: "HS256", typ: "JWT" })) + "." + b64(JSON.s
 const SESSION = { access_token: JWT, token_type: "bearer", expires_in: 3600, expires_at: exp, refresh_token: "fake-refresh", user: USER };
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "*", "Access-Control-Allow-Methods": "GET,POST,PATCH,PUT,DELETE,OPTIONS" };
 
-// Fake Supabase: records every call, answers auth with a fake anonymous session and everything else with an empty list
-async function fakeSupabase(page){
-  const log = [];
+// Fake Supabase: records every call, answers auth with a fake anonymous session and everything else with an empty list.
+// The server function practice-chat (Claude) answers with opts.ai: { status, body } (default: an AI reply), and its
+// requests are kept in log.ai.
+const AI_TEXT = { de: "Hallo! Schön, dass du schreibst. Ich sitze in Wagen 5.", en: "Hi! Nice of you to write. I'm in coach 5.", ar: "مرحباً! جميل أنك كتبت. أنا في العربة 5." };
+async function fakeSupabase(page, opts = {}){
+  const log = []; log.ai = [];
   await page.routeWebSocket(/supabase\.co/, () => {});                       // Realtime: never connects
   await page.route(/supabase\.co/, route => {
     const req = route.request(), u = new URL(req.url());
@@ -25,6 +28,11 @@ async function fakeSupabase(page){
     if(u.pathname.endsWith("/auth/v1/signup") || u.pathname.includes("/auth/v1/token")) return json(SESSION);
     if(u.pathname.endsWith("/auth/v1/user")) return json(USER);
     if(u.pathname.endsWith("/rpc/am_host")) return json(false);
+    if(u.pathname.endsWith("/functions/v1/practice-chat")){
+      const body = JSON.parse(req.postData() || "{}"); log.ai.push(body);
+      const a = opts.ai || { status: 200, body: { reply: [AI_TEXT[body.lang] || AI_TEXT.en] } };
+      return route.fulfill({ status: a.status, headers: { ...CORS, "Content-Type": "application/json" }, body: JSON.stringify(a.body) });
+    }
     return json([]);
   });
   return log;
@@ -40,6 +48,7 @@ async function signUp(page, lang){
 }
 const WRITES = /\/rest\/v1\/(riders|messages|waves|reports|blocks|compliments|buddies|group_messages|ride_moods|media_items|call_signals|trains|train_members)|\/rpc\/(file_report|send_media|open_media|report_media|host_announce|group_remove|become_host|train_cancel)/;
 const REPLY = { de: "Wagen 5", en: "coach 5", ar: "العربة 5" };
+const TYPING = { de: "schreibt", en: "typing", ar: "يكتب" };
 const MORNING = { de: "Guten Morgen", en: "Good morning", ar: "صباح الخير" };
 
 for(const lang of ["de", "en", "ar"]){
@@ -71,14 +80,19 @@ for(const lang of ["de", "en", "ar"]){
     await expect(page.locator(".banner.practice")).toBeVisible();
     await shot("3-match");
 
-    // chat: Lena answers by herself
+    // chat: Lena answers with the AI (the server function), shows "typing…" first
     await page.click('[data-act="chat"]');
     await expect(page.locator("#chatInput")).toBeVisible();
     await expect(page.locator(".banner.practice")).toBeVisible();
     await page.fill("#chatInput", "Hallo Lena!");
     await page.keyboard.press("Enter");
     await expect(page.locator("#chatLog .msg.mine")).toContainText("Hallo Lena!");
-    await expect(page.locator("#chatLog .msg:not(.mine)", { hasText: REPLY[lang] })).toBeVisible({ timeout: 15000 });
+    await expect(page.locator("#chatHead")).toContainText(TYPING[lang], { timeout: 8000 });
+    await expect(page.locator("#chatLog .msg:not(.mine)", { hasText: AI_TEXT[lang] })).toBeVisible({ timeout: 15000 });
+    // the server function got Lena, your language and the chat so far, nothing else
+    expect(log.ai.length).toBe(1);
+    expect(log.ai[0]).toMatchObject({ persona: "d-lena", lang, name: "Husam" });
+    expect(log.ai[0].history).toEqual([{ me: true, text: "Hallo Lena!" }]);
     await shot("4-chat");
 
     // the group chat of the practice ride
@@ -123,5 +137,25 @@ test("an empty real ride offers the practice ride, and the practice ride survive
   await expect(page.locator(".banner.practice")).toBeVisible();
   await expect(page.locator(".person", { hasText: "Karim" })).toBeVisible({ timeout: 15000 });
   expect(log.slice(before).filter(x => WRITES.test(x))).toEqual([]);
+  expect(errors).toEqual([]);
+});
+
+test("without the AI key the practice people answer with scripts, and stop asking the server", async ({ page }) => {
+  const errors = []; page.on("pageerror", e => errors.push(String(e)));
+  const log = await fakeSupabase(page, { ai: { status: 503, body: { error: "no_key" } } });
+  await signUp(page, "en");
+  await page.click('[data-act="practiceStart"]');
+  await page.click('[data-act="goOpen"]');
+  const lena = page.locator(".person", { hasText: "Lena" });
+  await expect(lena).toBeVisible({ timeout: 10000 });
+  await lena.locator('[data-act="wave"]').click();
+  await expect(page.locator("h1", { hasText: "Lena" })).toBeVisible({ timeout: 15000 });
+  await page.click('[data-act="chat"]');
+  await page.fill("#chatInput", "Hi Lena!"); await page.keyboard.press("Enter");
+  await expect(page.locator("#chatLog .msg:not(.mine)", { hasText: REPLY.en })).toBeVisible({ timeout: 15000 });
+  // a real question gets a fitting answer, not a random line
+  await page.fill("#chatInput", "What do you do for work?"); await page.keyboard.press("Enter");
+  await expect(page.locator("#chatLog .msg:not(.mine)", { hasText: "speech therapist" })).toBeVisible({ timeout: 15000 });
+  expect(log.ai.length).toBe(1);                                              // asked once, then scripts for the rest of the ride
   expect(errors).toEqual([]);
 });

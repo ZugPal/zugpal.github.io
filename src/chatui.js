@@ -25,6 +25,7 @@ function dayLabel(at){
 }
 // "Online", "Playing Chess", "Last seen 3 min ago"
 function peerStatus(m){
+  if(m && m.typing) return t("typingNow");
   if(!m || !m.seen_at) return "";
   const age = Date.now() - Date.parse(m.seen_at);
   if(age < 25000){
