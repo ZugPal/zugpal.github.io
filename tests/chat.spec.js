@@ -48,9 +48,11 @@ for(const lang of ["de", "en", "ar"]){
     await page.click('.plussheet [data-act="sendWord"]');
     await expect(page.locator(".plussheet")).toHaveCount(0);
     await page.click(".gamecard .wordflip");
-    await expect(page.locator(".wordsheet .mrow")).toHaveCount(3);
-    await expect(page.locator(".wordsheet .mrow").first()).toHaveAttribute("class", /mine/);       // your language first
-    await expect(page.locator(".wordsheet .mrow").first().locator("[lang]")).toHaveAttribute("lang", lang);
+    await expect(page.locator(".wordsheet .wmrow")).toHaveCount(3);
+    await expect(page.locator(".wordsheet .wmrow").first()).toHaveAttribute("class", /mine/);       // your language first
+    await expect(page.locator(".wordsheet .wmrow").first().locator("[lang]")).toHaveAttribute("lang", lang);
+    const meaningBox = await page.locator(".wordsheet .wmrow").first().locator("[lang]").boundingBox();
+    expect(meaningBox.width).toBeGreaterThan(200);   // the meaning uses the full width, never one word per line
     await page.screenshot({ path: path.join(SHOTS, `chat-2-word-${lang}.png`) });
     await page.goBack();                                                                           // back closes the sheet
     await expect(page.locator(".wordsheet")).toHaveCount(0);

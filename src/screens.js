@@ -131,7 +131,7 @@ function wordMeaningSheet(){
   return `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="wmT"><div class="panel wordsheet">
     <div class="lbl">${t("wordTitle")}</div><div class="bigword" id="wmT" lang="de">${esc(w[0])}</div>
     ${"speechSynthesis" in window ? `<button class="btn ghost small" data-act="wordSpeak" data-arg="${i}">${ICON.volume}${t("wordHear")}</button>` : ""}
-    <div class="meanings">${rows.map(([l, n, m]) => `<div class="mrow${l === S.lang ? " mine" : ""}"><span class="mlang">${n}</span><span lang="${l}" dir="${l === "ar" ? "rtl" : "ltr"}">${esc(m)}</span></div>`).join("")}</div>
+    <div class="meanings">${rows.map(([l, n, m]) => `<div class="wmrow${l === S.lang ? " mine" : ""}"><span class="wmlang">${n}</span><span lang="${l}" dir="${l === "ar" ? "rtl" : "ltr"}">${esc(m)}</span></div>`).join("")}</div>
     <div class="small">${t("wordTask")}</div>
     <div class="row" style="justify-content:flex-end"><button class="btn" data-act="wordClose">${t("close")}</button></div></div></div>`;
 }

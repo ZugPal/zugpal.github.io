@@ -664,9 +664,9 @@ button.word{font:inherit;color:inherit;background:var(--surface);text-align:star
 .wordsheet .bigword{font-family:var(--f-display);font-size:34px;font-weight:800}
 .wordsheet .btn.small{align-self:flex-start}
 .meanings{display:flex;flex-direction:column;gap:8px}
-.mrow{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line-soft)}
-.mrow.mine{border-color:var(--accent);background:var(--soft);color:var(--soft-ink)}
-.mlang{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;opacity:.75}
+.wmrow{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:12px;background:var(--surface);border:1px solid var(--line-soft)}
+.wmrow.mine{border-color:var(--accent);background:var(--soft);color:var(--soft-ink)}
+.wmlang{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;opacity:.75}
 /* video message recorder and player, call screen: outside #app */
 .medialayer,#callUi{position:fixed;inset:0;z-index:60;background:#000;color:#fff;display:flex;align-items:center;justify-content:center}
 .vrbox{width:100%;max-width:480px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px))}
